@@ -25,15 +25,17 @@ Linki do pobrania Payary 5.2022.5 i H2 1.4.200
 - Payara 5.2022.5 https://nexus.payara.fish/#browse/browse:payara-community:fish%2Fpayara%2Fdistributions%2Fpayara%2F5.2022.5%2Fpayara-5.2022.5.zip
 - H2 1.4.200 https://www.h2database.com/html/download-archive.html
 
+Edit configurations.. -> + -> Glassfish server Local -> Configure          
+![Alt text](screens/ustawienieServeraPayarawInteliji.png?raw=true "ustawienie Servera Payara w Inteliji.png")
 
-# Instrukcja konfiguracji
 Wymagane pluginy w Inteliji:       
 File -> Settings -> Plugins          
 ![Alt text](screens/plugins.jpg?raw=true "Pluginy")
 
-Ustawienie/sprawdzenie połączenia z bazą danych przez Inteliji:       
-View -> Tool Windows -> Database -> + -> Data Source -> H2       
-![Alt text](screens/ustawienaPolaczeniaBazyWInteliji.png?raw=true "Polaczenie z baza danych przez Inteliji")
+# Instrukcja konfiguracji
+W projekcie trzeba ustawić Jave 8:       
+File -> Project Structure...:       
+![Alt text](screens/projectStructure.png?raw=true "Project Structure")
 
 Maven Lifecycle wyczyszczenie i zbudowanie projektu:         
 View -> Tool Windows -> Maven -> SoapProject -> Lifecycle i klikamy **clean**, a następnie **package**          
@@ -44,6 +46,9 @@ Konfiguracja Payary:
 ![Alt text](screens/payaraConfigurationCz2.png?raw=true "Payara cz.2")
 ![Alt text](screens/payaraConfigurationCz3.png?raw=true "Payara cz.3")
 
+Ustawienie/sprawdzenie połączenia z bazą danych przez Inteliji:       
+View -> Tool Windows -> Database -> + -> Data Source -> H2       
+![Alt text](screens/ustawienaPolaczeniaBazyWInteliji.png?raw=true "Polaczenie z baza danych przez Inteliji")
 
 # Instrukcja dodawania rekordów do bazy przez konsole Inteliji
 View -> Tool Windows -> Database -> wybieramy naszą baze danych np. airport -> Open Default Console
