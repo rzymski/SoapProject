@@ -25,10 +25,10 @@ Linki do pobrania Payary 5.2022.5 i H2 1.4.200
 - Payara 5.2022.5 https://nexus.payara.fish/#browse/browse:payara-community:fish%2Fpayara%2Fdistributions%2Fpayara%2F5.2022.5%2Fpayara-5.2022.5.zip
 - H2 1.4.200 https://www.h2database.com/html/download-archive.html
 
-Edit configurations.. -> + -> Glassfish server Local -> Configure          
+Edit configurations... -> + -> Glassfish server Local -> Configure          
 ![Alt text](screens/ustawienieServeraPayarawInteliji.png?raw=true "ustawienie Servera Payara w Inteliji.png")
 
-Wymagane pluginy w Inteliji:       
+Wymagane pluginy w Inteliji **GlassFish**, **Maven** i **Maven Extension**:       
 File -> Settings -> Plugins          
 ![Alt text](screens/plugins.jpg?raw=true "Pluginy")
 
@@ -53,7 +53,7 @@ View -> Tool Windows -> Database -> + -> Data Source -> H2
 # Instrukcja dodawania rekordów do bazy przez konsole Inteliji
 View -> Tool Windows -> Database -> wybieramy naszą baze danych np. airport -> Open Default Console
 Tworzenie lotów w bazie za pomocą CSV:
-   - INSERT INTO Flight (ID, FLIGHTCODE, DEPARTUREAIRPORT, DEPARTURETIME, DESTINATIONAIRPORT, ARRIVALTIME, CREATEDATE, UPDATEDATE)      
+   - INSERT INTO Flight (ID, FLIGHTCODE, DEPARTUREAIRPORT, DEPARTURETIME, DESTINATIONAIRPORT, ARRIVALTIME, CREATEDATE, UPDATEDATE, CAPACITY, OCCUPIEDSEATS)          
      SELECT *
 
      FROM CSVREAD('D:/programowanie/java/rsi/SoapProject/createDatabaseCSV/flights.csv', null);

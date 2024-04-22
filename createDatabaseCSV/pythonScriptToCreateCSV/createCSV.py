@@ -14,15 +14,27 @@ for day in range(10):
             selected_ports = random.sample(ports, 2)
             departureTime = datetime(2024, 5, 6+day, hour, 5*b, 0)
             arrivalTime = departureTime + timedelta(hours=b + 1)
+            capacity = random.randint(70, 150)
+            occupiedSeats = capacity - random.randint(0, 20)
             counter += 1
             now = datetime.now()
-            flight = {'id': f'{1000+counter}', 'flightCode': f'LOT {counter}', 'departureAirport': selected_ports[0], 'departureTime': departureTime, 'destinationAirport': selected_ports[1], 'arrivalTime': arrivalTime, 'createDate': now, 'updateDate': now}
+            flight = {'id': f'{1000+counter}',
+                      'flightCode': f'LOT {counter}',
+                      'departureAirport': selected_ports[0],
+                      'departureTime': departureTime,
+                      'destinationAirport': selected_ports[1],
+                      'arrivalTime': arrivalTime,
+                      'createDate': now,
+                      'updateDate': now,
+                      'capacity': capacity,
+                      'occupiedSeats': occupiedSeats
+                      }
             flights_data.append(flight)
 
 csv_path = '../flights.csv'
 
 with open(csv_path, mode='w', newline='', encoding='utf-8') as file:
-    writer = csv.DictWriter(file, fieldnames=["id", "flightCode", "departureAirport", "departureTime", "destinationAirport", "arrivalTime", 'createDate', 'updateDate'])
+    writer = csv.DictWriter(file, fieldnames=["id", "flightCode", "departureAirport", "departureTime", "destinationAirport", "arrivalTime", 'createDate', 'updateDate', 'capacity', 'occupiedSeats'])
     writer.writeheader()
     for flight in flights_data:
         print(flight)
