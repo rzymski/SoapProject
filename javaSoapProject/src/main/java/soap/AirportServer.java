@@ -1,5 +1,6 @@
 package soap;
 
+import database.dto.FlightDTO;
 import database.model.Flight;
 
 import javax.jws.WebMethod;
@@ -28,4 +29,7 @@ public interface AirportServer {
 
     @WebMethod
     List<Flight> getFlightsData();
+
+    @WebMethod
+    List<FlightDTO> getFlightsDTOData();
 }
