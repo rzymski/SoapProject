@@ -1,6 +1,5 @@
 package soap;
 
-import database.dto.FlightDTO;
 import database.model.Flight;
 import database.service.FlightService;
 
@@ -64,30 +63,5 @@ public class AirportServerImpl implements AirportServer, Serializable {
         }
         logger.warning("Testowa wartosc: " + flights.get(1));
         return flights;
-    }
-
-    @Override
-    public List<FlightDTO> getFlightsDTOData() {
-        logger.warning("Metoda getFlightsData została wywołana");
-        List<Flight> flights = flightService.findAll();
-        logger.warning("Znalezione loty:");
-        for (Flight flight : flights) {
-            logger.warning(flight.toString());
-        }
-        logger.warning("Testowa wartosc: " + flights.get(1));
-
-        List<FlightDTO> flightDTOs = new ArrayList<>();
-
-        for (Flight flight : flights) {
-            FlightDTO dto = new FlightDTO(flight.getFlightCode(), flight.getDepartureAirport(), flight.getDepartureTime(), flight.getDestinationAirport(), flight.getArrivalTime());
-//            dto.setFlightCode(flight.getFlightCode());
-//            dto.setDepartureAirport(flight.getDepartureAirport());
-//            dto.setDepartureTime(flight.getDepartureTime());
-//            dto.setDestinationAirport(flight.getDestinationAirport());
-//            dto.setArrivalTime(flight.getArrivalTime());
-            flightDTOs.add(dto);
-        }
-        logger.warning("Testowa wartosc flightDTO: " + flightDTOs.get(1));
-        return flightDTOs;
     }
 }

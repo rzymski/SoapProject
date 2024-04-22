@@ -1,6 +1,10 @@
 package database.model;
 
+import database.conventor.LocalDateTimeAdapter;
+
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 
 @Entity
@@ -39,6 +43,8 @@ public class Flight extends AbstractModel {
         this.departureAirport = departureAirport;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
+    @XmlSchemaType(name="dateTime")
     public LocalDateTime getDepartureTime() {
         return departureTime;
     }
@@ -55,6 +61,8 @@ public class Flight extends AbstractModel {
         this.destinationAirport = destinationAirport;
     }
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
+    @XmlSchemaType(name="dateTime")
     public LocalDateTime getArrivalTime() {
         return arrivalTime;
     }
