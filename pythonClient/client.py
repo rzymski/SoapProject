@@ -68,7 +68,7 @@ def downloadImage():
 
 
 # echo("PIZZA IS THE BEST")
-# getFlightsData()
+getFlightsData()
 # getFlightsByFromCity("London")
 # getFlightsByToCity("London")
 # downloadImage()

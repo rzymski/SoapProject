@@ -1,2 +1,3 @@
 # Project exclude paths
-/javaSoapProject/target/
+/SoapProject/target/
+.idea/
