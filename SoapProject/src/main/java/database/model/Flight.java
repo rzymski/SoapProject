@@ -1,6 +1,6 @@
 package database.model;
 
-import database.conventor.LocalDateTimeAdapter;
+import database.adapter.LocalDateTimeAdapter;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlSchemaType;

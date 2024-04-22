@@ -10,9 +10,6 @@ import javax.ejb.Singleton;
 import javax.ejb.Startup;
 import javax.faces.annotation.FacesConfig;
 import javax.inject.Inject;
-import javax.security.enterprise.authentication.mechanism.http.CustomFormAuthenticationMechanismDefinition;
-import javax.security.enterprise.authentication.mechanism.http.LoginToContinue;
-import javax.security.enterprise.identitystore.DatabaseIdentityStoreDefinition;
 import javax.security.enterprise.identitystore.Pbkdf2PasswordHash;
 import java.util.List;
 import java.util.logging.Logger;
@@ -21,29 +18,14 @@ import java.util.logging.Logger;
         name = "java:global/SoapProjectDataSource",
         className = "org.h2.jdbcx.JdbcDataSource",
         url = "jdbc:h2:file:C:/Users/ukasz/Desktop/SoapProject/javaSoapProject/airport",
+        //url = "jdbc:h2:file:D:/programowanie/java/rsi/SoapProject/SoapProject/airport",
+//        url = "jdbc:h2:file:./SoapProject/airport", // wskazuje na miejsce zainstalowania Payary np. D:\programowanie\java\oprogramowanie\payara\payara-5.2022.5\payara5\glassfish\domains\domain1\config
+//        url = "jdbc:h2:file:${user.dir}/SoapProject/SoapProject/airport", // wskazuje na miejsce zainstalowania Payary
 
         minPoolSize = 1,
         initialPoolSize = 1,
         user = "sa",
         password = ""
-)
-@CustomFormAuthenticationMechanismDefinition(
-        loginToContinue = @LoginToContinue(
-                loginPage = "/login.xhtml",
-                errorPage = "",
-                useForwardToLogin = false
-        )
-)
-@DatabaseIdentityStoreDefinition(
-        dataSourceLookup = "java:global/SoapProjectDataSource",
-        callerQuery = "SELECT password FROM \"USER\" WHERE login = ?",
-        groupsQuery = "SELECT ug.name FROM \"USER\" u JOIN USERGROUP ug ON u.usergroup_id=ug.id WHERE u.login = ?",
-        hashAlgorithm = Pbkdf2PasswordHash.class,
-        hashAlgorithmParameters = {
-                "Pbkdf2PasswordHash.Algorithm=PBKDF2WithHmacSHA512",
-                "Pbkdf2PasswordHash.Iterations=3072",
-                "Pbkdf2PasswordHash.SaltSizeBytes=64",
-        }
 )
 @FacesConfig
 @Singleton
@@ -61,8 +43,10 @@ public class Configuration {
     @EJB
     private FlightDao flightDao;
 
+
     @PostConstruct
     private void init(){
+        logger.warning("DZIALA INIT");
         initDatabase();
     }
 
