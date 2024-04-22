@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 @DataSourceDefinition(
         name = "java:global/SoapProjectDataSource",
         className = "org.h2.jdbcx.JdbcDataSource",
-        url = "jdbc:h2:file:D:/programowanie/java/rsi/SoapProject/javaSoapProject/airport",
+        url = "jdbc:h2:file:C:/Users/ukasz/Desktop/SoapProject/javaSoapProject/airport",
 
         minPoolSize = 1,
         initialPoolSize = 1,

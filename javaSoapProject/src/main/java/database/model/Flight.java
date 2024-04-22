@@ -18,16 +18,33 @@ public class Flight extends AbstractModel {
     private String destinationAirport;
     @Column(nullable = false)
     private LocalDateTime arrivalTime;
+    private int capacity;
+    private int occupiedSeats;
 
     public Flight(){}
-    public Flight(String flightCode, String departureAirport, LocalDateTime departureTime, String destinationAirport, LocalDateTime arrivalTime)
+    public Flight(String flightCode, String departureAirport, LocalDateTime departureTime,
+                  String destinationAirport, LocalDateTime arrivalTime) {
+        this(flightCode, departureAirport, departureTime, destinationAirport, arrivalTime, 100);
+    }
+    public Flight(String flightCode, String departureAirport, LocalDateTime departureTime,
+                  String destinationAirport, LocalDateTime arrivalTime, int capacity)
     {
         this.flightCode = flightCode;
         this.departureAirport = departureAirport;
         this.departureTime = departureTime;
         this.destinationAirport = destinationAirport;
         this.arrivalTime = arrivalTime;
+        this.capacity = capacity;
+        this.occupiedSeats = 0;
     }
+
+    public int getCapacity() { return capacity; }
+
+    public void setCapacity(int capacity) { this.capacity = capacity; }
+
+    public int getOccupiedSeats() { return occupiedSeats; }
+
+    public void setOccupiedSeats(int occupiedSeats) { this.occupiedSeats = occupiedSeats; }
 
     public String getFlightCode() {
         return flightCode;
