@@ -8,6 +8,8 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
 
 @Entity
+@NamedQuery(name = "Flight.findFlightByFromCity", query ="select f from Flight f where f.departureAirport=?1")
+@NamedQuery(name = "Flight.findFlightByToCity", query ="select f from Flight f where f.destinationAirport=?1")
 public class Flight extends AbstractModel {
     private String flightCode;
     private String departureAirport;

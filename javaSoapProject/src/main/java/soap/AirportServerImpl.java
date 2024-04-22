@@ -1,8 +1,10 @@
 package soap;
 
+import database.dao.FlightDao;
 import database.model.Flight;
 import database.service.FlightService;
 
+import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -57,6 +59,31 @@ public class AirportServerImpl implements AirportServer, Serializable {
     public List<Flight> getFlightsData() {
         logger.warning("Metoda getFlightsData została wywołana");
         List<Flight> flights = flightService.findAll();
+        logger.warning("Znalezione loty:");
+        for (Flight flight : flights) {
+            logger.warning(flight.toString());
+        }
+        logger.warning("Testowa wartosc: " + flights.get(1));
+        return flights;
+    }
+
+    @EJB
+    private FlightDao flightDao;
+
+    @Override
+    public List<Flight> getFlightsByFromCity(String city) {
+        List<Flight> flights = flightDao.findFlightByFromCity(city);
+        logger.warning("Znalezione loty:");
+        for (Flight flight : flights) {
+            logger.warning(flight.toString());
+        }
+        logger.warning("Testowa wartosc: " + flights.get(1));
+        return flights;
+    }
+
+    @Override
+    public List<Flight> getFlightsByToCity(String city) {
+        List<Flight> flights = flightDao.findFlightByToCity(city);
         logger.warning("Znalezione loty:");
         for (Flight flight : flights) {
             logger.warning(flight.toString());

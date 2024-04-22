@@ -28,4 +28,10 @@ public interface AirportServer {
 
     @WebMethod
     List<Flight> getFlightsData();
+
+    @WebMethod
+    List<Flight> getFlightsByFromCity(String city);
+
+    @WebMethod
+    List<Flight> getFlightsByToCity(String city);
 }
