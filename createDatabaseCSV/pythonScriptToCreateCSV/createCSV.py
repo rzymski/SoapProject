@@ -15,18 +15,17 @@ for day in range(10):
             departureTime = datetime(2024, 5, 6+day, hour, 5*b, 0)
             arrivalTime = departureTime + timedelta(hours=b + 1)
             counter += 1
-            flight = {'flightCode': f'LOT {counter}', 'departureAirport': selected_ports[0], 'departureTime': departureTime, 'destinationAirport': selected_ports[1], 'arrivalTime': arrivalTime}
+            now = datetime.now()
+            flight = {'id': f'{1000+counter}', 'flightCode': f'LOT {counter}', 'departureAirport': selected_ports[0], 'departureTime': departureTime, 'destinationAirport': selected_ports[1], 'arrivalTime': arrivalTime, 'createDate': now, 'updateDate': now}
             flights_data.append(flight)
-
-print(f"Liczba lotów = {len(flights_data)}")
 
 csv_path = '../flights.csv'
 
 with open(csv_path, mode='w', newline='', encoding='utf-8') as file:
-    writer = csv.DictWriter(file, fieldnames=["flightCode", "departureAirport", "departureTime", "destinationAirport", "arrivalTime"])
+    writer = csv.DictWriter(file, fieldnames=["id", "flightCode", "departureAirport", "departureTime", "destinationAirport", "arrivalTime", 'createDate', 'updateDate'])
     writer.writeheader()
     for flight in flights_data:
         print(flight)
         writer.writerow(flight)
 
-
+print(f"Liczba lotów = {len(flights_data)}")

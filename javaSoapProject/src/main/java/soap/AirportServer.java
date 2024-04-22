@@ -1,12 +1,14 @@
 package soap;
 
+import database.model.Flight;
+
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
 //import javax.xml.ws.BindingType;
 //import javax.xml.ws.soap.MTOM;
 import java.awt.*;
-
+import java.util.List;
 
 import javax.jws.soap.SOAPBinding;
 import javax.jws.soap.SOAPBinding.Style;
@@ -21,9 +23,9 @@ public interface AirportServer {
     String echo(String text);
 
     @WebMethod
-    byte[] downloadImage(String fileName);
+    byte[] downloadImage();
 
 
     @WebMethod
-    void getFlightsData();
+    List<Flight> getFlightsData();
 }

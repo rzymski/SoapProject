@@ -38,26 +38,27 @@ public class AirportServerImpl implements AirportServer, Serializable {
     }
 
     @Override
-    public byte[] downloadImage(String fileName) {
+    public byte[] downloadImage() {
         try {
-            File imageFile = new File("D:\\programowanie\\java\\rsi\\JavaSoap\\screens\\" + fileName);
+            File imageFile = new File("D:\\programowanie\\java\\rsi\\SoapProject\\screens\\plane.png");
             Image image = ImageIO.read(imageFile);
             ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
             ImageIO.write((RenderedImage) image, "png", outputStream);
             return outputStream.toByteArray();
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.warning("Wystąpił wyjątek: "+ e.toString());
             return null;
         }
     }
 
     @Override
-    public void getFlightsData() {
-        logger.severe("Metoda getFlightsData została wywołana");
+    public List<Flight> getFlightsData() {
+        logger.warning("Metoda getFlightsData została wywołana");
         List<Flight> flights = flightService.findAll();
-        logger.severe("Znalezione loty:");
+        logger.warning("Znalezione loty:");
         for (Flight flight : flights) {
-            logger.severe(flight.toString());
+            logger.warning(flight.toString());
         }
+        return flights;
     }
 }
