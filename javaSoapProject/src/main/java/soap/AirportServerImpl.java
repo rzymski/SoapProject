@@ -59,6 +59,7 @@ public class AirportServerImpl implements AirportServer, Serializable {
         for (Flight flight : flights) {
             logger.warning(flight.toString());
         }
+        logger.warning("Testowa wartosc: " + flights.get(1));
         return flights;
     }
 }
