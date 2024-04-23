@@ -31,4 +31,13 @@ public class FlightServiceImpl implements FlightService {
     public List<Flight> findAll() {
         return flightDao.findAll();
     }
+
+    @Override
+    public List<Flight> findFlightsFromCity(String city) {
+        return flightDao.getFlightsFromCity(city);
+    }
+    @Override
+    public List<Flight> findFlightsToCity(String city) {
+        return flightDao.getFlightsToCity(city);
+    }
 }

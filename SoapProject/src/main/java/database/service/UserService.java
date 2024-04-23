@@ -5,8 +5,11 @@
  */
 package database.service;
 
+import database.model.Flight;
+import database.model.FlightReservation;
 import database.model.User;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface UserService {

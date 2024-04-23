@@ -1,12 +1,17 @@
 package database.model;
 
+import database.adapter.LocalDateTimeAdapter;
+
 import javax.persistence.*;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
 @MappedSuperclass
-public class AbstractModel {
+public class AbstractModel implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
@@ -14,8 +19,13 @@ public class AbstractModel {
     @Transient
     private String uid = UUID.randomUUID().toString();
 
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
+    @XmlSchemaType(name="dateTime")
     @Column(nullable = false, updatable = false)
     protected LocalDateTime createDate;
+
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
+    @XmlSchemaType(name="dateTime")
     @Column(nullable = false)
     private LocalDateTime updateDate;
     @PrePersist

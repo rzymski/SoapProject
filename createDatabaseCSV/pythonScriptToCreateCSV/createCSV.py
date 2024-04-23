@@ -26,15 +26,14 @@ for day in range(10):
                       'arrivalTime': arrivalTime,
                       'createDate': now,
                       'updateDate': now,
-                      'capacity': capacity,
-                      'occupiedSeats': occupiedSeats
+                      'capacity': capacity
                       }
             flights_data.append(flight)
 
 csv_path = '../flights.csv'
 
 with open(csv_path, mode='w', newline='', encoding='utf-8') as file:
-    writer = csv.DictWriter(file, fieldnames=["id", "flightCode", "departureAirport", "departureTime", "destinationAirport", "arrivalTime", 'createDate', 'updateDate', 'capacity', 'occupiedSeats'])
+    writer = csv.DictWriter(file, fieldnames=["id", "flightCode", "departureAirport", "departureTime", "destinationAirport", "arrivalTime", 'createDate', 'updateDate', 'capacity'])
     writer.writeheader()
     for flight in flights_data:
         print(flight)

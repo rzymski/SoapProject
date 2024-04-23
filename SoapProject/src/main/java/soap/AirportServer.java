@@ -1,6 +1,9 @@
 package soap;
 
+import database.dto.FlightDTO;
+import database.dto.FlightReservationDTO;
 import database.model.Flight;
+import database.model.FlightReservation;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
@@ -8,6 +11,7 @@ import javax.jws.WebService;
 //import javax.xml.ws.BindingType;
 //import javax.xml.ws.soap.MTOM;
 import java.awt.*;
+import java.math.BigDecimal;
 import java.util.List;
 
 import javax.jws.soap.SOAPBinding;
@@ -27,11 +31,23 @@ public interface AirportServer {
 
 
     @WebMethod
-    List<Flight> getFlightsData();
+    List<FlightDTO> getFlightsData();
 
     @WebMethod
-    List<Flight> getFlightsByFromCity(String city);
+    List<FlightDTO> getFlightsByFromCity(String city);
 
     @WebMethod
-    List<Flight> getFlightsByToCity(String city);
+    List<FlightDTO> getFlightsByToCity(String city);
+
+    @WebMethod
+    FlightReservationDTO checkFlightReservation(Long flightReservationId);
+
+    @WebMethod
+    FlightDTO getFlightById(Long flightReservationId);
+
+    @WebMethod
+    boolean reserveFlight(Long flightId, Long numberOfReservedSeats);
+
+    @WebMethod
+    void cancelFlightReservation(Long flightId);
 }

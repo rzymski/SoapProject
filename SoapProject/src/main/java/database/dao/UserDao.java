@@ -1,5 +1,7 @@
 package database.dao;
 
+import database.model.Flight;
+import database.model.FlightReservation;
 import database.model.User;
 
 import java.util.Optional;

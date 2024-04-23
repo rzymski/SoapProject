@@ -9,4 +9,7 @@ public interface FlightService {
     void delete (Long id);
     Flight findById(Long id);
     List<Flight> findAll();
+
+    List<Flight> findFlightsFromCity(String city);
+    List<Flight> findFlightsToCity(String city);
 }

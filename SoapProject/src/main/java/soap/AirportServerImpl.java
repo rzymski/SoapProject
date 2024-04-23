@@ -1,8 +1,15 @@
 package soap;
 
 import database.dao.FlightDao;
+import database.dto.FlightDTO;
+import database.dto.FlightReservationDTO;
+import database.exceptions.RecordNotFoundException;
 import database.model.Flight;
+import database.model.FlightReservation;
+import database.model.User;
+import database.service.FlightReservationService;
 import database.service.FlightService;
+import database.service.UserService;
 
 import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
@@ -56,39 +63,70 @@ public class AirportServerImpl implements AirportServer, Serializable {
     }
 
     @Override
-    public List<Flight> getFlightsData() {
+    public List<FlightDTO> getFlightsData() {
         logger.warning("Metoda getFlightsData została wywołana");
         List<Flight> flights = flightService.findAll();
-        logger.warning("Znalezione loty:");
-        for (Flight flight : flights) {
-            logger.warning(flight.toString());
-        }
-        logger.warning("Testowa wartosc: " + flights.get(1));
-        return flights;
-    }
-
-    @EJB
-    private FlightDao flightDao;
-
-    @Override
-    public List<Flight> getFlightsByFromCity(String city) {
-        List<Flight> flights = flightDao.findFlightByFromCity(city);
-        logger.warning("Znalezione loty:");
-        for (Flight flight : flights) {
-            logger.warning(flight.toString());
-        }
-        logger.warning("Testowa wartosc: " + flights.get(1));
-        return flights;
+        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
+        return flightDTOs;
     }
 
     @Override
-    public List<Flight> getFlightsByToCity(String city) {
-        List<Flight> flights = flightDao.findFlightByToCity(city);
-        logger.warning("Znalezione loty:");
-        for (Flight flight : flights) {
-            logger.warning(flight.toString());
+    public List<FlightDTO> getFlightsByFromCity(String city) {
+        logger.warning("Metoda getFlightsByFromCity została wywołana");
+        List<Flight> flights = flightService.findFlightsFromCity(city);
+        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
+        return flightDTOs;
+    }
+
+    @Override
+    public List<FlightDTO> getFlightsByToCity(String city) {
+        logger.warning("Metoda getFlightsByToCity została wywołana");
+        List<Flight> flights = flightService.findFlightsToCity(city);
+        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
+        return flightDTOs;
+    }
+
+    @Inject
+    private UserService userService;
+
+    @Inject
+    private FlightReservationService flightReservationService;
+
+    @Override
+    public FlightReservationDTO checkFlightReservation(Long flightReservationId) {
+        FlightReservation flightReservation = flightReservationService.findById(flightReservationId);
+        if(flightReservation == null){
+            throw new RecordNotFoundException("Nie znaleziono rezerwacji o takim ID: " + flightReservationId);
         }
-        logger.warning("Testowa wartosc: " + flights.get(1));
-        return flights;
+        FlightReservationDTO flightReservationDTO = new FlightReservationDTO(flightReservation);
+        return flightReservationDTO;
+    }
+
+    @Override
+    public FlightDTO getFlightById(Long flightId) {
+        Flight flight = flightService.findById(flightId);
+        if(flight == null){
+            throw new RecordNotFoundException("Nie znaleziono lotu o takim ID: " + flightId);
+        }
+        FlightDTO flightDTO = new FlightDTO(flight);
+        return flightDTO;
+    }
+
+    //pozniej powinno sie dodac przechwytywanie uzytkownika z handlera
+    @Override
+    public boolean reserveFlight(Long flightId, Long numberOfReservedSeats) {
+        Flight flight = flightService.findById(flightId);
+        if(flight == null){
+            throw new RecordNotFoundException("Nie znaleziono lotu o takim ID: " + flightId);
+        }
+        User user = userService.findByLogin("rzymski");
+        return flightReservationService.addEditFlightReservation(user, flight, numberOfReservedSeats);
+    }
+
+    @Override
+    public void cancelFlightReservation(Long flightId) {
+        Flight flight = flightService.findById(flightId);
+        User user = userService.findByLogin("rzymski");
+        flightReservationService.deleteFlightReservation(user, flight);
     }
 }

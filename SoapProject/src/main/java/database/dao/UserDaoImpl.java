@@ -1,8 +1,12 @@
 package database.dao;
 
+import database.model.Flight;
+import database.model.FlightReservation;
 import database.model.User;
 
 import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
+import java.util.List;
 import java.util.Optional;
 import java.util.logging.Logger;
 

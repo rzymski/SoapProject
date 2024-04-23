@@ -6,10 +6,13 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@NamedQuery(name = "Flight.findFlightByFromCity", query ="select f from Flight f where f.departureAirport=?1")
-@NamedQuery(name = "Flight.findFlightByToCity", query ="select f from Flight f where f.destinationAirport=?1")
+@NamedQuery(name = "Flight.findFlightsFromCity", query ="select f from Flight f where f.departureAirport=?1")
+@NamedQuery(name = "Flight.findFlightsToCity", query ="select f from Flight f where f.destinationAirport=?1")
+@NamedQuery(name = "Flight.getFlightTotalNumberOfOccupiedSeats", query = "select sum(fr.numberOfReservedSeats) from FlightReservation fr where fr.flight=?1")
 public class Flight extends AbstractModel {
     private String flightCode;
     private String departureAirport;
@@ -18,16 +21,18 @@ public class Flight extends AbstractModel {
     private String destinationAirport;
     @Column(nullable = false)
     private LocalDateTime arrivalTime;
-    private int capacity;
-    private int occupiedSeats;
+    private Long capacity;
+
+    @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FlightReservation> flightReservations = new ArrayList<>();
 
     public Flight(){}
     public Flight(String flightCode, String departureAirport, LocalDateTime departureTime,
                   String destinationAirport, LocalDateTime arrivalTime) {
-        this(flightCode, departureAirport, departureTime, destinationAirport, arrivalTime, 100);
+        this(flightCode, departureAirport, departureTime, destinationAirport, arrivalTime, 100L);
     }
     public Flight(String flightCode, String departureAirport, LocalDateTime departureTime,
-                  String destinationAirport, LocalDateTime arrivalTime, int capacity)
+                  String destinationAirport, LocalDateTime arrivalTime, Long capacity)
     {
         this.flightCode = flightCode;
         this.departureAirport = departureAirport;
@@ -35,16 +40,11 @@ public class Flight extends AbstractModel {
         this.destinationAirport = destinationAirport;
         this.arrivalTime = arrivalTime;
         this.capacity = capacity;
-        this.occupiedSeats = 0;
     }
 
-    public int getCapacity() { return capacity; }
+    public Long getCapacity() { return capacity; }
 
-    public void setCapacity(int capacity) { this.capacity = capacity; }
-
-    public int getOccupiedSeats() { return occupiedSeats; }
-
-    public void setOccupiedSeats(int occupiedSeats) { this.occupiedSeats = occupiedSeats; }
+    public void setCapacity(Long capacity) { this.capacity = capacity; }
 
     public String getFlightCode() {
         return flightCode;
@@ -114,4 +114,14 @@ public class Flight extends AbstractModel {
         Flight other = (Flight) obj;
         return flightCode.equals(other.flightCode);
     }
+
+    public List<FlightReservation> getFlightReservations() {
+        return flightReservations;
+    }
+
+    public void setFlightReservations(List<FlightReservation> flightReservations) {
+        this.flightReservations = flightReservations;
+    }
+
+
 }
