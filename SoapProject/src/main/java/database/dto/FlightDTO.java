@@ -13,47 +13,14 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "FlightDTO")
 public class FlightDTO {
-////    @XmlAttribute
-//    protected Long id;
-//    protected String flightCode;
-//    protected String departureAirport;
-//
-////    @XmlElement(name = "DepartureTime")
-//    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
-//    protected LocalDateTime departureTimeX;
-//
-//    protected String destinationAirport;
-//
-////    @XmlElement(name = "ArrivalTime")
-//    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
-//    protected LocalDateTime arrivalTimeX;
-//
-//    protected Long capacity;
 
-    @XmlAttribute
     protected Long id;
-
-    @XmlElement(name = "FlightCode")
     protected String flightCode;
-
-    @XmlElement(name = "DepartureAirport")
     protected String departureAirport;
-
-    @XmlElement(name = "DepartureTime")
-    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
-    protected LocalDateTime departureTimeX;
-
-    @XmlElement(name = "DestinationAirport")
+    protected LocalDateTime departureTime;
     protected String destinationAirport;
-
-    @XmlElement(name = "ArrivalTime")
-    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
-    protected LocalDateTime arrivalTimeX;
-
-    @XmlElement(name = "Capacity")
+    protected LocalDateTime arrivalTime;
     protected Long capacity;
-
-
 
     public FlightDTO(){}
 
@@ -61,9 +28,9 @@ public class FlightDTO {
         this.id = flight.getId();
         this.flightCode = flight.getFlightCode();
         this.departureAirport = flight.getDepartureAirport();
-        this.departureTimeX = flight.getDepartureTime();
+        this.departureTime = flight.getDepartureTime();
         this.destinationAirport = flight.getDestinationAirport();
-        this.arrivalTimeX = flight.getArrivalTime();
+        this.arrivalTime = flight.getArrivalTime();
         this.capacity = flight.getCapacity();
     }
 
@@ -72,62 +39,57 @@ public class FlightDTO {
         this.id = id;
         this.flightCode = flightCode;
         this.departureAirport = departureAirport;
-        this.departureTimeX = departureTime;
+        this.departureTime = departureTime;
         this.destinationAirport = destinationAirport;
-        this.arrivalTimeX = arrivalTime;
+        this.arrivalTime = arrivalTime;
         this.capacity = capacity;
     }
 
-    public Long getId() {
-        return id;
-    }
+    @XmlAttribute
+    public Long getId() { return id; }
+
+    @XmlElement(name = "flightCode")
+    public String getFlightCode() { return flightCode; }
+
+    @XmlElement(name = "departureAirport")
+    public String getDepartureAirport() { return departureAirport; }
+
+    @XmlElement(name = "departureTime")
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
+    public LocalDateTime getDepartureTime() { return departureTime; }
+
+    @XmlElement(name = "destinationAirport")
+    public String getDestinationAirport() { return destinationAirport; }
+
+    @XmlElement(name = "arrivalTime")
+    @XmlJavaTypeAdapter(LocalDateTimeAdapter.class)
+    public LocalDateTime getArrivalTime() { return arrivalTime; }
+
+    @XmlElement(name = "capacity")
+    public Long getCapacity() { return capacity; }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public String getFlightCode() {
-        return flightCode;
     }
 
     public void setFlightCode(String flightCode) {
         this.flightCode = flightCode;
     }
 
-    public String getDepartureAirport() {
-        return departureAirport;
-    }
-
     public void setDepartureAirport(String departureAirport) {
         this.departureAirport = departureAirport;
     }
 
-    public LocalDateTime getDepartureTime() {
-        return departureTimeX;
-    }
-
     public void setDepartureTime(LocalDateTime departureTime) {
-        this.departureTimeX = departureTime;
-    }
-
-    public String getDestinationAirport() {
-        return destinationAirport;
+        this.departureTime = departureTime;
     }
 
     public void setDestinationAirport(String destinationAirport) {
         this.destinationAirport = destinationAirport;
     }
 
-    public LocalDateTime getArrivalTime() {
-        return arrivalTimeX;
-    }
-
     public void setArrivalTime(LocalDateTime arrivalTime) {
-        this.arrivalTimeX = arrivalTime;
-    }
-
-    public Long getCapacity() {
-        return capacity;
+        this.arrivalTime = arrivalTime;
     }
 
     public void setCapacity(Long capacity) {
@@ -140,9 +102,9 @@ public class FlightDTO {
                 "id=" + id +
                 ", flightCode='" + flightCode + '\'' +
                 ", departureAirport='" + departureAirport + '\'' +
-                ", departureTimeX=" + departureTimeX +
+                ", departureTime=" + departureTime +
                 ", destinationAirport='" + destinationAirport + '\'' +
-                ", arrivalTimeX=" + arrivalTimeX +
+                ", arrivalTime=" + arrivalTime +
                 ", capacity=" + capacity +
                 '}';
     }

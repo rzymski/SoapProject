@@ -2,6 +2,8 @@ package database.dto;
 
 import database.model.Flight;
 import database.model.FlightReservation;
+
+import javax.xml.bind.annotation.XmlElement;
 import java.time.LocalDateTime;
 
 public class FlightReservationDTO extends FlightDTO {
@@ -34,24 +36,27 @@ public class FlightReservationDTO extends FlightDTO {
         this.numberOfReservedSeats = numberOfReservedSeats;
     }
 
+    @XmlElement(name = "login")
     public String getLogin() {
         return login;
+    }
+
+    @XmlElement(name = "email")
+    public String getEmail() {
+        return email;
+    }
+
+    @XmlElement(name = "numberOfReservedSeats")
+    public Long getNumberOfReservedSeats() {
+        return numberOfReservedSeats;
     }
 
     public void setLogin(String login) {
         this.login = login;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public Long getNumberOfReservedSeats() {
-        return numberOfReservedSeats;
     }
 
     public void setNumberOfReservedSeats(Long numberOfReservedSeats) {
@@ -63,9 +68,9 @@ public class FlightReservationDTO extends FlightDTO {
         String FlightData = "id=" + id +
                 ", flightCode='" + flightCode + '\'' +
                 ", departureAirport='" + departureAirport + '\'' +
-                ", departureTimeX=" + departureTimeX +
+                ", departureTime=" + departureTime +
                 ", destinationAirport='" + destinationAirport + '\'' +
-                ", arrivalTimeX=" + arrivalTimeX +
+                ", arrivalTime=" + arrivalTime +
                 ", capacity=" + capacity +
                 '}';
         String UserData = "id=" + getId() +
