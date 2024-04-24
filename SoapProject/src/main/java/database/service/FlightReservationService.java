@@ -14,6 +14,8 @@ public interface FlightReservationService {
 
     FlightReservation findFlightReservation(User user, Flight flight);
     boolean addEditFlightReservation(User user, Flight flight, Long numberOfReservedSeats);
+    boolean addEditFlightReservation(FlightReservation flightReservation, Long numberOfReservedSeats);
     void deleteFlightReservation(User user, Flight flight);
+    void deleteFlightReservation(FlightReservation flightReservation);
     void clearUserFlightReservations(User user);
 }

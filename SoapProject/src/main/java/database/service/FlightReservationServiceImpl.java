@@ -69,10 +69,20 @@ public class FlightReservationServiceImpl implements FlightReservationService {
     }
 
     @Override
+    public boolean addEditFlightReservation(FlightReservation flightReservation, Long numberOfReservedSeats) {
+        return addEditFlightReservation(flightReservation.getUser(), flightReservation.getFlight(), numberOfReservedSeats);
+    }
+
+    @Override
     public void deleteFlightReservation(User user, Flight flight) {
         logger.severe("Usuwanie rezerwacji uzytkownika " + user + " na lot " + flight);
         user.removeFlightReservation(flight);
         userService.save(user);
+    }
+
+    @Override
+    public void deleteFlightReservation(FlightReservation flightReservation) {
+        deleteFlightReservation(flightReservation.getUser(), flightReservation.getFlight());
     }
 
     @Override

@@ -115,18 +115,26 @@ public class AirportServerImpl implements AirportServer, Serializable {
     //pozniej powinno sie dodac przechwytywanie uzytkownika z handlera
     @Override
     public boolean reserveFlight(Long flightId, Long numberOfReservedSeats) {
+        User user = userService.findByLogin("rzymski");
         Flight flight = flightService.findById(flightId);
         if(flight == null){
             throw new RecordNotFoundException("Nie znaleziono lotu o takim ID: " + flightId);
         }
-        User user = userService.findByLogin("rzymski");
         return flightReservationService.addEditFlightReservation(user, flight, numberOfReservedSeats);
     }
 
+    //pozniej powinno sie dodac przechwytywanie uzytkownika z handlera
     @Override
     public void cancelFlightReservation(Long flightId) {
-        Flight flight = flightService.findById(flightId);
         User user = userService.findByLogin("rzymski");
-        flightReservationService.deleteFlightReservation(user, flight);
+        Flight flight = flightService.findById(flightId);
+        if(flight == null){
+            throw new RecordNotFoundException("Nie znaleziono lotu o takim ID: " + flightId);
+        }
+        FlightReservation flightReservation =  flightReservationService.findFlightReservation(user, flight);
+        if(flightReservation == null){
+            throw new RecordNotFoundException("Użytkownik " + user.getLogin() + " nie ma rezerwacji lotu o ID: " + flightId);
+        }
+        flightReservationService.deleteFlightReservation(flightReservation);
     }
 }
