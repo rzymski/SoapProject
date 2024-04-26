@@ -3,6 +3,7 @@ package soap.service;
 import database.dto.FlightDTO;
 import database.dto.FlightReservationDTO;
 import database.exceptions.RecordNotFoundException;
+import database.exceptions.UserNotFoundException;
 import database.model.Flight;
 import database.model.FlightReservation;
 import database.model.User;
@@ -115,31 +116,23 @@ public class AirportServerImpl implements AirportServer, Serializable {
         return flightDTO;
     }
 
-    //pozniej powinno sie dodac przechwytywanie uzytkownika z handlera
     @Override
     public boolean reserveFlight(Long flightId, Long numberOfReservedSeats) {
-        // User user = userService.findByLogin("rzymski");
         User user = getAuthenticatedUser();
+        if (user == null) throw new UserNotFoundException("Nie ma użytkownika o takich danych logowania");
         Flight flight = flightService.findById(flightId);
-        if(flight == null){
-            throw new RecordNotFoundException("Nie znaleziono lotu o takim ID: " + flightId);
-        }
+        if(flight == null) throw new RecordNotFoundException("Nie znaleziono lotu o takim ID: " + flightId);
         return flightReservationService.addEditFlightReservation(user, flight, numberOfReservedSeats);
     }
 
-    //pozniej powinno sie dodac przechwytywanie uzytkownika z handlera
     @Override
     public void cancelFlightReservation(Long flightId) {
-        // User user = userService.findByLogin("rzymski");
         User user = getAuthenticatedUser();
+        if (user == null) throw new UserNotFoundException("Nie ma użytkownika o takich danych logowania");
         Flight flight = flightService.findById(flightId);
-        if(flight == null){
-            throw new RecordNotFoundException("Nie znaleziono lotu o takim ID: " + flightId);
-        }
+        if (flight == null) throw new RecordNotFoundException("Nie znaleziono lotu o takim ID: " + flightId);
         FlightReservation flightReservation =  flightReservationService.findFlightReservation(user, flight);
-        if(flightReservation == null){
-            throw new RecordNotFoundException("Użytkownik " + user.getLogin() + " nie ma rezerwacji lotu o ID: " + flightId);
-        }
+        if(flightReservation == null) throw new RecordNotFoundException("Użytkownik " + user.getLogin() + " nie ma rezerwacji lotu o ID: " + flightId);
         flightReservationService.deleteFlightReservation(flightReservation);
     }
 

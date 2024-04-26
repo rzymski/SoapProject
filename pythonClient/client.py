@@ -1,10 +1,13 @@
 from zeep import Client
+from zeep.transports import Transport
+from requests import Session
 from PIL import Image
 from io import BytesIO
 import matplotlib.pyplot as plt
 
-from zeep.transports import Transport
-from requests import Session
+# Loggi z requestami
+# import logging
+# logging.basicConfig(level=logging.DEBUG)
 
 
 class Service:
@@ -14,6 +17,10 @@ class Service:
             'username': 'user',
             'password': 'admin',
         })
+        session.proxies = {
+            'http': 'http://localhost:8081/SoapProject/AirportServerImplService?WSDL:8081',
+            'https': 'http://localhost:8081/SoapProject/AirportServerImplService?WSDL:8081'
+        }
         transport = Transport(session=session)
         self.wsdl_url = wsdl_url
         self.client = Client(wsdl=wsdl_url, transport=transport)
@@ -56,5 +63,5 @@ soapService = Service('http://localhost:8080/SoapProject/AirportServerImplServic
 # soapService.printService("downloadImage")
 # soapService.printService("getFlightById", "1010")
 # soapService.printService("checkFlightReservation", "653")
-soapService.printService("reserveFlight", 1012, 12)
+soapService.printService("reserveFlight", 1025, 5)
 # soapService.printService("cancelFlightReservation", 1099)
