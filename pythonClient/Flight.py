@@ -1,5 +1,4 @@
-
-class Flight():
+class Flight:
 
     id = Column(Integer, primary_key=True)
     flightCode = Column(String)

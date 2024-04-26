@@ -1,6 +1,5 @@
-package soap;
+package soap.service;
 
-import database.dao.FlightDao;
 import database.dto.FlightDTO;
 import database.dto.FlightReservationDTO;
 import database.exceptions.RecordNotFoundException;
@@ -11,15 +10,14 @@ import database.service.FlightReservationService;
 import database.service.FlightService;
 import database.service.UserService;
 
-import javax.ejb.EJB;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.BindingType;
 import javax.xml.ws.soap.MTOM;
@@ -37,7 +35,8 @@ import java.io.IOException;
 @ViewScoped
 @MTOM
 @BindingType(value = SOAPBinding.SOAP11HTTP_MTOM_BINDING)
-@WebService(endpointInterface = "soap.AirportServer")
+@WebService(endpointInterface = "soap.service.AirportServer")
+@HandlerChain(file="loginHandler.xml")
 public class AirportServerImpl implements AirportServer, Serializable {
     private static Logger logger = Logger.getLogger(AirportServerImpl.class.getName());
     @Inject

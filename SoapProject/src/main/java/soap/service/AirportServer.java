@@ -1,4 +1,4 @@
-package soap;
+package soap.service;
 
 import database.dto.FlightDTO;
 import database.dto.FlightReservationDTO;

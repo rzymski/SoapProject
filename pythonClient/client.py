@@ -1,74 +1,52 @@
 from zeep import Client
-
-# Adres URL usługi
-url = 'http://localhost:8080/SoapProject/AirportServerImplService?WSDL'
-# Tworzymy klienta SOAP
-client = Client(url)
+from PIL import Image
+from io import BytesIO
+import matplotlib.pyplot as plt
 
 
-def echo(text):
-    try:
-        response = client.service.echo(text)
-        print("Odpowiedź z serwera:", response)
-    except Exception as e:
-        print("Wystąpił błąd:", e)
+class Service:
+    def __init__(self, wsdl_url):
+        self.wsdl_url = wsdl_url
+        self.client = Client(wsdl=wsdl_url)
 
+    def service(self, serviceName, *args):
+        kwargs = {f"arg{idx}": arg for idx, arg in enumerate(args)}
+        # print(f"Argumenty = {kwargs}")
+        try:
+            return getattr(self.client.service, serviceName)(**kwargs)
+        except Exception as e:
+            print("Wystąpił błąd:", e)
+            return None
 
-def getFlightsData():
-    try:
-        response = client.service.getFlightsData()
-        if response:
-            print(response)
-            print("Lista lotów:")
-            for flight in response:
+    def printService(self, serviceName, *args):
+        print(f"{serviceName} zwrócił: ")
+        responseText = self.service(serviceName, *args)
+        if serviceName in ["getFlightsData", "getFlightsByFromCity", "getFlightsByToCity"]:
+            for flight in responseText:
                 print(f"Id: {flight['id']}, flightCode: {flight['flightCode']} z {flight['departureAirport']} o {flight['departureTime']} do {flight['destinationAirport']} o {flight['arrivalTime']}")
+        elif serviceName == "downloadImage":
+            try:
+                image_data = BytesIO(responseText)
+                image = Image.open(image_data)
+                # Wyświetl obraz
+                plt.imshow(image)
+                plt.axis('off')  # Ukryj osie
+                plt.show()
+            except Exception as e:
+                print("Wystąpił błąd:", e)
         else:
-            print("Brak lotów.")
-    except Exception as e:
-        print("Wystąpił błąd:", e)
+            print(responseText)
 
 
-def getFlightsByFromCity(city):
-    try:
-        response = client.service.getFlightsByFromCity(city)
-        if response:
-            # print(response)
-            print("Lista lotów:")
-            for flight in response:
-                print(f"Id: {flight['id']}, flightCode: {flight['flightCode']} z {flight['departureAirport']} o {flight['departureTime']} do {flight['destinationAirport']} o {flight['arrivalTime']}")
-        else:
-            print("Brak lotów.")
-    except Exception as e:
-        print("Wystąpił błąd:", e)
+wsdl_url = 'http://localhost:8080/SoapProject/AirportServerImplService?WSDL'
+soapService = Service(wsdl_url)
 
-
-def getFlightsByToCity(city):
-    try:
-        response = client.service.getFlightsByToCity(city)
-        if response:
-            # print(response)
-            print("Lista lotów:")
-            for flight in response:
-                print(f"Id: {flight['id']}, flightCode: {flight['flightCode']} z {flight['departureAirport']} o {flight['departureTime']} do {flight['destinationAirport']} o {flight['arrivalTime']}")
-        else:
-            print("Brak lotów.")
-    except Exception as e:
-        print("Wystąpił błąd:", e)
-
-
-def downloadImage():
-    try:
-        response = client.service.downloadImage()
-        if response:
-            print(response)
-        else:
-            print("Brak lotów.")
-    except Exception as e:
-        print("Wystąpił błąd:", e)
-
-
-# echo("PIZZA IS THE BEST")
-#getFlightsData()
-# getFlightsByFromCity("London")
-# getFlightsByToCity("London")
-# downloadImage()
+soapService.printService("echo", "PIZZA IS THE BEST")
+# soapService.printService("getFlightsData")
+# soapService.printService("getFlightsByFromCity", "Tokyo")
+# soapService.printService("getFlightsByToCity", "New York")
+# soapService.printService("downloadImage")
+# soapService.printService("getFlightById", "1010")
+soapService.printService("checkFlightReservation", "653")
+# soapService.printService("reserveFlight", 1099, 1)
+# soapService.printService("cancelFlightReservation", 1099)
