@@ -9,7 +9,9 @@ import database.model.User;
 import database.service.FlightReservationService;
 import database.service.FlightService;
 import database.service.UserService;
+import soap.handler.LoginHandler;
 
+import javax.annotation.Resource;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -20,6 +22,8 @@ import java.util.logging.Logger;
 import javax.jws.HandlerChain;
 import javax.jws.WebService;
 import javax.xml.ws.BindingType;
+import javax.xml.ws.WebServiceContext;
+import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.soap.MTOM;
 
 import javax.xml.ws.soap.SOAPBinding;
@@ -114,7 +118,8 @@ public class AirportServerImpl implements AirportServer, Serializable {
     //pozniej powinno sie dodac przechwytywanie uzytkownika z handlera
     @Override
     public boolean reserveFlight(Long flightId, Long numberOfReservedSeats) {
-        User user = userService.findByLogin("rzymski");
+        // User user = userService.findByLogin("rzymski");
+        User user = getAuthenticatedUser();
         Flight flight = flightService.findById(flightId);
         if(flight == null){
             throw new RecordNotFoundException("Nie znaleziono lotu o takim ID: " + flightId);
@@ -125,7 +130,8 @@ public class AirportServerImpl implements AirportServer, Serializable {
     //pozniej powinno sie dodac przechwytywanie uzytkownika z handlera
     @Override
     public void cancelFlightReservation(Long flightId) {
-        User user = userService.findByLogin("rzymski");
+        // User user = userService.findByLogin("rzymski");
+        User user = getAuthenticatedUser();
         Flight flight = flightService.findById(flightId);
         if(flight == null){
             throw new RecordNotFoundException("Nie znaleziono lotu o takim ID: " + flightId);
@@ -135,5 +141,17 @@ public class AirportServerImpl implements AirportServer, Serializable {
             throw new RecordNotFoundException("Użytkownik " + user.getLogin() + " nie ma rezerwacji lotu o ID: " + flightId);
         }
         flightReservationService.deleteFlightReservation(flightReservation);
+    }
+
+    @Resource
+    private WebServiceContext webServiceContext;
+
+    private User getAuthenticatedUser() {
+        MessageContext context = webServiceContext.getMessageContext();
+        String username = (String) context.get(LoginHandler.USER_CONTEXT_KEY);
+        if (username != null) {
+            return userService.findByLogin(username);
+        }
+        return null;
     }
 }

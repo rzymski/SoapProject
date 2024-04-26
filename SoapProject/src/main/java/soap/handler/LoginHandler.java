@@ -1,7 +1,9 @@
 package soap.handler;
 
+import database.service.UserService;
 import soap.service.AirportServerImpl;
 
+import javax.inject.Inject;
 import javax.xml.namespace.QName;
 import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
@@ -16,6 +18,12 @@ import java.util.logging.Logger;
 
 public class LoginHandler implements SOAPHandler<SOAPMessageContext>{
     private static Logger logger = Logger.getLogger(LoginHandler.class.getName());
+
+    public static final String USER_CONTEXT_KEY = "authenticatedUser";
+
+    @Inject
+    UserService userService;
+
     @Override
     public boolean handleMessage(SOAPMessageContext context) {
         logger.warning("Server : handleMessage()......");
@@ -33,8 +41,8 @@ public class LoginHandler implements SOAPHandler<SOAPMessageContext>{
 
                 }
 
-                String username = "";
-                String password = "";
+                String username = null;
+                String password = null;
                 Map<String, List<String>> httpHeaders = (Map<String, List<String>>) context.get(MessageContext.HTTP_REQUEST_HEADERS);
                 if (httpHeaders != null) {
                     List<String> usernameList = httpHeaders.get("username");
@@ -46,10 +54,13 @@ public class LoginHandler implements SOAPHandler<SOAPMessageContext>{
                         password = passwordList.get(0);
                     }
                 }
-
                 logger.warning("username: " + username);
                 logger.warning("password: " + password);
-
+                boolean verification = userService.verify(username, password);
+                if (verification) {
+                    context.put(USER_CONTEXT_KEY, username);
+                    context.setScope(USER_CONTEXT_KEY, MessageContext.Scope.APPLICATION);
+                }
 
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 soapMsg.writeTo(outputStream);
@@ -61,7 +72,6 @@ public class LoginHandler implements SOAPHandler<SOAPMessageContext>{
                 logger.warning(e.toString());
             }
         }
-        //continue other handler chain
         return true;
     }
 

@@ -49,12 +49,12 @@ class Service:
 
 soapService = Service('http://localhost:8080/SoapProject/AirportServerImplService?WSDL')
 
-soapService.printService("echo", "PIZZA IS THE BEST")
+# soapService.printService("echo", "PIZZA IS THE BEST")
 # soapService.printService("getFlightsData")
 # soapService.printService("getFlightsByFromCity", "Tokyo")
 # soapService.printService("getFlightsByToCity", "New York")
 # soapService.printService("downloadImage")
 # soapService.printService("getFlightById", "1010")
 # soapService.printService("checkFlightReservation", "653")
-# soapService.printService("reserveFlight", 1099, 1)
+soapService.printService("reserveFlight", 1012, 12)
 # soapService.printService("cancelFlightReservation", 1099)
