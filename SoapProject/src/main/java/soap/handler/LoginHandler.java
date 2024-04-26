@@ -11,9 +11,7 @@ import javax.xml.ws.soap.SOAPFaultException;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.logging.Logger;
 
 public class LoginHandler implements SOAPHandler<SOAPMessageContext>{
@@ -30,11 +28,29 @@ public class LoginHandler implements SOAPHandler<SOAPMessageContext>{
                 //if no header, add one
                 if (soapHeader == null){
                     soapHeader = soapEnv.addHeader();
-                    //throw exception
                     generateSOAPErrMessage(soapMsg, "No SOAP header.");
+                } else {
+
                 }
 
-;
+                String username = "";
+                String password = "";
+                Map<String, List<String>> httpHeaders = (Map<String, List<String>>) context.get(MessageContext.HTTP_REQUEST_HEADERS);
+                if (httpHeaders != null) {
+                    List<String> usernameList = httpHeaders.get("username");
+                    if (usernameList != null && !usernameList.isEmpty()) {
+                        username = usernameList.get(0);
+                    }
+                    List<String> passwordList = httpHeaders.get("password");
+                    if (passwordList != null && !passwordList.isEmpty()) {
+                        password = passwordList.get(0);
+                    }
+                }
+
+                logger.warning("username: " + username);
+                logger.warning("password: " + password);
+
+
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 soapMsg.writeTo(outputStream);
                 String soapMessageString = outputStream.toString(StandardCharsets.UTF_8.name());

@@ -3,11 +3,20 @@ from PIL import Image
 from io import BytesIO
 import matplotlib.pyplot as plt
 
+from zeep.transports import Transport
+from requests import Session
+
 
 class Service:
     def __init__(self, wsdl_url):
+        session = Session()
+        session.headers.update({
+            'username': 'user',
+            'password': 'admin',
+        })
+        transport = Transport(session=session)
         self.wsdl_url = wsdl_url
-        self.client = Client(wsdl=wsdl_url)
+        self.client = Client(wsdl=wsdl_url, transport=transport)
 
     def service(self, serviceName, *args):
         kwargs = {f"arg{idx}": arg for idx, arg in enumerate(args)}
@@ -38,8 +47,7 @@ class Service:
             print(responseText)
 
 
-wsdl_url = 'http://localhost:8080/SoapProject/AirportServerImplService?WSDL'
-soapService = Service(wsdl_url)
+soapService = Service('http://localhost:8080/SoapProject/AirportServerImplService?WSDL')
 
 soapService.printService("echo", "PIZZA IS THE BEST")
 # soapService.printService("getFlightsData")
@@ -47,6 +55,6 @@ soapService.printService("echo", "PIZZA IS THE BEST")
 # soapService.printService("getFlightsByToCity", "New York")
 # soapService.printService("downloadImage")
 # soapService.printService("getFlightById", "1010")
-soapService.printService("checkFlightReservation", "653")
+# soapService.printService("checkFlightReservation", "653")
 # soapService.printService("reserveFlight", 1099, 1)
 # soapService.printService("cancelFlightReservation", 1099)
