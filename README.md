@@ -51,7 +51,7 @@ Ustawienie/sprawdzenie połączenia z bazą danych przez Inteliji:
 View -> Tool Windows -> Database -> + -> Data Source -> H2       
 ![Alt text](screens/ustawienaPolaczeniaBazyWInteliji.png?raw=true "Polaczenie z baza danych przez Inteliji")
 
-# Instrukcja dodawania rekordów do bazy przez konsole Inteliji
+# Instrukcja dodawania rekordów do bazy używając CSV przez konsole Inteliji
 View -> Tool Windows -> Database -> wybieramy naszą baze danych np. airport -> Open Default Console
 Tworzenie lotów w bazie za pomocą CSV:
    - INSERT INTO Flight (ID, FLIGHTCODE, DEPARTUREAIRPORT, DEPARTURETIME, DESTINATIONAIRPORT, ARRIVALTIME, CREATEDATE, UPDATEDATE, CAPACITY, OCCUPIEDSEATS)          
@@ -59,3 +59,14 @@ Tworzenie lotów w bazie za pomocą CSV:
 
      FROM CSVREAD('D:/programowanie/java/rsi/SoapProject/createDatabaseCSV/flights.csv', null);
 
+# Instrukcja monitorowania requestów
+Ustawienie **SoapUi HTTP Proxy** na porcie **8085**:      
+![Alt text](screens/soapUiUstawieniePort8085.png?raw=true "Ustawienie SoapUi HTTP Proxy na porcie 8085")      
+Przykładowe działanie **SoapUi HTTP Proxy** na porcie **8085**:
+![Alt text](screens/soapUiDzialaPort8085.png?raw=true "Przykładowe działanie SoapUi HTTP Proxy na porcie 8085")
+
+
+Ustawienie **tcpMonitor**-a na porcie **8084**:      
+![Alt text](screens/tcpMonitorUstawieniePort8084.png?raw=true "Ustawienie tcpMonitor-a na porcie 8084")      
+Przykładowe działanie **tcpMonitor**-a na porcie **8084**:
+![Alt text](screens/tcpMonitorDzialaPort8084.png?raw=true "Przykładowe działanie tcpMonitor-a na porcie 8084")

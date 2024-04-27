@@ -1,6 +1,7 @@
 from zeep import Client
 from zeep.transports import Transport
 from requests import Session
+from requests.exceptions import ProxyError, ConnectionError, Timeout
 from PIL import Image
 from io import BytesIO
 import matplotlib.pyplot as plt
@@ -11,19 +12,22 @@ import matplotlib.pyplot as plt
 
 
 class Service:
-    def __init__(self, wsdl_url):
-        session = Session()
-        session.headers.update({
-            'username': 'user',
-            'password': 'admin',
-        })
-        session.proxies = {
-            'http': 'http://localhost:8081/SoapProject/AirportServerImplService?WSDL:8081',
-            'https': 'http://localhost:8081/SoapProject/AirportServerImplService?WSDL:8081'
-        }
-        transport = Transport(session=session)
-        self.wsdl_url = wsdl_url
-        self.client = Client(wsdl=wsdl_url, transport=transport)
+    def __init__(self, serverPort, proxyPorts, ipAddress, serviceUrl):
+        for proxyPort in proxyPorts + [None]:
+            try:
+                session = Session()
+                session.headers.update({
+                    'username': 'user',
+                    'password': 'admin',
+                })
+                if proxyPort:
+                    session.proxies = {'http': f'http://{ipAddress}:{proxyPort}/{serviceUrl}'}
+                transport = Transport(session=session, timeout=1)
+                self.wsdl_url = f'http://{ipAddress}:{serverPort}/{serviceUrl}'
+                self.client = Client(wsdl=self.wsdl_url, transport=transport)
+                break
+            except (ProxyError, ConnectionError, Timeout) as e:
+                print(f"Nie udało się połączyć z proxy na porcie {proxyPort}.")
 
     def service(self, serviceName, *args):
         kwargs = {f"arg{idx}": arg for idx, arg in enumerate(args)}
@@ -44,9 +48,8 @@ class Service:
             try:
                 image_data = BytesIO(responseText)
                 image = Image.open(image_data)
-                # Wyświetl obraz
                 plt.imshow(image)
-                plt.axis('off')  # Ukryj osie
+                plt.axis('off')
                 plt.show()
             except Exception as e:
                 print("Wystąpił błąd:", e)
@@ -54,7 +57,7 @@ class Service:
             print(responseText)
 
 
-soapService = Service('http://localhost:8080/SoapProject/AirportServerImplService?WSDL')
+soapService = Service(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService?WSDL")
 
 # soapService.printService("echo", "PIZZA IS THE BEST")
 # soapService.printService("getFlightsData")
