@@ -50,4 +50,7 @@ public interface AirportServer {
 
     @WebMethod
     void cancelFlightReservation(Long flightId);
+
+    @WebMethod
+    void createUser(String username, String password,String email);
 }

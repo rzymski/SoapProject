@@ -6,9 +6,9 @@ ___
 **System rezerwacji biletów lotniczych**
 1) [x] Baza lotów (Miasto od , Miasto do, dzień, godzina)
 2) [x] Wyszukiwanie lotów
-3) [ ] Kupno biletu
+3) [x] Kupno biletu
 4) [ ] Odbiór potwierdzenia kupna w formacie PDF
-5) [ ] Sprawdzenie rezerwacji na podstawie podanego numeru
+5) [x] Sprawdzenie rezerwacji na podstawie podanego numeru
 
 # Działanie Serwera
 Można sprawdzić działanie serwera w:  

@@ -2,6 +2,7 @@ package soap.service;
 
 import database.dto.FlightDTO;
 import database.dto.FlightReservationDTO;
+import database.exceptions.NotEnoughDataException;
 import database.exceptions.RecordNotFoundException;
 import database.exceptions.UserNotFoundException;
 import database.model.Flight;
@@ -146,5 +147,16 @@ public class AirportServerImpl implements AirportServer, Serializable {
             return userService.findByLogin(username);
         }
         return null;
+    }
+
+    @Override
+    public void createUser(String username, String password, String email) {
+        if (username != null && email != null && password != null) {
+            User user = new User(username, password, email, false);
+            userService.save(user);
+        } else {
+            throw new NotEnoughDataException("Nie podano wszystkich danych. Użytkownik = " + username + ", password = " + password + ", email = " + email);
+        }
+
     }
 }

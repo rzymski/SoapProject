@@ -66,5 +66,6 @@ soapService = Service(8080, [8085, 8084], "localhost", "SoapProject/AirportServe
 # soapService.printService("downloadImage")
 # soapService.printService("getFlightById", "1010")
 # soapService.printService("checkFlightReservation", "653")
-soapService.printService("reserveFlight", 1025, 5)
+# soapService.printService("reserveFlight", 1025, 5)
 # soapService.printService("cancelFlightReservation", 1099)
+soapService.printService("createUser", "pythonClient", "python", "python@gmail.com")
