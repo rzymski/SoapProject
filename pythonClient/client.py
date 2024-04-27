@@ -5,6 +5,7 @@ from requests.exceptions import ProxyError, ConnectionError, Timeout
 from PIL import Image
 from io import BytesIO
 import matplotlib.pyplot as plt
+from datetime import datetime
 
 # Loggi z requestami
 # import logging
@@ -57,7 +58,8 @@ class Service:
             print(responseText)
 
 
-soapService = Service(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService?WSDL")
+# soapService = Service(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService?WSDL")
+soapService = Service(8080, [], "localhost", "SoapProject/AirportServerImplService?WSDL")
 
 # soapService.printService("echo", "PIZZA IS THE BEST")
 # soapService.printService("getFlightsData")
@@ -68,4 +70,5 @@ soapService = Service(8080, [8085, 8084], "localhost", "SoapProject/AirportServe
 # soapService.printService("checkFlightReservation", "653")
 # soapService.printService("reserveFlight", 1025, 5)
 # soapService.printService("cancelFlightReservation", 1099)
-soapService.printService("createUser", "pythonClient", "python", "python@gmail.com")
+# soapService.printService("createUser", "pythonClient", "python", "python@gmail.com")
+
