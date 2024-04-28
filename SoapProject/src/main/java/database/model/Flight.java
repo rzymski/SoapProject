@@ -15,6 +15,7 @@ import java.util.List;
 @NamedQuery(name = "Flight.findFlightsFromCityToCity", query = "select f from Flight f where f.departureAirport=upper(?1) and  f.destinationAirport=upper(?2)")
 @NamedQuery(name = "Flight.findFlightsFromCityToCityWithinDateRange", query = "select f from Flight f where f.departureAirport = upper(?1) and f.destinationAirport = upper(?2) and f.departureTime between ?3 and ?4")
 @NamedQuery(name = "Flight.getFlightTotalNumberOfOccupiedSeats", query = "select sum(fr.numberOfReservedSeats) from FlightReservation fr where fr.flight=?1")
+@NamedQuery(name = "Flight.getAvailableAirports", query = "select distinct f.departureAirport from Flight f union select distinct f.destinationAirport from Flight f")
 public class Flight extends AbstractModel {
     @Column(unique = true)
     private String flightCode;

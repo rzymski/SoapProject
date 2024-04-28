@@ -50,6 +50,9 @@ public interface AirportServer {
     List<FlightDTO> getAllFlightsWithParameters(String fromCity, String toCity, String startDateRange, String endDateRange);
 
     @WebMethod
+    List<String> findAvailableAirports();
+
+    @WebMethod
     FlightReservationDTO checkFlightReservation(Long flightReservationId);
 
     @WebMethod

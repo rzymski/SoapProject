@@ -53,4 +53,9 @@ public class FlightServiceImpl implements FlightService {
     public List<Flight> findAllFlightsWithParameters(String fromCity, String toCity, LocalDateTime startDateRange, LocalDateTime endDateRange) {
         return flightDao.getAllFlightsWithParameters(fromCity, toCity, startDateRange, endDateRange);
     }
+
+    @Override
+    public List<String> findAvailableAirports() {
+        return flightDao.getAvailableAirports();
+    }
 }

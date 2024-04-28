@@ -25,6 +25,7 @@ public class FlightDaoImpl extends AbstractDaoJpaImpl<Flight> implements FlightD
         List<Flight> result = query.getResultList();
         return result;
     }
+
     @Override
     public List<Flight> getFlightsToCity(String city) {
         logger.severe("getFlightsToCity wywolal sie z city = " + city);
@@ -88,5 +89,13 @@ public class FlightDaoImpl extends AbstractDaoJpaImpl<Flight> implements FlightD
         cq.where(conditions.toArray(new Predicate[0]));
         TypedQuery<Flight> allQuery = em.createQuery(cq);
         return allQuery.getResultList();
+    }
+
+    @Override
+    public List<String> getAvailableAirports() {
+        logger.severe("getAvailableAirports");
+        TypedQuery<String> query = em.createNamedQuery("Flight.getAvailableAirports", String.class);
+        List<String> result = query.getResultList();
+        return result;
     }
 }

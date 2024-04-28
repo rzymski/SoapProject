@@ -10,11 +10,10 @@ public interface FlightService {
     void delete (Long id);
     Flight findById(Long id);
     List<Flight> findAll();
-
     List<Flight> findFlightsFromCity(String city);
     List<Flight> findFlightsToCity(String city);
-
     List<Flight> findFlightsFromCityToCity(String fromCity, String toCity);
     List<Flight> findFlightsFromCityToCityWithinDateRange(String fromCity, String toCity, LocalDateTime startDateRange, LocalDateTime endDateRange);
     List<Flight> findAllFlightsWithParameters(String fromCity, String toCity, LocalDateTime startDateRange, LocalDateTime endDateRange);
+    List<String> findAvailableAirports();
 }

@@ -122,6 +122,13 @@ public class AirportServerImpl implements AirportServer, Serializable {
         return flightDTOs;
     }
 
+    @Override
+    public List<String> findAvailableAirports() {
+        logger.warning("Metoda findAvailableAirports");
+        List<String> airports = flightService.findAvailableAirports();
+        return airports;
+    }
+
     @Inject
     private UserService userService;
 
