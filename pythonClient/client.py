@@ -65,6 +65,8 @@ soapService = Service(8080, [], "localhost", "SoapProject/AirportServerImplServi
 # soapService.printService("getFlightsData")
 # soapService.printService("getFlightsByFromCity", "Tokyo")
 # soapService.printService("getFlightsByToCity", "New York")
+# soapService.printService("getFlightsFromCityToCity", "Rome", "new york")
+soapService.printService("getFlightsFromCityToCityWithinDateRange", "rome", "kair", "2024-05-11T03:30:00", "2024-05-21T03:30:00")
 # soapService.printService("downloadImage")
 # soapService.printService("getFlightById", "1010")
 # soapService.printService("checkFlightReservation", "653")

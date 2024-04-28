@@ -18,6 +18,7 @@ import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -87,6 +88,36 @@ public class AirportServerImpl implements AirportServer, Serializable {
     public List<FlightDTO> getFlightsByToCity(String city) {
         logger.warning("Metoda getFlightsByToCity została wywołana");
         List<Flight> flights = flightService.findFlightsToCity(city);
+        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
+        return flightDTOs;
+    }
+
+    @Override
+    public List<FlightDTO> getFlightsFromCityToCity(String fromCity, String toCity) {
+        logger.warning("Metoda getFlightsFromCityToCity została wywołana");
+        List<Flight> flights = flightService.findFlightsFromCityToCity(fromCity, toCity);
+        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
+        return flightDTOs;
+    }
+
+    @Override
+    public List<FlightDTO> getFlightsFromCityToCityWithinDateRange(String fromCity, String toCity, String startDateRange, String endDateRange) {
+        logger.warning("Metoda getFlightsFromCityToCityWithinDateRange została wywołana z: " + fromCity + " do: " + toCity + " od: " + startDateRange + " do: "+ endDateRange);
+        LocalDateTime start = LocalDateTime.parse(startDateRange);
+        LocalDateTime end = LocalDateTime.parse(endDateRange);
+        logger.warning("Metoda getFlightsFromCityToCityWithinDateRange konwersja stringow na daty start: " + start + " end: " + end);
+        List<Flight> flights = flightService.findFlightsFromCityToCityWithinDateRange(fromCity, toCity, start, end);
+        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
+        return flightDTOs;
+    }
+
+    @Override
+    public List<FlightDTO> getAllFlightsWithParameters(String fromCity, String toCity, String startDateRange, String endDateRange) {
+        logger.warning("Metoda getAllFlightsWithParameters została wywołana z: " + fromCity + " do: " + toCity + " od: " + startDateRange + " do: "+ endDateRange);
+        LocalDateTime start = (startDateRange != null) ? LocalDateTime.parse(startDateRange) : null;
+        LocalDateTime end = (endDateRange != null) ? LocalDateTime.parse(endDateRange) : null;
+        logger.warning("Metoda getAllFlightsWithParameters konwersja stringow na daty start: " + start + " end: " + end);
+        List<Flight> flights = flightService.findAllFlightsWithParameters(fromCity, toCity, start, end);
         List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
         return flightDTOs;
     }

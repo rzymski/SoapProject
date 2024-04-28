@@ -7,7 +7,7 @@ ___
 1) [x] Baza lotów (Miasto od , Miasto do, dzień, godzina)
 2) [x] Wyszukiwanie lotów
 3) [x] Kupno biletu
-4) [ ] Odbiór potwierdzenia kupna w formacie PDF
+4) [x] Odbiór potwierdzenia kupna w formacie PDF
 5) [x] Sprawdzenie rezerwacji na podstawie podanego numeru
 
 # Działanie Serwera

@@ -6,6 +6,7 @@ import database.model.Flight;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -39,5 +40,17 @@ public class FlightServiceImpl implements FlightService {
     @Override
     public List<Flight> findFlightsToCity(String city) {
         return flightDao.getFlightsToCity(city);
+    }
+    @Override
+    public List<Flight> findFlightsFromCityToCity(String fromCity, String toCity) { return flightDao.getFlightsFromCityToCity(fromCity, toCity); }
+
+    @Override
+    public List<Flight> findFlightsFromCityToCityWithinDateRange(String fromCity, String toCity, LocalDateTime startDateRange, LocalDateTime endDateRange) {
+        return flightDao.getFlightsFromCityToCityWithinDateRange(fromCity, toCity, startDateRange, endDateRange);
+    }
+
+    @Override
+    public List<Flight> findAllFlightsWithParameters(String fromCity, String toCity, LocalDateTime startDateRange, LocalDateTime endDateRange) {
+        return flightDao.getAllFlightsWithParameters(fromCity, toCity, startDateRange, endDateRange);
     }
 }

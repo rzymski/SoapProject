@@ -10,10 +10,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@NamedQuery(name = "Flight.findFlightsFromCity", query ="select f from Flight f where f.departureAirport=?1")
-@NamedQuery(name = "Flight.findFlightsToCity", query ="select f from Flight f where f.destinationAirport=?1")
+@NamedQuery(name = "Flight.findFlightsFromCity", query ="select f from Flight f where f.departureAirport=upper(?1)")
+@NamedQuery(name = "Flight.findFlightsToCity", query ="select f from Flight f where f.destinationAirport=upper(?1)")
+@NamedQuery(name = "Flight.findFlightsFromCityToCity", query = "select f from Flight f where f.departureAirport=upper(?1) and  f.destinationAirport=upper(?2)")
+@NamedQuery(name = "Flight.findFlightsFromCityToCityWithinDateRange", query = "select f from Flight f where f.departureAirport = upper(?1) and f.destinationAirport = upper(?2) and f.departureTime between ?3 and ?4")
 @NamedQuery(name = "Flight.getFlightTotalNumberOfOccupiedSeats", query = "select sum(fr.numberOfReservedSeats) from FlightReservation fr where fr.flight=?1")
 public class Flight extends AbstractModel {
+    @Column(unique = true)
     private String flightCode;
     private String departureAirport;
     @Column(nullable = false)

@@ -1,5 +1,6 @@
 package soap.service;
 
+import database.adapter.LocalDateTimeAdapter;
 import database.dto.FlightDTO;
 import database.dto.FlightReservationDTO;
 import database.model.Flight;
@@ -11,7 +12,7 @@ import javax.jws.WebService;
 //import javax.xml.ws.BindingType;
 //import javax.xml.ws.soap.MTOM;
 import java.awt.*;
-import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.jws.soap.SOAPBinding;
@@ -38,6 +39,15 @@ public interface AirportServer {
 
     @WebMethod
     List<FlightDTO> getFlightsByToCity(String city);
+
+    @WebMethod
+    List<FlightDTO> getFlightsFromCityToCity(String fromCity, String toCity);
+
+    @WebMethod
+    List<FlightDTO> getFlightsFromCityToCityWithinDateRange(String fromCity, String toCity, String startDateRange, String endDateRange);
+
+    @WebMethod
+    List<FlightDTO> getAllFlightsWithParameters(String fromCity, String toCity, String startDateRange, String endDateRange);
 
     @WebMethod
     FlightReservationDTO checkFlightReservation(Long flightReservationId);

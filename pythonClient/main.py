@@ -13,7 +13,7 @@ destinationAirport = flightReservationData['destinationAirport']
 arrivalTime = datetime.strptime(flightReservationData['arrivalTime'], "%Y-%m-%dT%H:%M:%S").__str__()
 numberOfReservedSeats = flightReservationData['numberOfReservedSeats']
 
-pdf = PDF(titlePDF="ticketConfirmation.pdf",
+pdf = PDF(titlePDF="../pdfs/ticketConfirmation.pdf",
           title="Confirmation of Airline Ticket Purchase",
           image=logo,
           username=login,
