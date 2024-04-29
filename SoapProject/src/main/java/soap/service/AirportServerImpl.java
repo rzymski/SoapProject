@@ -11,13 +11,15 @@ import database.model.User;
 import database.service.FlightReservationService;
 import database.service.FlightService;
 import database.service.UserService;
+import pdfGenerator.PdfGenerator;
 import soap.handler.LoginHandler;
 
 import javax.annotation.Resource;
 import javax.faces.view.ViewScoped;
 import javax.inject.Inject;
 import javax.inject.Named;
-import java.io.Serializable;
+import java.io.*;
+import java.net.MalformedURLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Logger;
@@ -34,9 +36,6 @@ import javax.xml.ws.soap.SOAPBinding;
 import java.awt.Image;
 import javax.imageio.ImageIO;
 import java.awt.image.RenderedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.IOException;
 
 @Named
 @ViewScoped
@@ -48,6 +47,7 @@ public class AirportServerImpl implements AirportServer, Serializable {
     private static Logger logger = Logger.getLogger(AirportServerImpl.class.getName());
     @Inject
     private FlightService flightService;
+
 
     @Override
     public String echo(String text) {
@@ -196,5 +196,11 @@ public class AirportServerImpl implements AirportServer, Serializable {
             throw new NotEnoughDataException("Nie podano wszystkich danych. Użytkownik = " + username + ", password = " + password + ", email = " + email);
         }
 
+    }
+
+    @Override
+    public void generatePdf(String path) throws FileNotFoundException, MalformedURLException {
+        PdfGenerator pdfGenerator = new PdfGenerator(path);
+        pdfGenerator.generate();
     }
 }
