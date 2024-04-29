@@ -6,6 +6,8 @@ from PIL import Image
 from io import BytesIO
 import matplotlib.pyplot as plt
 from datetime import datetime
+import tkinter as tk
+from tkinter import filedialog
 
 # Loggi z requestami
 # import logging
@@ -62,6 +64,19 @@ def save_pdf(bytes_pdf, path):
         file.write(bytes_pdf)
     print("Save pdf file at " + path)
 
+def save_pdf_with_dialog(bytes_pdf):
+    root = tk.Tk()
+    root.withdraw()
+
+    path = filedialog.asksaveasfilename(defaultextension=".pdf", filetypes=[("PDF files", "*pdf")])
+    if path:
+        with open(path, 'wb') as file:
+            file.write(bytes_pdf)
+            print("Save pdf file at " + path)
+    else:
+        print("Saving pdf file was canceled")
+
+
 if __name__ == "__main__":
     # soapService = Service(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService?WSDL")
     soapService = Service(8080, [], "localhost", "SoapProject/AirportServerImplService?WSDL")
@@ -81,7 +96,8 @@ if __name__ == "__main__":
     pdf_bytes = soapService.service("generatePdf", "tmp.pdf")
     if pdf_bytes:
         path = "testowy.pdf"
-        save_pdf(pdf_bytes, path)
+        #save_pdf(pdf_bytes, path)
+        save_pdf_with_dialog(pdf_bytes)
     else:
         print("ERROR: Can't save pdf file");
 
