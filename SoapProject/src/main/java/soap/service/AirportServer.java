@@ -71,5 +71,5 @@ public interface AirportServer {
     void createUser(String username, String password,String email);
 
     @WebMethod
-    byte[] generatePdf(String path) throws IOException;
+    byte[] generatePdf(Long reservationId) throws IOException;
 }

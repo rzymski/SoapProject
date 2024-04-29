@@ -21,6 +21,7 @@ import javax.inject.Named;
 import java.io.*;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
+import java.rmi.NoSuchObjectException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Logger;
@@ -201,9 +202,13 @@ public class AirportServerImpl implements AirportServer, Serializable {
 
     //@MTOM
     @Override
-    public byte[] generatePdf(String path) throws IOException {
-        String NewPath = "C:\\users\\ukasz\\Desktop\\" + path;
-        PdfGenerator pdfGenerator = new PdfGenerator(NewPath);
+    public byte[] generatePdf(Long reservationId) throws IOException {
+        String newPath = "C:\\users\\ukasz\\Desktop\\" + reservationId + ".pdf";
+
+        FlightReservationDTO res = checkFlightReservation(reservationId);
+        if(res == null) throw new NoSuchObjectException("No reservation with ID: " + reservationId);
+
+        PdfGenerator pdfGenerator = new PdfGenerator(newPath, res);
         pdfGenerator.setHeaderFooter("Potwierdzenie rezerwacji biletu","Super linie lotnicze sp. z o.o.");
         //pdfGenerator.setImage("");
         pdfGenerator.generate();

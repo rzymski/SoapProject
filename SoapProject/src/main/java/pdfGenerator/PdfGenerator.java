@@ -7,6 +7,7 @@ import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
+import database.dto.FlightReservationDTO;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,6 +19,7 @@ public class PdfGenerator {
 
     private final PdfWriter _writer;
     private final String _outPath;
+    private final FlightReservationDTO _reservation;
 
     private boolean isHeaderFooter;
     private boolean isImage;
@@ -27,9 +29,10 @@ public class PdfGenerator {
 
     private String imagePath;
 
-    public PdfGenerator(String outPath) throws FileNotFoundException {
+    public PdfGenerator(String outPath, FlightReservationDTO reservation) throws FileNotFoundException {
         this._writer = new PdfWriter(outPath);
         this._outPath = outPath;
+        this._reservation = reservation;
 
         this.isHeaderFooter = false;
         this.isImage = false;
@@ -77,6 +80,10 @@ public class PdfGenerator {
         Paragraph paragraph = new Paragraph("Pdf Generator");
         document.add(paragraph);
         System.out.println("[PdfGenerator] Add paragraph");
+
+        Paragraph paragraph1 = new Paragraph(_reservation.getLogin() + " " + _reservation.getEmail() + "\n" +
+                                                _reservation.getFlightCode() + " " + _reservation.getNumberOfReservedSeats());
+        document.add(paragraph1);
 
         if(isImage) {
             ImageData id = ImageDataFactory.create(imagePath);

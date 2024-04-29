@@ -93,7 +93,7 @@ if __name__ == "__main__":
 
     ###### PDF TEST #######
     #soapService.printService("generatePdf", "testowy.pdf")
-    pdf_bytes = soapService.service("generatePdf", "tmp.pdf")
+    pdf_bytes = soapService.service("generatePdf", "653")
     if pdf_bytes:
         path = "testowy.pdf"
         #save_pdf(pdf_bytes, path)
