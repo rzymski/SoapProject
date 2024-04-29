@@ -8,8 +8,11 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.element.Paragraph;
 
+import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 
 public class PdfGenerator {
 
@@ -49,6 +52,13 @@ public class PdfGenerator {
         this.isImage = true;
 
         System.out.println("[PdfGenerator] Set image path as " + imagePath);
+    }
+
+    public byte[] getGeneratedFile() throws IOException {
+        File file = new File(_outPath);
+        byte[] bytes = Files.readAllBytes(file.toPath());
+
+        return bytes;
     }
 
     public void generate() throws MalformedURLException {

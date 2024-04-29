@@ -208,9 +208,6 @@ public class AirportServerImpl implements AirportServer, Serializable {
         pdfGenerator.generate();
 
         //return output file
-        File file = new File(path);
-        byte[] bytes = Files.readAllBytes(file.toPath());
-
-        return bytes;
+        return pdfGenerator.getGeneratedFile();
     }
 }
