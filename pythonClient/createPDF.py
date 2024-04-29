@@ -1,4 +1,3 @@
-#from client import *
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch
 from reportlab.platypus import Image, SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
@@ -64,27 +63,30 @@ class PDF:
         print(f"PDF został wygenerowany: {pdf_file}")
 
 
-# logo = BytesIO(soapService.service("downloadImage"))
-# flightReservationData = soapService.service("checkFlightReservation", "653")
-# print(flightReservationData)
-# login = flightReservationData['login']
-# email = flightReservationData['email']
-# flightCode = flightReservationData['flightCode']
-# departureAirport = flightReservationData['departureAirport']
-# departureTime = datetime.strptime(flightReservationData['departureTime'], "%Y-%m-%dT%H:%M:%S").__str__()
-# destinationAirport = flightReservationData['destinationAirport']
-# arrivalTime = datetime.strptime(flightReservationData['arrivalTime'], "%Y-%m-%dT%H:%M:%S").__str__()
-# numberOfReservedSeats = flightReservationData['numberOfReservedSeats']
-#
-# pdf = PDF(titlePDF="ticketConfirmation.pdf",
-#           title="Confirmation of Airline Ticket Purchase",
-#           image=logo,
-#           username=login,
-#           email=email,
-#           flightCode=flightCode,
-#           numberOfReservedSeats=numberOfReservedSeats,
-#           departureAirport=departureAirport,
-#           departureTime=departureTime,
-#           destinationAirport=destinationAirport,
-#           arrivalTime=arrivalTime
-#           )
+if __name__ == "__main__":
+    from client import *
+    soapService = Service(8080, [], "localhost", "SoapProject/AirportServerImplService?WSDL")
+    logo = BytesIO(soapService.service("downloadImage"))
+    flightReservationData = soapService.service("checkFlightReservation", "653")
+    print(flightReservationData)
+    login = flightReservationData['login']
+    email = flightReservationData['email']
+    flightCode = flightReservationData['flightCode']
+    departureAirport = flightReservationData['departureAirport']
+    departureTime = datetime.strptime(flightReservationData['departureTime'], "%Y-%m-%dT%H:%M:%S").__str__()
+    destinationAirport = flightReservationData['destinationAirport']
+    arrivalTime = datetime.strptime(flightReservationData['arrivalTime'], "%Y-%m-%dT%H:%M:%S").__str__()
+    numberOfReservedSeats = flightReservationData['numberOfReservedSeats']
+
+    pdf = PDF(titlePDF="../pdfs/ticketConfirmation.pdf",
+              title="Confirmation of Airline Ticket Purchase",
+              image=logo,
+              username=login,
+              email=email,
+              flightCode=flightCode,
+              numberOfReservedSeats=numberOfReservedSeats,
+              departureAirport=departureAirport,
+              departureTime=departureTime,
+              destinationAirport=destinationAirport,
+              arrivalTime=arrivalTime
+              )
