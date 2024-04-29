@@ -201,6 +201,8 @@ public class AirportServerImpl implements AirportServer, Serializable {
     @Override
     public void generatePdf(String path) throws FileNotFoundException, MalformedURLException {
         PdfGenerator pdfGenerator = new PdfGenerator(path);
+        pdfGenerator.setHeaderFooter("Potwierdzenie rezerwacji biletu","Super linie lotnicze sp. z o.o.");
+        //pdfGenerator.setImage("");
         pdfGenerator.generate();
     }
 }
