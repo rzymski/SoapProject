@@ -15,6 +15,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <itext.version>8.0.2</itext.version>
     </properties>
 
     <dependencies>
@@ -44,6 +45,21 @@
 <!--            <version>4.0.1</version>-->
 <!--            <scope>provided</scope>-->
 <!--        </dependency>-->
+
+
+            <dependency>
+                <groupId>com.itextpdf</groupId>
+                <artifactId>itext-core</artifactId>
+                <version>${itext.version}</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>com.itextpdf</groupId>
+                <artifactId>bouncy-castle-adapter</artifactId>
+                <version>${itext.version}</version>
+            </dependency>
+
+
     </dependencies>
 
     <build>
