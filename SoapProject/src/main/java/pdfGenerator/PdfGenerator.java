@@ -1,14 +1,25 @@
 package pdfGenerator;
 import com.itextpdf.io.image.ImageData;
 import com.itextpdf.io.image.ImageDataFactory;
+import com.itextpdf.kernel.colors.Color;
+import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.events.PdfDocumentEvent;
+import com.itextpdf.kernel.geom.PageSize;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
 import com.itextpdf.layout.Document;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.element.Image;
-import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.properties.TextAlignment;
+import com.itextpdf.layout.properties.VerticalAlignment;
 import database.dto.FlightReservationDTO;
+import com.itextpdf.layout.Canvas;
 
+
+
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -68,6 +79,66 @@ public class PdfGenerator {
         PdfDocument pdfDocument = new PdfDocument(_writer);
         System.out.println("[PdfGenerator] Create document");
 
+        pdfDocument.setDefaultPageSize(PageSize.A4);
+
+        float col = 280f;
+        float[] columnWidth = {col, col};
+
+        Table table = new Table(columnWidth);
+
+        table.setBackgroundColor(new DeviceRgb(63, 169, 219))
+                        .setFontColor(ColorConstants.WHITE);
+
+        table.addCell(new Cell().add(new Paragraph("Reservation"))
+                            .setTextAlignment(TextAlignment.CENTER)
+                            .setVerticalAlignment(VerticalAlignment.MIDDLE)
+                            .setMarginTop(30f)
+                            .setMarginBottom(30f)
+                            .setFontSize(30f)
+                            .setBorder(Border.NO_BORDER));
+
+        table.addCell(new Cell().add(
+                new Paragraph("Reservation number: " + _reservation.getReservationId() + "\n" +
+                        "Current reservations count: " + _reservation.getNumberOfReservedSeats())
+        ).setTextAlignment(TextAlignment.RIGHT)
+                .setMarginTop(30f)
+                .setMarginBottom(30f)
+                .setMarginRight(10f)
+                .setBorder(Border.NO_BORDER));
+
+        Text text = new Text("Your data\n").setFontSize(17).setBold();
+        Paragraph userDataHeader = new Paragraph(text).setMarginTop(25f);
+        Paragraph userData = new Paragraph("Login: " + _reservation.getLogin() + "\n"
+                                                + "E-mail: " + _reservation.getEmail() + "\n");
+
+        Text text2 = new Text("Flight " + _reservation.getFlightCode()).setFontSize(17).setBold();
+        Paragraph flightDataHeader = new Paragraph(text2);
+        Paragraph flightData = new Paragraph("Departure: " + _reservation.getDepartureAirport() + " at " + _reservation.getDepartureTime() + "  ----->  "
+                                                + "Destination: " + _reservation.getDestinationAirport() + " at " + _reservation.getArrivalTime());
+
+        //watermark
+
+        ImageData imageData = ImageDataFactory.create(imagePath);
+        Image image = new Image(imageData);
+
+        image.setFixedPosition(pdfDocument.getDefaultPageSize().getWidth()/2-320, pdfDocument.getDefaultPageSize().getHeight()/2-160);
+        image.setOpacity(0.3f);
+
+        Document document = new Document(pdfDocument);
+
+        document.add(table);
+
+        document.add(userDataHeader);
+        document.add(userData);
+
+        document.add(flightDataHeader);
+        document.add(flightData);
+
+        document.add(image);
+
+        document.close();
+
+        /*
         pdfDocument.addNewPage();
 
         Document document = new Document(pdfDocument);
@@ -95,7 +166,8 @@ public class PdfGenerator {
             System.out.println("[PdfGenerator] Add image");
         }
 
-        document.close();
+
+*/
 
         System.out.println("[PdfGenerator] Document closed");
         System.out.println("[PdfGenerator] Document created at " + _outPath);

@@ -210,7 +210,8 @@ public class AirportServerImpl implements AirportServer, Serializable {
 
         PdfGenerator pdfGenerator = new PdfGenerator(newPath, res);
         pdfGenerator.setHeaderFooter("Potwierdzenie rezerwacji biletu","Super linie lotnicze sp. z o.o.");
-        //pdfGenerator.setImage("");
+        String imagePath = "c:\\users\\ukasz\\desktop\\SoapProject\\screens\\plane.png";
+        pdfGenerator.setImage(imagePath);
         pdfGenerator.generate();
 
         //return output file
