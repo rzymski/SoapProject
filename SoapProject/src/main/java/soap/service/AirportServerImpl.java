@@ -199,10 +199,11 @@ public class AirportServerImpl implements AirportServer, Serializable {
 
     }
 
-    @MTOM
+    //@MTOM
     @Override
     public byte[] generatePdf(String path) throws IOException {
-        PdfGenerator pdfGenerator = new PdfGenerator(path);
+        String NewPath = "C:\\users\\ukasz\\Desktop\\" + path;
+        PdfGenerator pdfGenerator = new PdfGenerator(NewPath);
         pdfGenerator.setHeaderFooter("Potwierdzenie rezerwacji biletu","Super linie lotnicze sp. z o.o.");
         //pdfGenerator.setImage("");
         pdfGenerator.generate();

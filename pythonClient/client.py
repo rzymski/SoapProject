@@ -57,6 +57,10 @@ class Service:
         else:
             print(responseText)
 
+def save_pdf(bytes_pdf, path):
+    with open(path, 'wb') as file:
+        file.write(bytes_pdf)
+    print("Save pdf file at " + path)
 
 if __name__ == "__main__":
     # soapService = Service(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService?WSDL")
@@ -70,6 +74,17 @@ if __name__ == "__main__":
     # soapService.printService("getFlightsFromCityToCityWithinDateRange", "rome", "kair", "2024-05-11T03:30:00", "2024-05-21T03:30:00")
     # soapService.printService("getAllFlightsWithParameters", None, "rome", None, "2024-05-10T03:30:00")
     soapService.printService("findAvailableAirports")
+
+
+    ###### PDF TEST #######
+    #soapService.printService("generatePdf", "testowy.pdf")
+    pdf_bytes = soapService.service("generatePdf", "tmp.pdf")
+    if pdf_bytes:
+        path = "testowy.pdf"
+        save_pdf(pdf_bytes, path)
+    else:
+        print("ERROR: Can't save pdf file");
+
     # soapService.printService("downloadImage")
     # soapService.printService("getFlightById", "1010")
     # soapService.printService("checkFlightReservation", "653")
