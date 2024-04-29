@@ -13,6 +13,7 @@ import javax.jws.WebService;
 //import javax.xml.ws.soap.MTOM;
 import java.awt.*;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -70,5 +71,5 @@ public interface AirportServer {
     void createUser(String username, String password,String email);
 
     @WebMethod
-    void generatePdf(String path) throws FileNotFoundException, MalformedURLException;
+    byte[] generatePdf(String path) throws IOException;
 }

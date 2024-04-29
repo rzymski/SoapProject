@@ -20,6 +20,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.*;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.logging.Logger;
@@ -198,11 +199,18 @@ public class AirportServerImpl implements AirportServer, Serializable {
 
     }
 
+    @MTOM
     @Override
-    public void generatePdf(String path) throws FileNotFoundException, MalformedURLException {
+    public byte[] generatePdf(String path) throws IOException {
         PdfGenerator pdfGenerator = new PdfGenerator(path);
         pdfGenerator.setHeaderFooter("Potwierdzenie rezerwacji biletu","Super linie lotnicze sp. z o.o.");
         //pdfGenerator.setImage("");
         pdfGenerator.generate();
+
+        //return output file
+        File file = new File(path);
+        byte[] bytes = Files.readAllBytes(file.toPath());
+
+        return bytes;
     }
 }
