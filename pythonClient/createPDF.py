@@ -1,6 +1,7 @@
+from client import *
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.units import inch
-from reportlab.platypus import Image, SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
+from reportlab.platypus import Image as PDFImage, SimpleDocTemplate, Table, TableStyle, Paragraph, Spacer
 from reportlab.lib.styles import getSampleStyleSheet
 
 
@@ -10,10 +11,10 @@ class PDF:
         return Spacer(1, height * inch)
 
     @staticmethod
-    def createCenteredImage(image_data, width=3 * inch, height=3 * inch):
-        image = Image(image_data, width=width, height=height)
-        image.hAlign = 'CENTER'
-        return image
+    def createCenteredImage(imageData, width=3 * inch, height=3 * inch):
+        pdfImage = PDFImage(imageData, width=width, height=height)
+        pdfImage.hAlign = 'CENTER'
+        return pdfImage
 
     @staticmethod
     def createTwoColumnTable(left_text, right_text, col_widths=[3 * inch, 3 * inch]):
@@ -32,7 +33,7 @@ class PDF:
             elements.append(PDF.createSpacer(0.1))
         return elements
 
-    def __init__(self, titlePDF, title, image, username, email, flightCode, numberOfReservedSeats, departureAirport, departureTime, destinationAirport, arrivalTime):
+    def __init__(self, titlePDF, title, pdfImage, username, email, flightCode, numberOfReservedSeats, departureAirport, departureTime, destinationAirport, arrivalTime):
         # Konfiguracja PDF
         pdf_file = titlePDF
         document = SimpleDocTemplate(pdf_file, pagesize=A4)
@@ -43,7 +44,7 @@ class PDF:
         elements.append(titleParagraph)
         elements.append(PDF.createSpacer(0.5))
         # Dodanie wycentrowanego obrazka
-        elements.append(PDF.createCenteredImage(image))
+        elements.append(PDF.createCenteredImage(pdfImage))
         elements.append(PDF.createSpacer(0.5))
         # Dodanie wypunktowanej listy
         info = [
@@ -64,7 +65,6 @@ class PDF:
 
 
 if __name__ == "__main__":
-    from client import *
     soapService = Service(8080, [], "localhost", "SoapProject/AirportServerImplService?WSDL")
     logo = BytesIO(soapService.service("downloadImage"))
     flightReservationData = soapService.service("checkFlightReservation", "653")
@@ -80,7 +80,7 @@ if __name__ == "__main__":
 
     pdf = PDF(titlePDF="../pdfs/ticketConfirmation.pdf",
               title="Confirmation of Airline Ticket Purchase",
-              image=logo,
+              pdfImage=logo,
               username=login,
               email=email,
               flightCode=flightCode,

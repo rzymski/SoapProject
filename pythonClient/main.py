@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     pdf = PDF(titlePDF="../pdfs/ticketConfirmation.pdf",
               title="Confirmation of Airline Ticket Purchase",
-              image=logo,
+              pdfImage=logo,
               username=login,
               email=email,
               flightCode=flightCode,

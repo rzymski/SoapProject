@@ -47,9 +47,9 @@ class Service:
                 print(f"Id: {flight['id']}, flightCode: {flight['flightCode']} z {flight['departureAirport']} o {flight['departureTime']} do {flight['destinationAirport']} o {flight['arrivalTime']}")
         elif serviceName == "downloadImage":
             try:
-                image_data = BytesIO(responseText)
-                image = Image.open(image_data)
-                plt.imshow(image)
+                imageData = BytesIO(responseText)
+                showImage = Image.open(imageData)
+                plt.imshow(showImage)
                 plt.axis('off')
                 plt.show()
             except Exception as e:
