@@ -59,22 +59,21 @@ class Service:
         else:
             print(responseText)
 
-def save_pdf(bytes_pdf, path):
-    with open(path, 'wb') as file:
-        file.write(bytes_pdf)
-    print("Save pdf file at " + path)
-
-def save_pdf_with_dialog(bytes_pdf):
-    root = tk.Tk()
-    root.withdraw()
-
-    path = filedialog.asksaveasfilename(defaultextension=".pdf", filetypes=[("PDF files", "*pdf")])
-    if path:
-        with open(path, 'wb') as file:
-            file.write(bytes_pdf)
-            print("Save pdf file at " + path)
-    else:
-        print("Saving pdf file was canceled")
+    def generatePDF(self, reservationID):
+        pdfBytes = self.service("generatePdf", reservationID)
+        root = tk.Tk()
+        root.withdraw()
+        if pdfBytes:
+            filePath = filedialog.asksaveasfilename(defaultextension=".pdf", filetypes=[("Pliki PDF", "*.pdf")], initialfile=f"ticketConfirmation{reservationID}", title="Zapisz pdf-a", initialdir="../pdfs")
+            if filePath:
+                try:
+                    with open(filePath, 'wb') as file:
+                        file.write(pdfBytes)
+                        print("Save pdf file at " + filePath)
+                except IOError as e:
+                    print("Błąd podczas zapisywania pliku:", e)
+            else:
+                print("Zapis pliku został anulowany.")
 
 
 if __name__ == "__main__":
@@ -89,22 +88,10 @@ if __name__ == "__main__":
     # soapService.printService("getFlightsFromCityToCityWithinDateRange", "rome", "kair", "2024-05-11T03:30:00", "2024-05-21T03:30:00")
     # soapService.printService("getAllFlightsWithParameters", None, "rome", None, "2024-05-10T03:30:00")
     soapService.printService("findAvailableAirports")
-
-
-    ###### PDF TEST #######
-    #soapService.printService("generatePdf", "testowy.pdf")
-    pdf_bytes = soapService.service("generatePdf", "653")
-    if pdf_bytes:
-        path = "testowy.pdf"
-        #save_pdf(pdf_bytes, path)
-        save_pdf_with_dialog(pdf_bytes)
-    else:
-        print("ERROR: Can't save pdf file");
-
     # soapService.printService("downloadImage")
     # soapService.printService("getFlightById", "1010")
     # soapService.printService("checkFlightReservation", "653")
     # soapService.printService("reserveFlight", 1025, 5)
     # soapService.printService("cancelFlightReservation", 1099)
     # soapService.printService("createUser", "pythonClient", "python", "python@gmail.com")
-
+    soapService.generatePDF(653)

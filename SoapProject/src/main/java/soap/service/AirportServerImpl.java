@@ -199,22 +199,19 @@ public class AirportServerImpl implements AirportServer, Serializable {
         }
 
     }
-
-    //@MTOM
+    
     @Override
     public byte[] generatePdf(Long reservationId) throws IOException {
-        String newPath = "C:\\users\\ukasz\\Desktop\\" + reservationId + ".pdf";
-
         FlightReservationDTO res = checkFlightReservation(reservationId);
-        if(res == null) throw new NoSuchObjectException("No reservation with ID: " + reservationId);
-
-        PdfGenerator pdfGenerator = new PdfGenerator(newPath, res);
-        pdfGenerator.setHeaderFooter("Potwierdzenie rezerwacji biletu","Super linie lotnicze sp. z o.o.");
-        String imagePath = "c:\\users\\ukasz\\desktop\\SoapProject\\screens\\plane.png";
+        if (res == null) {
+            throw new RecordNotFoundException("No reservation with ID: " + reservationId);
+        }
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        PdfGenerator pdfGenerator = new PdfGenerator(byteArrayOutputStream, res);
+        pdfGenerator.setHeaderFooter("Potwierdzenie rezerwacji biletu", "Super linie lotnicze sp. z o.o.");
+        String imagePath = "D:\\programowanie\\java\\rsi\\SoapProject\\screens\\plane.png";
         pdfGenerator.setImage(imagePath);
         pdfGenerator.generate();
-
-        //return output file
-        return pdfGenerator.getGeneratedFile();
+        return byteArrayOutputStream.toByteArray();
     }
 }

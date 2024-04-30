@@ -20,6 +20,7 @@ import com.itextpdf.layout.Canvas;
 
 
 import java.awt.*;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -29,7 +30,6 @@ import java.nio.file.Files;
 public class PdfGenerator {
 
     private final PdfWriter _writer;
-    private final String _outPath;
     private final FlightReservationDTO _reservation;
 
     private boolean isHeaderFooter;
@@ -40,9 +40,8 @@ public class PdfGenerator {
 
     private String imagePath;
 
-    public PdfGenerator(String outPath, FlightReservationDTO reservation) throws FileNotFoundException {
-        this._writer = new PdfWriter(outPath);
-        this._outPath = outPath;
+    public PdfGenerator(ByteArrayOutputStream outputStream, FlightReservationDTO reservation) throws FileNotFoundException {
+        this._writer = new PdfWriter(outputStream);
         this._reservation = reservation;
 
         this.isHeaderFooter = false;
@@ -66,13 +65,6 @@ public class PdfGenerator {
         this.isImage = true;
 
         System.out.println("[PdfGenerator] Set image path as " + imagePath);
-    }
-
-    public byte[] getGeneratedFile() throws IOException {
-        File file = new File(_outPath);
-        byte[] bytes = Files.readAllBytes(file.toPath());
-
-        return bytes;
     }
 
     public void generate() throws MalformedURLException {
@@ -170,7 +162,5 @@ public class PdfGenerator {
 */
 
         System.out.println("[PdfGenerator] Document closed");
-        System.out.println("[PdfGenerator] Document created at " + _outPath);
-
     }
 }
