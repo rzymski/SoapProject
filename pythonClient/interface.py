@@ -1,4 +1,5 @@
 from tkinter import *
+from tkinter import ttk
 import tkinter.font as font
 from icecream import ic
 
@@ -47,59 +48,64 @@ class AirportInterface:
         self.reserveFlightButton = self.createButton(self.leftFrame, text="Zarezerwuj lot", command=self.reserveFlight, pad=[10, 10], grid=[2, 0], buttonFont=[28, "bold"])
         # cancel reservation
         self.cancelReservationButton = self.createButton(self.leftFrame, text="Anuluj rezerwacje", command=self.cancelReservation, pad=[10, 10], grid=[3, 0], buttonFont=[28, "bold"])
-        # flights
-        self.flightsLabel = self.createLabelFrame(self.root, expand=True, pad=[0, 0])
-
-        self.flightsHeader = self.createLabel(self.flightsLabel, pack=[None, False, "x"], pad=[10, 10])
-        self.flightsHeaderFlightCode = self.createLabel(self.flightsHeader, "KOD LOTU", pack=["left", True, "x"], pad=[20, 10])
-        self.flightsHeaderDepartureAirport = self.createLabel(self.flightsHeader, "LOTNISKO ODLOTU", pack=["left", True, "x"], pad=[20, 10])
-        self.flightsHeaderDepartureTime = self.createLabel(self.flightsHeader, "CZAS ODLOTU", pack=["left", True, "x"], pad=[20, 10])
-        self.flightsHeaderDestinationAirport = self.createLabel(self.flightsHeader, "LOTNISKO DOCELOWE", pack=["left", True, "x"], pad=[20, 10])
-        self.flightsHeaderArrivalTime = self.createLabel(self.flightsHeader, "CZAS PRZYLOTU", pack=["right", True, "x"], pad=[20, 10])
-
 
         # hide buttons which shouldn't be displayed to not logged user
         self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.reserveFlightButton, self.cancelReservationButton])  # ukrycie przyciskow rezerwowania i usuwania rezerwacji
         # self.showButtonsAndLabels([[self.reserveFlightButton, (2, 0, "WE")], [self.cancelReservationButton, (3, 0, "WE")]])  # wyswietlenie przyciskow rezerwowania i usuwania rezerwacji
 
-        self.scrollableFrame = self.createScrollableFrame(self.flightsLabel)
+        # # flights
+        self.flightsLabel = self.createLabel(self.root, pack=[None, True, "both"], border=0)
 
+        # self.flightsHeader = self.createLabel(self.flightsLabel, pack=[None, False, "x"], pad=[10, 10])
+        # self.flightsHeaderFlightCode = self.createLabel(self.flightsHeader, "KOD LOTU", pack=["left", True, "x"], pad=[20, 10])
+        # self.flightsHeaderDepartureAirport = self.createLabel(self.flightsHeader, "LOTNISKO ODLOTU", pack=["left", True, "x"], pad=[20, 10])
+        # self.flightsHeaderDepartureTime = self.createLabel(self.flightsHeader, "CZAS ODLOTU", pack=["left", True, "x"], pad=[20, 10])
+        # self.flightsHeaderDestinationAirport = self.createLabel(self.flightsHeader, "LOTNISKO DOCELOWE", pack=["left", True, "x"], pad=[20, 10])
+        # self.flightsHeaderArrivalTime = self.createLabel(self.flightsHeader, "CZAS PRZYLOTU", pack=["right", True, "x"], pad=[20, 10])
+        #
+        # self.scrollbarFlights = Scrollbar(self.flightsLabel, orient=VERTICAL)
+        #
+        # self.flightList = Listbox(self.flightsLabel, font=font.Font(family="Courier New", size=18, weight="bold"), yscrollcommand=self.scrollbarFlights)
+        # self.flightList.pack(side=LEFT, expand=True, fill="both", anchor="center")
+        #
+        # self.scrollbarFlights.config(command=self.flightList.yview)
+        # self.scrollbarFlights.pack(side=RIGHT, fill=Y)
+        #
+        #
+        # for i in range(2000):
+        #     flightCode = f"KOD{i}"
+        #     departureAirport = "ODLOT Z"
+        #     departureTime = "YYYY-MM-DD HH:mm:ss"
+        #     destinationAirport = "PRZYLOT DO"
+        #     arrivalTime = "YYYY-MM-DD HH:mm:ss"
+        #     text = f"{flightCode:25}{departureAirport:25}{departureTime:25}{destinationAirport:25}{arrivalTime:25}"
+        #     self.flightList.insert(END, text)
 
-        for i in range(200):
-            # label = Label(self.scrollableFrame, text=f"Etykieta {i + 1}", padx=10, pady=5, font=font.Font(size=12))
-            # label.pack(anchor="w")
-            label = self.createFlightRow(self.scrollableFrame, f"Flight {i + 1}")
+        scrollbarFlights = Scrollbar(self.flightsLabel, orient=VERTICAL)
 
-    def createFlightRow(self, frame, flightCode="KOD", departureAirport="ODLOT Z", departureTime="YYYY-MM-DD HH:mm:ss", destinationAirport="PRZYLOT DO", arrivalTime="YYYY-MM-DD HH:mm:ss"):
-        mainLabel = self.createLabel(frame, pack=[None, True, "x"], pad=[5, 5])
-        flightsHeaderFlightCode = self.createLabel(mainLabel, flightCode, pack=["left", True, "x"], pad=[20, 5])
-        flightDepartureAirport = self.createLabel(mainLabel, departureAirport, pack=["left", True, "x"], pad=[20, 5])
-        flightDepartureTime = self.createLabel(mainLabel, departureTime, pack=["left", True, "x"], pad=[20, 5])
-        flightDestinationAirport = self.createLabel(mainLabel, destinationAirport, pack=["left", True, "x"], pad=[20, 5])
-        flightArrivalTime = self.createLabel(mainLabel, arrivalTime, pack=["right", True, "x"], pad=[20, 5])
-        return mainLabel
+        style = ttk.Style()
+        style.theme_use('clam')
+        style.configure("Treeview.Heading", font=(None, 24, "bold"))
+        style.configure("Treeview", font=("Courier New", 18, "bold"), rowheight=int(18*2))
+        tree = ttk.Treeview(self.flightsLabel, column=("c1", "c2", "c3", "c4", "c5"), show='headings', yscrollcommand=scrollbarFlights)
+        tree.column("#1", anchor=CENTER)
+        tree.heading("#1", text="KOD LOTU")
+        tree.column("#2", anchor=CENTER)
+        tree.heading("#2", text="LOTNISKO ODLOTU")
+        tree.column("#3", anchor=CENTER)
+        tree.heading("#3", text="CZAS ODLOTU")
+        tree.column("#4", anchor=CENTER)
+        tree.heading("#4", text="LOTNISKO DOCELOWE")
+        tree.column("#5", anchor=CENTER)
+        tree.heading("#5", text="CZAS PRZYLOTU")
 
-    def createScrollableFrame(self, parent, padx=10, pady=10):
-        # Utworzenie ramki zawierającej Canvas i Scrollbar
-        container = Frame(parent)
-        container.pack(expand=True, fill="both")
-        # Utworzenie Canvas i pionowego paska przewijania
-        canvas = Canvas(container, bg="white")
-        scrollbar = Scrollbar(container, orient="vertical", command=canvas.yview)
-        scrollbar.pack(side="right", fill="y")
-        canvas.pack(side="left", expand=True, fill="both")
-        # Konfiguracja Canvas i tworzenie okna wewnątrz Canvas
-        innerFrame = Frame(canvas)
-        canvas.create_window((0, 0), window=innerFrame, anchor="nw")
-        # Konfiguracja Scrollbar
-        canvas.configure(yscrollcommand=scrollbar.set)
+        scrollbarFlights.config(command=tree.yview)
+        scrollbarFlights.pack(side=RIGHT, fill=Y)
 
-        # Aktualizacja rozmiaru przewijania
-        def update_scrollregion(event):
-            canvas.config(scrollregion=canvas.bbox("all"))
-        # Ustawienie eventu na zmianę rozmiaru
-        innerFrame.bind("<Configure>", update_scrollregion)
-        return innerFrame
+        for i in range(2000):
+            tree.insert('', 'end', text=i, values=(f'KOD{i}', 'ODLOT Z', 'YYYY-MM-DD HH:mm:ss', 'PRZYLOT DO', 'YYYY-MM-DD HH:mm:ss'))
+        tree.pack(fill="both", expand=True)
+
 
     def createLabelFrame(self, frame, pad, side=None, fill="both", expand=False, text="", labelFont=[18, "bold"]):
         labelFrame = LabelFrame(frame, padx=pad[0], pady=pad[1], text=text)
@@ -107,8 +113,8 @@ class AirportInterface:
         labelFrame['font'] = font.Font(size=labelFont[0], weight=labelFont[1])
         return labelFrame
 
-    def createLabel(self, frame, text='', grid=None, pack=None, sticky="WE", span=(1, 1), pad=[0, 0], labelFont=[18, "bold"]):
-        label = Label(frame, text=text, padx=pad[0], pady=pad[1])
+    def createLabel(self, frame, text='', grid=None, pack=None, sticky="WE", span=(1, 1), pad=[0, 0], labelFont=[18, "bold"], border=1):
+        label = Label(frame, text=text, padx=pad[0], pady=pad[1], bd=border)
         if grid:
             label.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky)
         if pack:
@@ -165,3 +171,5 @@ if __name__ == "__main__":
     rootInterface = Tk()
     app = AirportInterface(rootInterface)
     rootInterface.mainloop()
+
+
