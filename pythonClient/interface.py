@@ -53,59 +53,28 @@ class AirportInterface:
         self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.reserveFlightButton, self.cancelReservationButton])  # ukrycie przyciskow rezerwowania i usuwania rezerwacji
         # self.showButtonsAndLabels([[self.reserveFlightButton, (2, 0, "WE")], [self.cancelReservationButton, (3, 0, "WE")]])  # wyswietlenie przyciskow rezerwowania i usuwania rezerwacji
 
-        # # flights
-        self.flightsLabel = self.createLabel(self.root, pack=[None, True, "both"], border=0)
+        # flights list
+        self.flightsLabel, self.flightList = self.createList(self.root, headers=["KOD LOTU", "LOTNISKO ODLOTU", "CZAS ODLOTU", "LOTNISKO DOCELOWE", "CZAS PRZYLOTU"], headerFont=(None, 24, "bold"), bodyFont=("Courier New", 18, "bold"))
+        # example insert data to list
+        for i in range(2000):
+            self.flightList.insert('', 'end', text=i, values=(f'KOD{i}', 'ODLOT Z', 'YYYY-MM-DD HH:mm:ss', 'PRZYLOT DO', 'YYYY-MM-DD HH:mm:ss'))
 
-        # self.flightsHeader = self.createLabel(self.flightsLabel, pack=[None, False, "x"], pad=[10, 10])
-        # self.flightsHeaderFlightCode = self.createLabel(self.flightsHeader, "KOD LOTU", pack=["left", True, "x"], pad=[20, 10])
-        # self.flightsHeaderDepartureAirport = self.createLabel(self.flightsHeader, "LOTNISKO ODLOTU", pack=["left", True, "x"], pad=[20, 10])
-        # self.flightsHeaderDepartureTime = self.createLabel(self.flightsHeader, "CZAS ODLOTU", pack=["left", True, "x"], pad=[20, 10])
-        # self.flightsHeaderDestinationAirport = self.createLabel(self.flightsHeader, "LOTNISKO DOCELOWE", pack=["left", True, "x"], pad=[20, 10])
-        # self.flightsHeaderArrivalTime = self.createLabel(self.flightsHeader, "CZAS PRZYLOTU", pack=["right", True, "x"], pad=[20, 10])
-        #
-        # self.scrollbarFlights = Scrollbar(self.flightsLabel, orient=VERTICAL)
-        #
-        # self.flightList = Listbox(self.flightsLabel, font=font.Font(family="Courier New", size=18, weight="bold"), yscrollcommand=self.scrollbarFlights)
-        # self.flightList.pack(side=LEFT, expand=True, fill="both", anchor="center")
-        #
-        # self.scrollbarFlights.config(command=self.flightList.yview)
-        # self.scrollbarFlights.pack(side=RIGHT, fill=Y)
-        #
-        #
-        # for i in range(2000):
-        #     flightCode = f"KOD{i}"
-        #     departureAirport = "ODLOT Z"
-        #     departureTime = "YYYY-MM-DD HH:mm:ss"
-        #     destinationAirport = "PRZYLOT DO"
-        #     arrivalTime = "YYYY-MM-DD HH:mm:ss"
-        #     text = f"{flightCode:25}{departureAirport:25}{departureTime:25}{destinationAirport:25}{arrivalTime:25}"
-        #     self.flightList.insert(END, text)
-
-        scrollbarFlights = Scrollbar(self.flightsLabel, orient=VERTICAL)
-
+    def createList(self, frame, headers, headerFont, bodyFont):
+        flightsLabel = self.createLabel(frame, pack=[None, True, "both"], border=0)
+        scrollbarFlights = Scrollbar(flightsLabel, orient=VERTICAL)
         style = ttk.Style()
         style.theme_use('clam')
-        style.configure("Treeview.Heading", font=(None, 24, "bold"))
-        style.configure("Treeview", font=("Courier New", 18, "bold"), rowheight=int(18*2))
-        tree = ttk.Treeview(self.flightsLabel, column=("c1", "c2", "c3", "c4", "c5"), show='headings', yscrollcommand=scrollbarFlights)
-        tree.column("#1", anchor=CENTER)
-        tree.heading("#1", text="KOD LOTU")
-        tree.column("#2", anchor=CENTER)
-        tree.heading("#2", text="LOTNISKO ODLOTU")
-        tree.column("#3", anchor=CENTER)
-        tree.heading("#3", text="CZAS ODLOTU")
-        tree.column("#4", anchor=CENTER)
-        tree.heading("#4", text="LOTNISKO DOCELOWE")
-        tree.column("#5", anchor=CENTER)
-        tree.heading("#5", text="CZAS PRZYLOTU")
-
-        scrollbarFlights.config(command=tree.yview)
+        style.configure("Treeview.Heading", font=headerFont)
+        style.configure("Treeview", font=bodyFont, rowheight=int(18 * 2))
+        columns = [f"c{i}" for i in range(1, len(headers) + 1)]
+        flightList = ttk.Treeview(flightsLabel, column=columns, show='headings', yscrollcommand=scrollbarFlights)
+        for index, header in enumerate(headers, start=1):
+            flightList.column(f"#{index}", anchor=CENTER)
+            flightList.heading(f"#{index}", text=header)
+        scrollbarFlights.config(command=flightList.yview)
         scrollbarFlights.pack(side=RIGHT, fill=Y)
-
-        for i in range(2000):
-            tree.insert('', 'end', text=i, values=(f'KOD{i}', 'ODLOT Z', 'YYYY-MM-DD HH:mm:ss', 'PRZYLOT DO', 'YYYY-MM-DD HH:mm:ss'))
-        tree.pack(fill="both", expand=True)
-
+        flightList.pack(fill="both", expand=True)
+        return flightsLabel, flightList
 
     def createLabelFrame(self, frame, pad, side=None, fill="both", expand=False, text="", labelFont=[18, "bold"]):
         labelFrame = LabelFrame(frame, padx=pad[0], pady=pad[1], text=text)
