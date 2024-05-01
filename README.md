@@ -46,12 +46,12 @@ File -> Settings -> Plugins
 
 # Instrukcja konfiguracji serwera
 > [!Important]
-> ### Ustawiamy ścieżke do naszej bazy danych:
-> W [SoapProject/src/main/java/database/Configuration.java](https://github.com/rzymski/SoapProject/blob/master/SoapProject/src/main/java/database/Configuration.java) ${\textsf{\color{gold}@DataSourceDefinition}}$ **`url`**
+> ### Ustawiamy ścieżke do naszej bazy danych w:
+> [SoapProject/src/main/java/database/Configuration.java](https://github.com/rzymski/SoapProject/blob/master/SoapProject/src/main/java/database/Configuration.java) ${\textsf{\color{gold}@DataSourceDefinition}}$ **`url`**
 
 > [!Note]
-> ### Ustawiamy ścieżke do obrazka, który ma być w pdf-ie:
-> W [SoapProject/src/main/java/soap/service/AirportServerImpl.java](https://github.com/rzymski/SoapProject/blob/master/SoapProject/src/main/java/soap/service/AirportServerImpl.java) ${\textsf{\color{red}generatePdf(Long reservationId)}}$ **`imagePath`** 
+> ### Ustawiamy ścieżke do obrazka, który ma być w pdf-ie w:
+> [SoapProject/src/main/java/soap/service/AirportServerImpl.java](https://github.com/rzymski/SoapProject/blob/master/SoapProject/src/main/java/soap/service/AirportServerImpl.java) ${\textsf{\color{red}generatePdf(Long reservationId)}}$ **`imagePath`** 
 
 W projekcie trzeba ustawić Jave 8:       
 File -> Project Structure...:       

@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 import tkinter.font as font
+from tkinter import messagebox
 from icecream import ic
 
 
@@ -44,23 +45,83 @@ class AirportInterface:
         self.toDropdown.config(width=12)  # Ustawienie stałej szerokości
         self.toDropdown['font'] = boldFont18
         self.toDropdown.grid(row=1, column=2)
+        # show reservations
+        self.checkReservationsButton = self.createButton(self.leftFrame, text="Sprawdź rezerwacje", command=self.checkReservationList, pad=[10, 10], grid=[2, 0], buttonFont=[28, "bold"])
         # reserve button
-        self.reserveFlightButton = self.createButton(self.leftFrame, text="Zarezerwuj lot", command=self.reserveFlight, pad=[10, 10], grid=[2, 0], buttonFont=[28, "bold"])
+        self.reserveFlightButton = self.createButton(self.leftFrame, text="Zarezerwuj lot", command=self.reserveFlight, pad=[10, 10], grid=[3, 0], buttonFont=[28, "bold"])
         # cancel reservation
-        self.cancelReservationButton = self.createButton(self.leftFrame, text="Anuluj rezerwacje", command=self.cancelReservation, pad=[10, 10], grid=[3, 0], buttonFont=[28, "bold"])
+        self.cancelReservationButton = self.createButton(self.leftFrame, text="Anuluj rezerwacje", command=self.cancelReservation, pad=[10, 10], grid=[4, 0], buttonFont=[28, "bold"])
 
         # hide buttons which shouldn't be displayed to not logged user
-        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.reserveFlightButton, self.cancelReservationButton])  # ukrycie przyciskow rezerwowania i usuwania rezerwacji
+        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton])  # ukrycie przyciskow rezerwowania i usuwania rezerwacji
         # self.showButtonsAndLabels([[self.reserveFlightButton, (2, 0, "WE")], [self.cancelReservationButton, (3, 0, "WE")]])  # wyswietlenie przyciskow rezerwowania i usuwania rezerwacji
 
         # flights list
         self.flightsLabel, self.flightList = self.createList(self.root, headers=["KOD LOTU", "LOTNISKO ODLOTU", "CZAS ODLOTU", "LOTNISKO DOCELOWE", "CZAS PRZYLOTU"], headerFont=(None, 24, "bold"), bodyFont=("Courier New", 18, "bold"))
         # example insert data to list
         for i in range(2000):
-            self.flightList.insert('', 'end', text=i, values=(f'KOD{i}', 'ODLOT Z', 'YYYY-MM-DD HH:mm:ss', 'PRZYLOT DO', 'YYYY-MM-DD HH:mm:ss'))
+            self.flightList.insert('', END, values=(f'KOD{i}', 'ODLOT Z', 'YYYY-MM-DD HH:mm:ss', 'PRZYLOT DO', 'YYYY-MM-DD HH:mm:ss'))
 
-    def createList(self, frame, headers, headerFont, bodyFont):
-        flightsLabel = self.createLabel(frame, pack=[None, True, "both"], border=0)
+        # login panel variables
+        self.loginWindow, self.loginPanel, self.usernameLabel, self.usernameEntry, self.passwordLabel, self.passwordEntry, self.loginConfirmButton, self.registrationOptionLabel = [None] * 8
+        # registration panel variables
+        self.registerWindow, self.registerPanel, self.emailLabel, self.emailEntry, self.registerConfirmButton, self.loginOptionLabel = [None] * 6
+        # user data
+        self.username, self.password, self.email = None, None, None
+
+
+    @staticmethod
+    def initNewWindow(frame, size, title):#, labelsData=[], entriesData=[], buttonsData=[]):
+        window = Toplevel(frame)
+        window.title(title)
+        window.wm_attributes("-topmost", 1)
+        window.geometry(size)
+        # vertical center elements space
+        window.grid_rowconfigure(0, weight=1)  # Przestrzeń przed
+        window.grid_rowconfigure(1, weight=0)  # Miejsce na elementy
+        window.grid_rowconfigure(2, weight=1)  # Przestrzeń po
+        # horizontally center elements space
+        window.grid_columnconfigure(0, weight=1)  # Przestrzeń przed
+        window.grid_columnconfigure(1, weight=0)  # Miejsce na elementy
+        window.grid_columnconfigure(2, weight=1)  # Przestrzeń po
+        # elements space in window
+        loginPanel = AirportInterface.createLabel(window, "", grid=[1, 1])
+        # labels, buttons, entries = [], [], []
+        # for labelData in labelsData:
+        #     label = AirportInterface.createLabel(window, text=labelData['text'], grid=labelsData['grid'], sticky=labelData['sticky'], span=labelData['span'], pad=labelData['pad'], labelFont=[18, "bold"])
+        #     labels.append(label)
+        # for entryData in entriesData:
+        #     entry = AirportInterface.createEntry(window, width=entryData['width'], textvariable=entryData['textvariable'], validationcommand=entryData['width'], grid=entryData['grid'], sticky=entryData['sticky'], span=entryData['span'], labelFont=[18, "bold"])
+        #     entries.append(entry)
+        # for buttonData in buttonsData:
+        #     button = AirportInterface.createButton(window, text=buttonData['text'], command=buttonData['command'], grid=buttonData['grid'], span=buttonData['span'], sticky=buttonData['sticky'], pad=buttonData['pad'], buttonFont=[18, "bold"])
+        #     buttons.append(button)
+        return window, loginPanel#, entries, labels, buttons
+
+    def validateUser(self):
+        self.username = self.usernameEntry.get()
+        self.password = self.passwordEntry.get()
+        ic("Validate user", self.username, self.password)
+        if not self.username or not self.password:
+            messagebox.showwarning("Błąd", "Musisz podać wszystkie dane!")
+        elif self.username == "pizza" and self.password == "admin":
+            self.loginWindow.destroy()
+        else:
+            messagebox.showwarning("Błąd", "Błędny login lub hasło!")
+
+    def createUser(self):
+        self.username = self.usernameEntry.get()
+        self.email = self.emailEntry.get()
+        self.password = self.passwordEntry.get()
+        ic("Create user", self.username, self.email, self.password)
+        if self.username and self.email and self.password:
+            self.registerWindow.destroy()
+        else:
+            messagebox.showwarning("Błąd", "Musisz podać wszystkie dane!")
+
+    @staticmethod
+    def createList(frame, headers, headerFont, bodyFont):
+        flightsLabel = AirportInterface.createLabel(frame, pack=[None, True, "both"], border=0)
         scrollbarFlights = Scrollbar(flightsLabel, orient=VERTICAL)
         style = ttk.Style()
         style.theme_use('clam')
@@ -76,50 +137,90 @@ class AirportInterface:
         flightList.pack(fill="both", expand=True)
         return flightsLabel, flightList
 
-    def createLabelFrame(self, frame, pad, side=None, fill="both", expand=False, text="", labelFont=[18, "bold"]):
+    @staticmethod
+    def createEntry(frame, textvariable=None, validationcommand=None, width=20, grid=[0, 0], span=(1, 1), pad=[0, 0], sticky="WE", justify=CENTER, entryFont=[18, "bold"], show=None):
+        entry = Entry(frame, width=width, textvariable=textvariable, validate='all', validatecommand=validationcommand, justify=justify, show=show)
+        entry.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky, padx=pad[0], pady=[0])
+        entry['font'] = font.Font(size=entryFont[0], weight=entryFont[1])
+        return entry
+
+
+    @staticmethod
+    def createLabelFrame(frame, pad, side=None, fill="both", expand=False, text="", labelFont=[18, "bold"]):
         labelFrame = LabelFrame(frame, padx=pad[0], pady=pad[1], text=text)
         labelFrame.pack(side=side, fill=fill, expand=expand)
         labelFrame['font'] = font.Font(size=labelFont[0], weight=labelFont[1])
         return labelFrame
 
-    def createLabel(self, frame, text='', grid=None, pack=None, sticky="WE", span=(1, 1), pad=[0, 0], labelFont=[18, "bold"], border=1):
-        label = Label(frame, text=text, padx=pad[0], pady=pad[1], bd=border)
+    @staticmethod
+    def createLabel(frame, text='', grid=None, pack=None, sticky="WE", span=(1, 1), pad=[0, 0], labelFont=[18, "bold"], border=1, fg=None, cursor=None, bind=None):
+        label = Label(frame, text=text, padx=pad[0], pady=pad[1], bd=border, fg=fg, cursor=cursor)
         if grid:
             label.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky)
         if pack:
             label.pack(side=pack[0], expand=pack[1], fill=pack[2])
         label['font'] = font.Font(size=labelFont[0], weight=labelFont[1])
+        if bind:
+            label.bind(bind[0], bind[1])
         return label
 
-    def createButton(self, frame, text, command, pad, grid, sticky="WE", span=(1, 1), buttonFont=[18, "bold"]):
+    @staticmethod
+    def createButton(frame, text, command, grid, sticky="WE", span=(1, 1), pad=[0, 0], margin=[0, 0], buttonFont=[18, "bold"]):
         button = Button(frame, text=text, command=command, padx=pad[0], pady=pad[1])
-        button.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky)
+        button.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky, padx=margin[0], pady=margin[1])
         button['font'] = font.Font(size=buttonFont[0], weight=buttonFont[1])
         return button
 
-    def showButtonsAndLabels(self, elementsWithGridPositions):
+    @staticmethod
+    def showButtonsAndLabels(elementsWithGridPositions):
         for data in elementsWithGridPositions:
             data[0].grid(row=data[1][0], column=data[1][1], sticky=data[1][2])
 
-    def hideButtonsAndLabels(self, elements):
+    @staticmethod
+    def hideButtonsAndLabels(elements):
         for element in elements:
             element.grid_forget()
 
-    def register(self):
+    def register(self, event=None):
         ic("Register")
+        if self.loginWindow:
+            self.loginWindow.destroy()
         self.hideButtonsAndLabels([self.loginButton, self.registerButton])
-        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.reserveFlightButton, (2, 0, "WE")], [self.cancelReservationButton, (3, 0, "WE")]])
+        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.checkReservationsButton, (2, 0, "WE")], [self.reserveFlightButton, (3, 0, "WE")], [self.cancelReservationButton, (4, 0, "WE")]])
 
-    def login(self):
+        # open register panel
+        self.registerWindow, self.registerPanel = self.initNewWindow(self.root, size="450x350", title="Panel rejestracyjny")
+        self.usernameLabel = self.createLabel(self.registerPanel, "Nazwa użytkownika", grid=[0, 0], sticky="W", pad=[0, 5])
+        self.usernameEntry = self.createEntry(self.registerPanel, grid=[1, 0])
+        self.emailLabel = self.createLabel(self.registerPanel, "Email", grid=[2, 0], sticky="W", pad=[0, 5])
+        self.emailEntry = self.createEntry(self.registerPanel, grid=[3, 0])
+        self.passwordLabel = self.createLabel(self.registerPanel, "Hasło", grid=[4, 0], sticky="W", pad=[0, 5])
+        self.passwordEntry = self.createEntry(self.registerPanel, grid=[5, 0], show="*")
+        self.loginConfirmButton = self.createButton(self.registerPanel, text="Zarejestruj się", command=self.createUser, grid=[6, 0], margin=[0, 10], buttonFont=[28, 'bold'])
+        self.registrationOptionLabel = self.createLabel(self.registerPanel, "Masz już konta? Zaloguj się.", grid=[7, 0], pad=[0, 10], fg="blue", cursor="hand2", bind=["<Button-1>", self.login], labelFont=[14, 'normal'])
+
+
+    def login(self, event=None):
         ic("Login")
+        if self.registerWindow:
+            self.registerWindow.destroy()
         self.hideButtonsAndLabels([self.loginButton, self.registerButton])
-        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.reserveFlightButton, (2, 0, "WE")], [self.cancelReservationButton, (3, 0, "WE")]])
+        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.checkReservationsButton, (2, 0, "WE")], [self.reserveFlightButton, (3, 0, "WE")], [self.cancelReservationButton, (4, 0, "WE")]])
+
+        # open login panel
+        self.loginWindow, self.loginPanel = self.initNewWindow(self.root, size="450x300", title="Panel logowania")
+        self.usernameLabel = self.createLabel(self.loginPanel, "Nazwa użytkownika", grid=[0, 0], sticky="W", pad=[0, 5])
+        self.usernameEntry = self.createEntry(self.loginPanel, grid=[1, 0])
+        self.passwordLabel = self.createLabel(self.loginPanel, "Hasło", grid=[2, 0], sticky="W", pad=[0, 5])
+        self.passwordEntry = self.createEntry(self.loginPanel, grid=[3, 0], show="*")
+        self.loginConfirmButton = self.createButton(self.loginPanel, text="Zaloguj się", command=self.validateUser, grid=[4, 0], margin=[0, 10], buttonFont=[28, 'bold'])
+        self.registrationOptionLabel = self.createLabel(self.loginPanel, "Nie masz konta? Zarejestruj się.", grid=[5, 0], pad=[0, 10], fg="blue", cursor="hand2", bind=["<Button-1>", self.register], labelFont=[14, 'normal'])
+
 
     def logout(self):
         ic("Logout")
-        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.reserveFlightButton, self.cancelReservationButton])
+        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton])
         self.showButtonsAndLabels([[self.loginButton, (0, 1, "E")], [self.registerButton, (0, 2, "E")]])
-
 
     def checkFlightList(self):
         ic("Check flight list")
@@ -129,11 +230,16 @@ class AirportInterface:
         destinationAirport = self.toAirportVar.get()
         ic("find flight", departureAirport, destinationAirport)
 
+    def checkReservationList(self):
+        ic("Check reservation list")
+
     def reserveFlight(self):
         ic("reserve flight")
 
     def cancelReservation(self):
         ic("Anuluj rezerwacje")
+
+
 
 
 if __name__ == "__main__":
