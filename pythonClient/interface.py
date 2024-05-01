@@ -66,16 +66,98 @@ class AirportInterface:
         self.loginWindow, self.loginPanel, self.usernameLabel, self.usernameEntry, self.passwordLabel, self.passwordEntry, self.loginConfirmButton, self.registrationOptionLabel = [None] * 8
         # registration panel variables
         self.registerWindow, self.registerPanel, self.emailLabel, self.emailEntry, self.registerConfirmButton, self.loginOptionLabel = [None] * 6
+        # errors in login or registration
+        self.noUsernameError, self.noPasswordError, self.noAuthorizationError = [None] * 3
         # user data
         self.username, self.password, self.email = None, None, None
 
+    def validateUser(self):
+        self.username = self.usernameEntry.get()
+        self.password = self.passwordEntry.get()
+        ic("Validate user", self.username, self.password)
+        self.noUsernameError['text'] = "Pole 'nazwa użytkownika' jest wymagane." if not self.username else ""
+        self.noPasswordError['text'] = "Pole 'hasło' jest wymagane." if not self.password else ""
+        # przykładowe sprawdzenie poprawnosci
+        if self.username == "pizza" and self.password == "admin":
+            self.loginWindow.destroy()
+            # change buttons when logged in
+            self.hideButtonsAndLabels([self.loginButton, self.registerButton])
+            self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.checkReservationsButton, (2, 0, "WE")], [self.reserveFlightButton, (3, 0, "WE")], [self.cancelReservationButton, (4, 0, "WE")]])
+        elif self.username and self.password:
+            self.noAuthorizationError['text'] = "Nie udało się zalogować. Błędny login lub hasło"
+        else:
+            self.noAuthorizationError['text'] = ""
+
+    def createUser(self):
+        self.username = self.usernameEntry.get()
+        self.email = self.emailEntry.get()
+        self.password = self.passwordEntry.get()
+        ic("Create user", self.username, self.email, self.password)
+        self.noUsernameError['text'] = "Pole 'nazwa użytkownika' jest wymagane." if not self.username else ""
+        self.noPasswordError['text'] = "Pole 'hasło' jest wymagane." if not self.password else ""
+        if self.username and self.password:
+            if True:  # tu zamiast True powinna byc proba stworzenia uzytkownika
+                self.noAuthorizationError['text'] = "Nie udało się zarejestrować. Taki użytkownik już istnieje."
+            else:
+                self.registerWindow.destroy()
+                # change buttons when registration completed
+                self.hideButtonsAndLabels([self.loginButton, self.registerButton])
+                self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.checkReservationsButton, (2, 0, "WE")], [self.reserveFlightButton, (3, 0, "WE")], [self.cancelReservationButton, (4, 0, "WE")]])
+
+
+    def register(self, event=None):
+        ic("Register")
+        # close if open login panel
+        if self.loginWindow:
+            self.loginWindow.destroy()
+        # open register panel
+        self.registerWindow, self.registerPanel = self.initNewWindow(self.root, size=[750, 750], title="Panel rejestracyjny")
+        self.usernameLabel = self.createLabel(self.registerPanel, "Nazwa użytkownika*", grid=[0, 0], sticky="W", pad=[0, 5], labelFont=[32, "bold"])
+        self.usernameEntry = self.createEntry(self.registerPanel, grid=[1, 0], entryFont=[24, "bold"])
+        self.noUsernameError = self.createLabel(self.registerPanel, "", grid=[2, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
+        self.emailLabel = self.createLabel(self.registerPanel, "Email", grid=[3, 0], sticky="W", pad=[0, 5], labelFont=[32, "bold"])
+        self.emailEntry = self.createEntry(self.registerPanel, grid=[4, 0], width=30, entryFont=[20, 'normal'])
+        self.passwordLabel = self.createLabel(self.registerPanel, "Hasło*", grid=[6, 0], sticky="W", pad=[0, 5], labelFont=[32, "bold"])
+        self.passwordEntry = self.createEntry(self.registerPanel, grid=[7, 0], show="*", entryFont=[24, "bold"])
+        self.noPasswordError = self.createLabel(self.registerPanel, "", grid=[8, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
+        self.loginConfirmButton = self.createButton(self.registerPanel, text="Zarejestruj się", command=self.createUser, grid=[9, 0], margin=[0, 10], buttonFont=[40, 'bold'])
+        self.noAuthorizationError = self.createLabel(self.registerPanel, "", grid=[10, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
+        self.registrationOptionLabel = self.createLabel(self.registerPanel, "Masz już konto? Zaloguj się.", grid=[11, 0], pad=[0, 10], fg="blue", cursor="hand2", bind=["<Button-1>", self.login], labelFont=[16, 'normal'])
+
+    def login(self, event=None):
+        ic("Login")
+        # close if open register panel
+        if self.registerWindow:
+            self.registerWindow.destroy()
+        # open login panel
+        self.loginWindow, self.loginPanel = self.initNewWindow(self.root, size=[600, 600], title="Panel logowania")
+        self.usernameLabel = self.createLabel(self.loginPanel, "Nazwa użytkownika", grid=[0, 0], sticky="W", pad=[0, 5], labelFont=[32, "bold"])
+        self.usernameEntry = self.createEntry(self.loginPanel, grid=[1, 0], entryFont=[24, "bold"])
+        self.noUsernameError = self.createLabel(self.loginPanel, "", grid=[2, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
+        self.passwordLabel = self.createLabel(self.loginPanel, "Hasło", grid=[3, 0], sticky="W", pad=[0, 5], labelFont=[32, "bold"])
+        self.passwordEntry = self.createEntry(self.loginPanel, grid=[4, 0], show="*", entryFont=[24, "bold"])
+        self.noPasswordError = self.createLabel(self.loginPanel, "", grid=[5, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
+        self.loginConfirmButton = self.createButton(self.loginPanel, text="Zaloguj się", command=self.validateUser, grid=[6, 0], margin=[0, 5], buttonFont=[40, 'bold'])
+        self.noAuthorizationError = self.createLabel(self.loginPanel, "", grid=[7, 0], sticky="WE", pad=[0, 7], fg='red', labelFont=[12, 'normal'])
+        self.registrationOptionLabel = self.createLabel(self.loginPanel, "Nie masz konta? Zarejestruj się.", grid=[8, 0], pad=[0, 10], fg="blue", cursor="hand2", bind=["<Button-1>", self.register], labelFont=[16, 'normal'])
+
+    def logout(self):
+        ic("Logout")
+        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton])
+        self.showButtonsAndLabels([[self.loginButton, (0, 1, "E")], [self.registerButton, (0, 2, "E")]])
+        self.username, self.password, self.email = [None] * 3
+
 
     @staticmethod
-    def initNewWindow(frame, size, title):#, labelsData=[], entriesData=[], buttonsData=[]):
+    def initNewWindow(frame, size, title):
         window = Toplevel(frame)
         window.title(title)
-        window.wm_attributes("-topmost", 1)
-        window.geometry(size)
+        window.wm_attributes("-topmost", True)  # ustawia ponad innymi oknami
+        window.grab_set()  # blokuje dostep do innych okien
+        window.resizable(False, False)  # blokowanie zmiany rozmiaru
+        xPosition = (window.winfo_screenwidth() // 2) - (size[0] // 2)
+        yPosition = (window.winfo_screenheight() // 2) - (size[1] // 2)
+        window.geometry(f"{size[0]}x{size[1]}+{xPosition}+{yPosition}")
         # vertical center elements space
         window.grid_rowconfigure(0, weight=1)  # Przestrzeń przed
         window.grid_rowconfigure(1, weight=0)  # Miejsce na elementy
@@ -86,38 +168,7 @@ class AirportInterface:
         window.grid_columnconfigure(2, weight=1)  # Przestrzeń po
         # elements space in window
         loginPanel = AirportInterface.createLabel(window, "", grid=[1, 1])
-        # labels, buttons, entries = [], [], []
-        # for labelData in labelsData:
-        #     label = AirportInterface.createLabel(window, text=labelData['text'], grid=labelsData['grid'], sticky=labelData['sticky'], span=labelData['span'], pad=labelData['pad'], labelFont=[18, "bold"])
-        #     labels.append(label)
-        # for entryData in entriesData:
-        #     entry = AirportInterface.createEntry(window, width=entryData['width'], textvariable=entryData['textvariable'], validationcommand=entryData['width'], grid=entryData['grid'], sticky=entryData['sticky'], span=entryData['span'], labelFont=[18, "bold"])
-        #     entries.append(entry)
-        # for buttonData in buttonsData:
-        #     button = AirportInterface.createButton(window, text=buttonData['text'], command=buttonData['command'], grid=buttonData['grid'], span=buttonData['span'], sticky=buttonData['sticky'], pad=buttonData['pad'], buttonFont=[18, "bold"])
-        #     buttons.append(button)
-        return window, loginPanel#, entries, labels, buttons
-
-    def validateUser(self):
-        self.username = self.usernameEntry.get()
-        self.password = self.passwordEntry.get()
-        ic("Validate user", self.username, self.password)
-        if not self.username or not self.password:
-            messagebox.showwarning("Błąd", "Musisz podać wszystkie dane!")
-        elif self.username == "pizza" and self.password == "admin":
-            self.loginWindow.destroy()
-        else:
-            messagebox.showwarning("Błąd", "Błędny login lub hasło!")
-
-    def createUser(self):
-        self.username = self.usernameEntry.get()
-        self.email = self.emailEntry.get()
-        self.password = self.passwordEntry.get()
-        ic("Create user", self.username, self.email, self.password)
-        if self.username and self.email and self.password:
-            self.registerWindow.destroy()
-        else:
-            messagebox.showwarning("Błąd", "Musisz podać wszystkie dane!")
+        return window, loginPanel
 
     @staticmethod
     def createList(frame, headers, headerFont, bodyFont):
@@ -180,47 +231,6 @@ class AirportInterface:
     def hideButtonsAndLabels(elements):
         for element in elements:
             element.grid_forget()
-
-    def register(self, event=None):
-        ic("Register")
-        if self.loginWindow:
-            self.loginWindow.destroy()
-        self.hideButtonsAndLabels([self.loginButton, self.registerButton])
-        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.checkReservationsButton, (2, 0, "WE")], [self.reserveFlightButton, (3, 0, "WE")], [self.cancelReservationButton, (4, 0, "WE")]])
-
-        # open register panel
-        self.registerWindow, self.registerPanel = self.initNewWindow(self.root, size="450x350", title="Panel rejestracyjny")
-        self.usernameLabel = self.createLabel(self.registerPanel, "Nazwa użytkownika", grid=[0, 0], sticky="W", pad=[0, 5])
-        self.usernameEntry = self.createEntry(self.registerPanel, grid=[1, 0])
-        self.emailLabel = self.createLabel(self.registerPanel, "Email", grid=[2, 0], sticky="W", pad=[0, 5])
-        self.emailEntry = self.createEntry(self.registerPanel, grid=[3, 0])
-        self.passwordLabel = self.createLabel(self.registerPanel, "Hasło", grid=[4, 0], sticky="W", pad=[0, 5])
-        self.passwordEntry = self.createEntry(self.registerPanel, grid=[5, 0], show="*")
-        self.loginConfirmButton = self.createButton(self.registerPanel, text="Zarejestruj się", command=self.createUser, grid=[6, 0], margin=[0, 10], buttonFont=[28, 'bold'])
-        self.registrationOptionLabel = self.createLabel(self.registerPanel, "Masz już konta? Zaloguj się.", grid=[7, 0], pad=[0, 10], fg="blue", cursor="hand2", bind=["<Button-1>", self.login], labelFont=[14, 'normal'])
-
-
-    def login(self, event=None):
-        ic("Login")
-        if self.registerWindow:
-            self.registerWindow.destroy()
-        self.hideButtonsAndLabels([self.loginButton, self.registerButton])
-        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.checkReservationsButton, (2, 0, "WE")], [self.reserveFlightButton, (3, 0, "WE")], [self.cancelReservationButton, (4, 0, "WE")]])
-
-        # open login panel
-        self.loginWindow, self.loginPanel = self.initNewWindow(self.root, size="450x300", title="Panel logowania")
-        self.usernameLabel = self.createLabel(self.loginPanel, "Nazwa użytkownika", grid=[0, 0], sticky="W", pad=[0, 5])
-        self.usernameEntry = self.createEntry(self.loginPanel, grid=[1, 0])
-        self.passwordLabel = self.createLabel(self.loginPanel, "Hasło", grid=[2, 0], sticky="W", pad=[0, 5])
-        self.passwordEntry = self.createEntry(self.loginPanel, grid=[3, 0], show="*")
-        self.loginConfirmButton = self.createButton(self.loginPanel, text="Zaloguj się", command=self.validateUser, grid=[4, 0], margin=[0, 10], buttonFont=[28, 'bold'])
-        self.registrationOptionLabel = self.createLabel(self.loginPanel, "Nie masz konta? Zarejestruj się.", grid=[5, 0], pad=[0, 10], fg="blue", cursor="hand2", bind=["<Button-1>", self.register], labelFont=[14, 'normal'])
-
-
-    def logout(self):
-        ic("Logout")
-        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton])
-        self.showButtonsAndLabels([[self.loginButton, (0, 1, "E")], [self.registerButton, (0, 2, "E")]])
 
     def checkFlightList(self):
         ic("Check flight list")

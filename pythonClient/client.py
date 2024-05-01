@@ -84,13 +84,12 @@ class Service:
         if not result:
             return None
         responseXML = etree.tostring(self.plugin.last_received["envelope"], encoding="unicode", pretty_print=True) if len(self.plugin.last_received["envelope"]) > 0 else None
-        print(responseXML)
+        # print(responseXML)
         if not responseXML:
             return None
         root = ET.fromstring(responseXML)
         namespace = {'SOAP-ENV': 'http://schemas.xmlsoap.org/soap/envelope/'}
         header = root.find('.//SOAP-ENV:Header', namespaces=namespace)
-        print(header)
         usernameValidation = header.find('.//{http://localhost:8080/SoapProject/AirportServerImplService}usernameValidation').text
         print("Wartość usernameValidation:", usernameValidation)
         return usernameValidation == "true"
