@@ -103,7 +103,8 @@ class AirportInterface:
                 # change buttons when registration completed
                 self.hideButtonsAndLabels([self.loginButton, self.registerButton])
                 self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.checkReservationsButton, (2, 0, "WE")], [self.reserveFlightButton, (3, 0, "WE")], [self.cancelReservationButton, (4, 0, "WE")]])
-
+        else:
+            self.noAuthorizationError['text'] = ""
 
     def register(self, event=None):
         ic("Register")
@@ -113,16 +114,17 @@ class AirportInterface:
         # open register panel
         self.registerWindow, self.registerPanel = self.initNewWindow(self.root, size=[750, 750], title="Panel rejestracyjny")
         self.usernameLabel = self.createLabel(self.registerPanel, "Nazwa użytkownika*", grid=[0, 0], sticky="W", pad=[0, 5], labelFont=[32, "bold"])
-        self.usernameEntry = self.createEntry(self.registerPanel, grid=[1, 0], entryFont=[24, "bold"])
+        self.usernameEntry = self.createEntry(self.registerPanel, grid=[1, 0], pad=[0, 5], entryFont=[24, "bold"])
         self.noUsernameError = self.createLabel(self.registerPanel, "", grid=[2, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
         self.emailLabel = self.createLabel(self.registerPanel, "Email", grid=[3, 0], sticky="W", pad=[0, 5], labelFont=[32, "bold"])
-        self.emailEntry = self.createEntry(self.registerPanel, grid=[4, 0], width=30, entryFont=[20, 'normal'])
+        self.emailEntry = self.createEntry(self.registerPanel, grid=[4, 0], width=30, pad=[0, 5], entryFont=[20, 'normal'])
+        self.emailError = self.createLabel(self.registerPanel, "", grid=[5, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
         self.passwordLabel = self.createLabel(self.registerPanel, "Hasło*", grid=[6, 0], sticky="W", pad=[0, 5], labelFont=[32, "bold"])
         self.passwordEntry = self.createEntry(self.registerPanel, grid=[7, 0], show="*", entryFont=[24, "bold"])
         self.noPasswordError = self.createLabel(self.registerPanel, "", grid=[8, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
-        self.loginConfirmButton = self.createButton(self.registerPanel, text="Zarejestruj się", command=self.createUser, grid=[9, 0], margin=[0, 10], buttonFont=[40, 'bold'])
+        self.loginConfirmButton = self.createButton(self.registerPanel, text="Zarejestruj się", command=self.createUser, grid=[9, 0], margin=[0, 5], buttonFont=[40, 'bold'])
         self.noAuthorizationError = self.createLabel(self.registerPanel, "", grid=[10, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
-        self.registrationOptionLabel = self.createLabel(self.registerPanel, "Masz już konto? Zaloguj się.", grid=[11, 0], pad=[0, 10], fg="blue", cursor="hand2", bind=["<Button-1>", self.login], labelFont=[16, 'normal'])
+        self.registrationOptionLabel = self.createLabel(self.registerPanel, "Masz już konto? Zaloguj się.", grid=[11, 0], pad=[0, 5], fg="blue", cursor="hand2", bind=["<Button-1>", self.login], labelFont=[16, 'normal'])
 
     def login(self, event=None):
         ic("Login")
@@ -131,14 +133,14 @@ class AirportInterface:
             self.registerWindow.destroy()
         # open login panel
         self.loginWindow, self.loginPanel = self.initNewWindow(self.root, size=[600, 600], title="Panel logowania")
-        self.usernameLabel = self.createLabel(self.loginPanel, "Nazwa użytkownika", grid=[0, 0], sticky="W", pad=[0, 5], labelFont=[32, "bold"])
+        self.usernameLabel = self.createLabel(self.loginPanel, "Nazwa użytkownika", grid=[0, 0], sticky="W", pad=[0, 0], labelFont=[32, "bold"])
         self.usernameEntry = self.createEntry(self.loginPanel, grid=[1, 0], entryFont=[24, "bold"])
         self.noUsernameError = self.createLabel(self.loginPanel, "", grid=[2, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
-        self.passwordLabel = self.createLabel(self.loginPanel, "Hasło", grid=[3, 0], sticky="W", pad=[0, 5], labelFont=[32, "bold"])
+        self.passwordLabel = self.createLabel(self.loginPanel, "Hasło", grid=[3, 0], sticky="W", pad=[0, 0], labelFont=[32, "bold"])
         self.passwordEntry = self.createEntry(self.loginPanel, grid=[4, 0], show="*", entryFont=[24, "bold"])
-        self.noPasswordError = self.createLabel(self.loginPanel, "", grid=[5, 0], sticky="WE", pad=[0, 5], fg='red', labelFont=[12, 'normal'])
-        self.loginConfirmButton = self.createButton(self.loginPanel, text="Zaloguj się", command=self.validateUser, grid=[6, 0], margin=[0, 5], buttonFont=[40, 'bold'])
-        self.noAuthorizationError = self.createLabel(self.loginPanel, "", grid=[7, 0], sticky="WE", pad=[0, 7], fg='red', labelFont=[12, 'normal'])
+        self.noPasswordError = self.createLabel(self.loginPanel, "", grid=[5, 0], sticky="WE", pad=[0, 10], fg='red', labelFont=[12, 'normal'])
+        self.loginConfirmButton = self.createButton(self.loginPanel, text="Zaloguj się", command=self.validateUser, grid=[6, 0], margin=[0, 10], buttonFont=[40, 'bold'])
+        self.noAuthorizationError = self.createLabel(self.loginPanel, "", grid=[7, 0], sticky="WE", pad=[0, 0], fg='red', labelFont=[12, 'normal'])
         self.registrationOptionLabel = self.createLabel(self.loginPanel, "Nie masz konta? Zarejestruj się.", grid=[8, 0], pad=[0, 10], fg="blue", cursor="hand2", bind=["<Button-1>", self.register], labelFont=[16, 'normal'])
 
     def logout(self):
@@ -189,9 +191,9 @@ class AirportInterface:
         return flightsLabel, flightList
 
     @staticmethod
-    def createEntry(frame, textvariable=None, validationcommand=None, width=20, grid=[0, 0], span=(1, 1), pad=[0, 0], sticky="WE", justify=CENTER, entryFont=[18, "bold"], show=None):
+    def createEntry(frame, textvariable=None, validationcommand=None, width=20, grid=(0, 0), span=(1, 1), pad=(0, 0), sticky="WE", justify=CENTER, entryFont=(18, "bold"), show=None):
         entry = Entry(frame, width=width, textvariable=textvariable, validate='all', validatecommand=validationcommand, justify=justify, show=show)
-        entry.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky, padx=pad[0], pady=[0])
+        entry.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky, padx=pad[0], pady=pad[1])
         entry['font'] = font.Font(size=entryFont[0], weight=entryFont[1])
         return entry
 
