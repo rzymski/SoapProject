@@ -1,4 +1,5 @@
 from zeep import Client
+from zeep.plugins import HistoryPlugin
 from zeep.transports import Transport
 from requests import Session
 from requests.exceptions import ProxyError, ConnectionError, Timeout
@@ -8,6 +9,8 @@ import matplotlib.pyplot as plt
 from datetime import datetime
 import tkinter as tk
 from tkinter import filedialog
+import xml.etree.ElementTree as ET
+from lxml import etree
 
 # Loggi z requestami
 # import logging
@@ -16,6 +19,7 @@ from tkinter import filedialog
 
 class Service:
     def __init__(self, serverPort, proxyPorts, ipAddress, serviceUrl):
+        self.plugin = HistoryPlugin()
         for proxyPort in proxyPorts + [None]:
             try:
                 session = Session()
@@ -27,7 +31,7 @@ class Service:
                     session.proxies = {'http': f'http://{ipAddress}:{proxyPort}/{serviceUrl}'}
                 transport = Transport(session=session, timeout=1)
                 self.wsdl_url = f'http://{ipAddress}:{serverPort}/{serviceUrl}'
-                self.client = Client(wsdl=self.wsdl_url, transport=transport)
+                self.client = Client(wsdl=self.wsdl_url, transport=transport, plugins=[self.plugin])
                 break
             except (ProxyError, ConnectionError, Timeout) as e:
                 print(f"Nie udało się połączyć z proxy na porcie {proxyPort}.")
@@ -75,23 +79,40 @@ class Service:
             else:
                 print("Zapis pliku został anulowany.")
 
+    def getHeaderValue(self, serviceName, *args):
+        result = soapService.service(serviceName, *args)
+        if not result:
+            return None
+        responseXML = etree.tostring(self.plugin.last_received["envelope"], encoding="unicode", pretty_print=True) if len(self.plugin.last_received["envelope"]) > 0 else None
+        print(responseXML)
+        if not responseXML:
+            return None
+        root = ET.fromstring(responseXML)
+        namespace = {'SOAP-ENV': 'http://schemas.xmlsoap.org/soap/envelope/'}
+        header = root.find('.//SOAP-ENV:Header', namespaces=namespace)
+        print(header)
+        usernameValidation = header.find('.//{http://localhost:8080/SoapProject/AirportServerImplService}usernameValidation').text
+        print("Wartość usernameValidation:", usernameValidation)
+        return usernameValidation == "true"
+
 
 if __name__ == "__main__":
     # soapService = Service(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService?WSDL")
     soapService = Service(8080, [], "localhost", "SoapProject/AirportServerImplService?WSDL")
 
-    # soapService.printService("echo", "PIZZA IS THE BEST")
+    soapService.printService("echo", "PIZZA IS THE BEST")
+    soapService.getHeaderValue("echo", "PIZZA IS THE BEST")
     # soapService.printService("getFlightsData")
     # soapService.printService("getFlightsByFromCity", "Tokyo")
     # soapService.printService("getFlightsByToCity", "New York")
     # soapService.printService("getFlightsFromCityToCity", "Rome", "new york")
     # soapService.printService("getFlightsFromCityToCityWithinDateRange", "rome", "kair", "2024-05-11T03:30:00", "2024-05-21T03:30:00")
     # soapService.printService("getAllFlightsWithParameters", None, "rome", None, "2024-05-10T03:30:00")
-    soapService.printService("findAvailableAirports")
+    # soapService.printService("findAvailableAirports")
     # soapService.printService("downloadImage")
     # soapService.printService("getFlightById", "1010")
     # soapService.printService("checkFlightReservation", "653")
     # soapService.printService("reserveFlight", 1025, 5)
     # soapService.printService("cancelFlightReservation", 1099)
     # soapService.printService("createUser", "pythonClient", "python", "python@gmail.com")
-    soapService.generatePDF(653)
+    # soapService.generatePDF(653)

@@ -20,6 +20,7 @@ public class LoginHandler implements SOAPHandler<SOAPMessageContext>{
     private static Logger logger = Logger.getLogger(LoginHandler.class.getName());
 
     public static final String USER_CONTEXT_KEY = "authenticatedUser";
+    public static boolean userValidationConfirmed = false;
 
     @Inject
     UserService userService;
@@ -40,7 +41,6 @@ public class LoginHandler implements SOAPHandler<SOAPMessageContext>{
                 } else {
 
                 }
-
                 String username = null;
                 String password = null;
                 Map<String, List<String>> httpHeaders = (Map<String, List<String>>) context.get(MessageContext.HTTP_REQUEST_HEADERS);
@@ -54,22 +54,55 @@ public class LoginHandler implements SOAPHandler<SOAPMessageContext>{
                         password = passwordList.get(0);
                     }
                 }
+                // logger.warning("Sprawdzenie zmiennych na wejsciu przed sprawdzeniem: " + String.valueOf(userValidationConfirmed));
                 logger.warning("username: " + username);
                 logger.warning("password: " + password);
                 boolean verification = userService.verify(username, password);
                 if (verification) {
+                    userValidationConfirmed = true;
                     context.put(USER_CONTEXT_KEY, username);
                     context.setScope(USER_CONTEXT_KEY, MessageContext.Scope.APPLICATION);
                 }
-
+                // logger.warning("Sprawdzenie zmiennych na wejsciu po sprawdzeniu: " + String.valueOf(userValidationConfirmed));
                 ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
                 soapMsg.writeTo(outputStream);
                 String soapMessageString = outputStream.toString(StandardCharsets.UTF_8.name());
-                logger.warning("SOAP Message: " + soapMessageString);
+                logger.warning("Handler input Message: " + soapMessageString);
             } catch(SOAPException e){
                 logger.warning("Wystąpił błąd podczas logowania wiadomości SOAP: " + e.toString());
             } catch(IOException e){
                 logger.warning(e.toString());
+            }
+        }
+        else {
+            try{
+                SOAPMessage soapMsg = context.getMessage();
+                SOAPEnvelope soapEnv = soapMsg.getSOAPPart().getEnvelope();
+                SOAPHeader soapHeader = soapEnv.getHeader();
+                //if no header, add one
+                if (soapHeader == null){
+                    soapHeader = soapEnv.addHeader();
+                }
+                boolean usernameValidation = userValidationConfirmed;
+                // logger.warning("Sprawdzenie zmiennych na wyjsciu: " + String.valueOf(usernameValidation) + " " + String.valueOf(userValidationConfirmed));
+                userValidationConfirmed = false;
+                QName qname = new QName("http://localhost:8080/SoapProject/AirportServerImplService", "usernameValidation");
+                SOAPHeaderElement soapHeaderElement = soapHeader.addHeaderElement(qname);
+                soapHeaderElement.setActor(SOAPConstants.URI_SOAP_ACTOR_NEXT);
+                soapHeaderElement.addTextNode(String.valueOf(usernameValidation));
+                soapMsg.saveChanges();
+
+
+                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                soapMsg.writeTo(outputStream);
+                String soapMessageString = outputStream.toString(StandardCharsets.UTF_8.name());
+                logger.warning("Handler output Message: " + soapMessageString);
+            } catch(SOAPException e){
+                System.err.println(e);
+            } catch(IOException e){
+                System.err.println(e);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return true;
