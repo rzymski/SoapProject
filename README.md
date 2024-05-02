@@ -106,7 +106,7 @@ public byte[] generatePdf(Long reservationId) throws IOException {
 
 <h3><details>
     <summary>Maven Lifecycle wyczyszczenie i zbudowanie projektu:</summary>
-        View -> Tool Windows -> Maven -> SoapProject -> Lifecycle i klikamy <b>clean</b>, a następnie <b>package</b>
+        View -> Tool Windows -> Maven -> SoapProject -> Lifecycle i klikamy <b>clean</b>, a następnie <b>package</b><br>
         <img src="screens/maven.jpg?raw=true" alt="Maven lifecycle clean and package">
 </details></h3>
 
