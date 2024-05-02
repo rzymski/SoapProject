@@ -53,9 +53,50 @@ Linki do pobrania Payary 5.2022.5 i H2 1.4.200
 > ### Ustawiamy ścieżke do naszej bazy danych w:
 > [SoapProject/src/main/java/database/Configuration.java](https://github.com/rzymski/SoapProject/blob/master/SoapProject/src/main/java/database/Configuration.java) ${\textsf{\color{gold}@DataSourceDefinition}}$ **`url`**
 
+<details>
+  <summary>Kod <b><code>@DataSourceDefinition</code></b> zawierający <b>url</b> do bazy danych</summary>
+
+  ```java
+  @DataSourceDefinition(
+        name = "java:global/SoapProjectDataSource",
+        className = "org.h2.jdbcx.JdbcDataSource",
+        url = "jdbc:h2:file:yourPath/SoapProject/SoapProject/airport",
+        minPoolSize = 1,
+        initialPoolSize = 1,
+        user = "sa",
+        password = ""
+    )
+  @FacesConfig
+  @Singleton
+  @Startup
+  public class Configuration {
+  ```
+</details>
+
 > [!Note]
 > ### Ustawiamy ścieżke do obrazka, który ma być w pdf-ie w:
 > [SoapProject/src/main/java/soap/service/AirportServerImpl.java](https://github.com/rzymski/SoapProject/blob/master/SoapProject/src/main/java/soap/service/AirportServerImpl.java) ${\textsf{\color{red}generatePdf(Long reservationId)}}$ **`imagePath`** 
+
+<details>
+  <summary>Kod <b><code>generatePdf</code></b> zawierający <b>url</b> do pliku obrazka</summary>
+
+  ```java
+@Override
+public byte[] generatePdf(Long reservationId) throws IOException {
+    FlightReservationDTO res = checkFlightReservation(reservationId);
+    if (res == null) {
+        throw new RecordNotFoundException("No reservation with ID: " + reservationId);
+    }
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    PdfGenerator pdfGenerator = new PdfGenerator(byteArrayOutputStream, res);
+    pdfGenerator.setHeaderFooter("Potwierdzenie rezerwacji biletu", "Super linie lotnicze sp. z o.o.");
+    String imagePath = "youPath\\SoapProject\\screens\\plane.png";
+    pdfGenerator.setImage(imagePath);
+    pdfGenerator.generate();
+    return byteArrayOutputStream.toByteArray();
+}
+  ```
+</details>
 
 <h3><details>
     <summary>Ustawienie Javy 8</summary>
