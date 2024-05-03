@@ -36,39 +36,92 @@ Linki do pobrania Payary 5.2022.5 i H2 1.4.200
 - Serwer Payara 5.2022.5: [Payara 5.2022.5](https://nexus.payara.fish/#browse/browse:payara-community:fish%2Fpayara%2Fdistributions%2Fpayara%2F5.2022.5%2Fpayara-5.2022.5.zip)
 - Baza danych H2 1.4.200: [H2 1.4.200](https://www.h2database.com/html/download-archive.html)
 
-Dodanie Payary do Inteliji:        
-Edit configurations... -> + -> Glassfish server Local -> Configure          
-![Alt text](screens/ustawienieServeraPayarawInteliji.png?raw=true "ustawienie Servera Payara w Inteliji.png")
+<h3><details>
+    <summary>Dodanie Payary do Inteliji:</summary>
+        Edit configurations... -> + -> Glassfish server Local -> Configure          
+        <img src="screens/ustawienieServeraPayarawInteliji.png?raw=true" alt="ustawienie Servera Payara w Inteliji.png">
+</details></h3>
 
-Wymagane pluginy w Inteliji **GlassFish**, **Maven** i **Maven Extension**:       
-File -> Settings -> Plugins          
-![Alt text](screens/plugins.jpg?raw=true "Pluginy")
+<h3><details>
+    <summary>Wymagane pluginy w Inteliji <b>GlassFish</b>, <b>Maven</b> i <b>Maven Extension</b>: </summary>      
+        File -> Settings -> Plugins          
+        <img src="screens/plugins.jpg?raw=true" alt="Pluginy">
+</details></h3>
 
 # Instrukcja konfiguracji serwera
 > [!Important]
 > ### Ustawiamy ścieżke do naszej bazy danych w:
 > [SoapProject/src/main/java/database/Configuration.java](https://github.com/rzymski/SoapProject/blob/master/SoapProject/src/main/java/database/Configuration.java) ${\textsf{\color{gold}@DataSourceDefinition}}$ **`url`**
 
+<details>
+  <summary>Kod <b><code>@DataSourceDefinition</code></b> zawierający <b>url</b> do bazy danych</summary>
+
+  ```java
+  @DataSourceDefinition(
+        name = "java:global/SoapProjectDataSource",
+        className = "org.h2.jdbcx.JdbcDataSource",
+        url = "jdbc:h2:file:yourPath/SoapProject/SoapProject/airport",
+        minPoolSize = 1,
+        initialPoolSize = 1,
+        user = "sa",
+        password = ""
+    )
+  @FacesConfig
+  @Singleton
+  @Startup
+  public class Configuration {
+  ```
+</details>
+
 > [!Note]
 > ### Ustawiamy ścieżke do obrazka, który ma być w pdf-ie w:
 > [SoapProject/src/main/java/soap/service/AirportServerImpl.java](https://github.com/rzymski/SoapProject/blob/master/SoapProject/src/main/java/soap/service/AirportServerImpl.java) ${\textsf{\color{red}generatePdf(Long reservationId)}}$ **`imagePath`** 
 
-W projekcie trzeba ustawić Jave 8:       
-File -> Project Structure...:       
-![Alt text](screens/projectStructure.png?raw=true "Project Structure")
+<details>
+  <summary>Kod <b><code>generatePdf</code></b> zawierający <b>url</b> do pliku obrazka</summary>
 
-Maven Lifecycle wyczyszczenie i zbudowanie projektu:         
-View -> Tool Windows -> Maven -> SoapProject -> Lifecycle i klikamy **clean**, a następnie **package**          
-![Alt text](screens/maven.jpg?raw=true "Pluginy")
+  ```java
+@Override
+public byte[] generatePdf(Long reservationId) throws IOException {
+    FlightReservationDTO res = checkFlightReservation(reservationId);
+    if (res == null) {
+        throw new RecordNotFoundException("No reservation with ID: " + reservationId);
+    }
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    PdfGenerator pdfGenerator = new PdfGenerator(byteArrayOutputStream, res);
+    pdfGenerator.setHeaderFooter("Potwierdzenie rezerwacji biletu", "Super linie lotnicze sp. z o.o.");
+    String imagePath = "youPath\\SoapProject\\screens\\plane.png";
+    pdfGenerator.setImage(imagePath);
+    pdfGenerator.generate();
+    return byteArrayOutputStream.toByteArray();
+}
+  ```
+</details>
 
-Konfiguracja Payary:          
-![Alt text](screens/payaraConfigurationCz1.png?raw=true "Payara cz.1")
-![Alt text](screens/payaraConfigurationCz2.png?raw=true "Payara cz.2")
-![Alt text](screens/payaraConfigurationCz3.png?raw=true "Payara cz.3")
+<h3><details>
+    <summary>Ustawienie Javy 8</summary>
+        File -> Project Structure...:
+        <img src="screens/projectStructure.png?raw=true" alt="Project Structure">
+</details></h3>
 
-Ustawienie/sprawdzenie połączenia z bazą danych przez Inteliji:       
-View -> Tool Windows -> Database -> + -> Data Source -> H2       
-![Alt text](screens/ustawienaPolaczeniaBazyWInteliji.png?raw=true "Polaczenie z baza danych przez Inteliji")
+<h3><details>
+    <summary>Maven Lifecycle wyczyszczenie i zbudowanie projektu:</summary>
+        View -> Tool Windows -> Maven -> SoapProject -> Lifecycle i klikamy <b>clean</b>, a następnie <b>package</b><br>
+        <img src="screens/maven.jpg?raw=true" alt="Maven lifecycle clean and package">
+</details></h3>
+
+<h3><details>
+    <summary>Konfiguracja Payary: </summary>
+        <img src="screens/payaraConfigurationCz1.png?raw=true" alt="Payara cz.1">
+        <img src="screens/payaraConfigurationCz2.png?raw=true" alt="Payara cz.2">
+        <img src="screens/payaraConfigurationCz3.png?raw=true" alt="Payara cz.3">
+</details></h3>
+
+<h3><details>
+    <summary>Ustawienie/sprawdzenie połączenia z bazą danych przez Inteliji: </summary>
+        View -> Tool Windows -> Database -> + -> Data Source -> H2
+        <img src="screens/ustawienaPolaczeniaBazyWInteliji.png?raw=true" alt="Polaczenie z baza danych przez Inteliji">
+</details></h3>
 
 # Użycie konsoli Inteliji do modyfikowania bazy danych
 #### Uruchomienie konsoli Inteliji
@@ -82,23 +135,27 @@ FROM CSVREAD('D:/programowanie/java/rsi/SoapProject/createDatabaseCSV/flights.cs
 ```
 
 # Instrukcja monitorowania requestów
-Ustawienie **`SoapUi HTTP Proxy`** na porcie **8085**:      
 
-![Alt text](screens/soapUiUstawieniePort8085.png?raw=true "Ustawienie SoapUi HTTP Proxy na porcie 8085")  
 
-Przykładowe działanie **`SoapUi HTTP Proxy`** na porcie **8085**:
+<h3><details>
+    <summary>Ustawienie <b><code>SoapUi HTTP Proxy</code></b> na porcie <b>8085</b>:</summary>
+        <img src="screens/soapUiUstawieniePort8085.png?raw=true" alt="Ustawienie SoapUi HTTP Proxy na porcie 8085">
+</details></h3>
 
-![Alt text](screens/soapUiDzialaPort8085.png?raw=true "Przykładowe działanie SoapUi HTTP Proxy na porcie 8085")
+<h3><details>
+    <summary>Przykładowe działanie <b><code>SoapUi HTTP Proxy</code></b> na porcie <b>8085</b>:</summary>
+        <img src="screens/soapUiDzialaPort8085.png?raw=true" alt="Przykładowe działanie SoapUi HTTP Proxy na porcie 8085">
+</details></h3>
 
-<br>
+<h3><details>
+    <summary>Ustawienie <b><code>tcpMonitor</code></b> na porcie <b>8084</b>:</summary>
+        <img src="screens/tcpMonitorUstawieniePort8084.png?raw=true" alt="Ustawienie tcpMonitor-a na porcie 8084">
+</details></h3>
 
-Ustawienie **`tcpMonitor`**-a na porcie **8084**:      
-
-![Alt text](screens/tcpMonitorUstawieniePort8084.png?raw=true "Ustawienie tcpMonitor-a na porcie 8084")      
-
-Przykładowe działanie **`tcpMonitor`**-a na porcie **8084**:
-
-![Alt text](screens/tcpMonitorDzialaPort8084.png?raw=true "Przykładowe działanie tcpMonitor-a na porcie 8084")      
+<h3><details>
+    <summary>Przykładowe działanie <b><code>tcpMonitor</code></b> na porcie <b>8084</b>:</summary>
+        <img src="screens/tcpMonitorDzialaPort8084.png?raw=true" alt="Przykładowe działanie tcpMonitor-a na porcie 8084">
+</details></h3>      
 
 # Instrukcja konfiguracji klienta
 Przechodzimy w konsoli do folderu **`pythonClient`**
