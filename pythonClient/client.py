@@ -1,12 +1,12 @@
 from zeep import Client
 from zeep.plugins import HistoryPlugin
 from zeep.transports import Transport
+from zeep.exceptions import Fault
 from requests import Session
 from requests.exceptions import ProxyError, ConnectionError, Timeout
 from PIL import Image
 from io import BytesIO
 import matplotlib.pyplot as plt
-from datetime import datetime
 import tkinter as tk
 from tkinter import filedialog
 import xml.etree.ElementTree as ET
@@ -17,32 +17,49 @@ from lxml import etree
 # logging.basicConfig(level=logging.DEBUG)
 
 
-class Service:
-    def __init__(self, serverPort, proxyPorts, ipAddress, serviceUrl):
+class AirportClient:
+    def __init__(self, serverPort, proxyPorts, ipAddress, serviceUrl, username=None, password=None):
+        self.serverPort = serverPort
+        self.proxyPorts = proxyPorts
+        self.ipAddress = ipAddress
+        self.serviceUrl = serviceUrl
+        self.username = username
+        self.password = password
         self.plugin = HistoryPlugin()
+        self.session = Session()
         for proxyPort in proxyPorts + [None]:
             try:
-                session = Session()
-                session.headers.update({
-                    'username': 'user',
-                    'password': 'admin',
+                self.session.headers.update({
+                    'username': username,
+                    'password': password,
                 })
-                if proxyPort:
-                    session.proxies = {'http': f'http://{ipAddress}:{proxyPort}/{serviceUrl}'}
-                transport = Transport(session=session, timeout=1)
-                self.wsdl_url = f'http://{ipAddress}:{serverPort}/{serviceUrl}'
-                self.client = Client(wsdl=self.wsdl_url, transport=transport, plugins=[self.plugin])
+                self.session.proxies = {'http': f'http://{ipAddress}:{proxyPort}/{serviceUrl}?WSDL'} if proxyPort else None
+                transport = Transport(session=self.session, timeout=1)
+                wsdlUrl = f'http://{ipAddress}:{serverPort}/{serviceUrl}?WSDL'
+                self.client = Client(wsdl=wsdlUrl, transport=transport, plugins=[self.plugin])
                 break
             except (ProxyError, ConnectionError, Timeout) as e:
-                print(f"Nie udało się połączyć z proxy na porcie {proxyPort}.")
+                print(f"Nie udało się połączyć z proxy na porcie {proxyPort if proxyPort is not None else serverPort}.")
+
+    def setUser(self, username, password):
+        if self.client:
+            try:
+                self.session.headers.update({
+                    'username': username,
+                    'password': password,
+                })
+            except Exception as e:
+                print(f"Wystąpił problem podczas aktualizacji danych użytkownika: {e}")
+        else:
+            print("Klient nie został poprawnie zainicjalizowany.")
 
     def service(self, serviceName, *args):
         kwargs = {f"arg{idx}": arg for idx, arg in enumerate(args)}
         # print(f"Argumenty = {kwargs}")
         try:
             return getattr(self.client.service, serviceName)(**kwargs)
-        except Exception as e:
-            print("Wystąpił błąd:", e)
+        except Fault as fault:
+            print(f"W service wystąpił błąd {fault.code} z komunikatem: {fault}")
             return None
 
     def printService(self, serviceName, *args):
@@ -59,7 +76,7 @@ class Service:
                 plt.axis('off')
                 plt.show()
             except Exception as e:
-                print("Wystąpił błąd:", e)
+                print("W printService wystąpił błąd:", e)
         else:
             print(responseText)
 
@@ -80,7 +97,7 @@ class Service:
                 print("Zapis pliku został anulowany.")
 
     def getHeaderValue(self, serviceName, *args):
-        result = soapService.service(serviceName, *args)
+        result = self.service(serviceName, *args)
         if not result:
             return None
         responseXML = etree.tostring(self.plugin.last_received["envelope"], encoding="unicode", pretty_print=True) if len(self.plugin.last_received["envelope"]) > 0 else None
@@ -90,17 +107,18 @@ class Service:
         root = ET.fromstring(responseXML)
         namespace = {'SOAP-ENV': 'http://schemas.xmlsoap.org/soap/envelope/'}
         header = root.find('.//SOAP-ENV:Header', namespaces=namespace)
-        usernameValidation = header.find('.//{http://localhost:8080/SoapProject/AirportServerImplService}usernameValidation').text
+        usernameValidation = header.find(".//{http://" + str(self.ipAddress) + ":" + str(self.serverPort) + "/" + self.serviceUrl + "}usernameValidation").text
         print("Wartość usernameValidation:", usernameValidation)
         return usernameValidation == "true"
 
 
 if __name__ == "__main__":
-    # soapService = Service(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService?WSDL")
-    soapService = Service(8080, [], "localhost", "SoapProject/AirportServerImplService?WSDL")
+    # soapService = Service(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService")
+    soapService = AirportClient(8080, [], "localhost", "SoapProject/AirportServerImplService")
+    # soapService.setUser("user", "admin")
 
     soapService.printService("echo", "PIZZA IS THE BEST")
-    soapService.getHeaderValue("echo", "PIZZA IS THE BEST")
+    # soapService.getHeaderValue("echo", "PIZZA IS THE BEST")
     # soapService.printService("getFlightsData")
     # soapService.printService("getFlightsByFromCity", "Tokyo")
     # soapService.printService("getFlightsByToCity", "New York")
@@ -113,5 +131,5 @@ if __name__ == "__main__":
     # soapService.printService("checkFlightReservation", "653")
     # soapService.printService("reserveFlight", 1025, 5)
     # soapService.printService("cancelFlightReservation", 1099)
-    # soapService.printService("createUser", "pythonClient", "python", "python@gmail.com")
+    # soapService.printService("createUser", "pythonClient", "xd", "python@gmail.com")
     # soapService.generatePDF(653)

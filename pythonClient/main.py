@@ -1,6 +1,6 @@
 from client import *
 
 if __name__ == "__main__":
-    soapService = Service(8080, [], "localhost", "SoapProject/AirportServerImplService?WSDL")
+    soapService = AirportClient(8080, [], "localhost", "SoapProject/AirportServerImplService")
     soapService.generatePDF(653)
 

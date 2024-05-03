@@ -65,10 +65,10 @@ public interface AirportServer {
     boolean reserveFlight(Long flightId, Long numberOfReservedSeats);
 
     @WebMethod
-    void cancelFlightReservation(Long flightId);
+    boolean cancelFlightReservation(Long flightId);
 
     @WebMethod
-    void createUser(String username, String password,String email);
+    boolean createUser(String username, String password,String email);
 
     @WebMethod
     byte[] generatePdf(Long reservationId) throws IOException;

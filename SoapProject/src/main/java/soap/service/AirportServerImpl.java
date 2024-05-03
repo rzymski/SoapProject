@@ -4,6 +4,7 @@ import database.dto.FlightDTO;
 import database.dto.FlightReservationDTO;
 import database.exceptions.NotEnoughDataException;
 import database.exceptions.RecordNotFoundException;
+import database.exceptions.UserAlreadyExistException;
 import database.exceptions.UserNotFoundException;
 import database.model.Flight;
 import database.model.FlightReservation;
@@ -167,7 +168,7 @@ public class AirportServerImpl implements AirportServer, Serializable {
     }
 
     @Override
-    public void cancelFlightReservation(Long flightId) {
+    public boolean cancelFlightReservation(Long flightId) {
         User user = getAuthenticatedUser();
         if (user == null) throw new UserNotFoundException("Nie ma użytkownika o takich danych logowania");
         Flight flight = flightService.findById(flightId);
@@ -175,6 +176,7 @@ public class AirportServerImpl implements AirportServer, Serializable {
         FlightReservation flightReservation =  flightReservationService.findFlightReservation(user, flight);
         if(flightReservation == null) throw new RecordNotFoundException("Użytkownik " + user.getLogin() + " nie ma rezerwacji lotu o ID: " + flightId);
         flightReservationService.deleteFlightReservation(flightReservation);
+        return true;
     }
 
     @Resource
@@ -190,14 +192,19 @@ public class AirportServerImpl implements AirportServer, Serializable {
     }
 
     @Override
-    public void createUser(String username, String password, String email) {
+    public boolean createUser(String username, String password, String email) {
         if (username != null && email != null && password != null) {
             User user = new User(username, password, email, false);
-            userService.save(user);
+            try {
+                userService.save(user);
+            } catch (Exception e){
+                logger.warning("TRANSAKCJA ABORTED PEWNIE ISTNIEJE TAKI UZYTKOWNIK");
+                throw new UserAlreadyExistException("Użytkownik " + username + " juz istnieje.");
+            }
         } else {
             throw new NotEnoughDataException("Nie podano wszystkich danych. Użytkownik = " + username + ", password = " + password + ", email = " + email);
         }
-
+        return true;
     }
     
     @Override

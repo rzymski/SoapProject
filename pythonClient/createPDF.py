@@ -65,7 +65,7 @@ class PDF:
 
 
 if __name__ == "__main__":
-    soapService = Service(8080, [], "localhost", "SoapProject/AirportServerImplService?WSDL")
+    soapService = AirportClient(8080, [], "localhost", "SoapProject/AirportServerImplService")
     logo = BytesIO(soapService.service("downloadImage"))
     flightReservationData = soapService.service("checkFlightReservation", "653")
     print(flightReservationData)
