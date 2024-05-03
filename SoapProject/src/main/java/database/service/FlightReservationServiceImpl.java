@@ -42,6 +42,11 @@ public class FlightReservationServiceImpl implements FlightReservationService {
     UserService userService;
 
     @Override
+    public Long getFlightAvailableSeats(Flight flight) {
+        return flight.getCapacity() - flightDao.getFlightTotalNumberOfOccupiedSeats(flight, 0L);
+    }
+
+    @Override
     public boolean addEditFlightReservation(User user, Flight flight, Long numberOfReservedSeats) {
         logger.severe("Wywolal sie serwis addEditFlightReservation");
         logger.severe("User = " + user + " Flight = " + flight);
@@ -57,7 +62,6 @@ public class FlightReservationServiceImpl implements FlightReservationService {
             if(fr != null){
                 deleteFlightReservation(user, flight);
             }
-
             user.addFlightReservation(flight, numberOfReservedSeats);
             userService.save(user);
             logger.severe("AddEditFlightReservation zakonczony, udalo sie dodac/zmienic rezerwacje");

@@ -57,19 +57,19 @@ public class AirportServerImpl implements AirportServer, Serializable {
         return "Serwer zwraca otrzymany text: " + text;
     }
 
-    @Override
-    public byte[] downloadImage() {
-        try {
-            File imageFile = new File("D:\\programowanie\\java\\rsi\\SoapProject\\screens\\plane.png");
-            Image image = ImageIO.read(imageFile);
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            ImageIO.write((RenderedImage) image, "png", outputStream);
-            return outputStream.toByteArray();
-        } catch (IOException e) {
-            logger.warning("Wystąpił wyjątek: "+ e.toString());
-            return null;
-        }
-    }
+//    @Override
+//    public byte[] downloadImage() {
+//        try {
+//            File imageFile = new File("D:\\programowanie\\java\\rsi\\SoapProject\\screens\\plane.png");
+//            Image image = ImageIO.read(imageFile);
+//            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+//            ImageIO.write((RenderedImage) image, "png", outputStream);
+//            return outputStream.toByteArray();
+//        } catch (IOException e) {
+//            logger.warning("Wystąpił wyjątek: "+ e.toString());
+//            return null;
+//        }
+//    }
 
     @Override
     public List<FlightDTO> getFlightsData() {
@@ -79,40 +79,40 @@ public class AirportServerImpl implements AirportServer, Serializable {
         return flightDTOs;
     }
 
-    @Override
-    public List<FlightDTO> getFlightsByFromCity(String city) {
-        logger.warning("Metoda getFlightsByFromCity została wywołana");
-        List<Flight> flights = flightService.findFlightsFromCity(city);
-        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
-        return flightDTOs;
-    }
-
-    @Override
-    public List<FlightDTO> getFlightsByToCity(String city) {
-        logger.warning("Metoda getFlightsByToCity została wywołana");
-        List<Flight> flights = flightService.findFlightsToCity(city);
-        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
-        return flightDTOs;
-    }
-
-    @Override
-    public List<FlightDTO> getFlightsFromCityToCity(String fromCity, String toCity) {
-        logger.warning("Metoda getFlightsFromCityToCity została wywołana");
-        List<Flight> flights = flightService.findFlightsFromCityToCity(fromCity, toCity);
-        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
-        return flightDTOs;
-    }
-
-    @Override
-    public List<FlightDTO> getFlightsFromCityToCityWithinDateRange(String fromCity, String toCity, String startDateRange, String endDateRange) {
-        logger.warning("Metoda getFlightsFromCityToCityWithinDateRange została wywołana z: " + fromCity + " do: " + toCity + " od: " + startDateRange + " do: "+ endDateRange);
-        LocalDateTime start = LocalDateTime.parse(startDateRange);
-        LocalDateTime end = LocalDateTime.parse(endDateRange);
-        logger.warning("Metoda getFlightsFromCityToCityWithinDateRange konwersja stringow na daty start: " + start + " end: " + end);
-        List<Flight> flights = flightService.findFlightsFromCityToCityWithinDateRange(fromCity, toCity, start, end);
-        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
-        return flightDTOs;
-    }
+//    @Override
+//    public List<FlightDTO> getFlightsByFromCity(String city) {
+//        logger.warning("Metoda getFlightsByFromCity została wywołana");
+//        List<Flight> flights = flightService.findFlightsFromCity(city);
+//        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
+//        return flightDTOs;
+//    }
+//
+//    @Override
+//    public List<FlightDTO> getFlightsByToCity(String city) {
+//        logger.warning("Metoda getFlightsByToCity została wywołana");
+//        List<Flight> flights = flightService.findFlightsToCity(city);
+//        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
+//        return flightDTOs;
+//    }
+//
+//    @Override
+//    public List<FlightDTO> getFlightsFromCityToCity(String fromCity, String toCity) {
+//        logger.warning("Metoda getFlightsFromCityToCity została wywołana");
+//        List<Flight> flights = flightService.findFlightsFromCityToCity(fromCity, toCity);
+//        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
+//        return flightDTOs;
+//    }
+//
+//    @Override
+//    public List<FlightDTO> getFlightsFromCityToCityWithinDateRange(String fromCity, String toCity, String startDateRange, String endDateRange) {
+//        logger.warning("Metoda getFlightsFromCityToCityWithinDateRange została wywołana z: " + fromCity + " do: " + toCity + " od: " + startDateRange + " do: "+ endDateRange);
+//        LocalDateTime start = LocalDateTime.parse(startDateRange);
+//        LocalDateTime end = LocalDateTime.parse(endDateRange);
+//        logger.warning("Metoda getFlightsFromCityToCityWithinDateRange konwersja stringow na daty start: " + start + " end: " + end);
+//        List<Flight> flights = flightService.findFlightsFromCityToCityWithinDateRange(fromCity, toCity, start, end);
+//        List<FlightDTO> flightDTOs = FlightDTO.createFromFlightsFlightDTOs(flights);
+//        return flightDTOs;
+//    }
 
     @Override
     public List<FlightDTO> getAllFlightsWithParameters(String fromCity, String toCity, String startDateRange, String endDateRange) {
@@ -230,5 +230,11 @@ public class AirportServerImpl implements AirportServer, Serializable {
         List<FlightReservation> flightReservations = flightReservationService.findUserReservations(user);
         List<FlightReservationDTO> flightReservationDTOS = FlightReservationDTO.createFromFlightReservationsFlightReservationDTOs(flightReservations);
         return flightReservationDTOS;
+    }
+
+    @Override
+    public Long getFlightAvailableSeats(Long flightId) {
+        Flight flight = flightService.findById(flightId);
+        return flightReservationService.getFlightAvailableSeats(flight);
     }
 }

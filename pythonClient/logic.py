@@ -72,7 +72,6 @@ class AirportLogic:
     @convertEmptyToNoneDecorator
     def getFlightsWithParameters(self, departureAirport, destinationAirport, departureTime, arrivalTime):
         flightsData = self.client.service("getAllFlightsWithParameters", departureAirport, destinationAirport, departureTime, arrivalTime)
-        ic(flightsData)
         return AirportLogic.refactorFlightList(flightsData)
 
     @staticmethod
@@ -94,4 +93,10 @@ class AirportLogic:
     def getFlightReservations(self):
         reservationsData = self.client.service("getUserReservations")
         return AirportLogic.refactorReservationList(reservationsData)
+
+    def numberOfAvailableSeatsInFlight(self, flightId):
+        return self.client.service("getFlightAvailableSeats", flightId)
+
+    def reserveFlight(self, flightId, numberOfReservedSeats):
+        return self.client.service("reserveFlight", flightId, numberOfReservedSeats)
 

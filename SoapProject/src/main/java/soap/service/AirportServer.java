@@ -30,24 +30,24 @@ public interface AirportServer {
     @WebMethod
     String echo(String text);
 
-    @WebMethod
-    byte[] downloadImage();
+//    @WebMethod
+//    byte[] downloadImage();
 
 
     @WebMethod
     List<FlightDTO> getFlightsData();
 
-    @WebMethod
-    List<FlightDTO> getFlightsByFromCity(String city);
-
-    @WebMethod
-    List<FlightDTO> getFlightsByToCity(String city);
-
-    @WebMethod
-    List<FlightDTO> getFlightsFromCityToCity(String fromCity, String toCity);
-
-    @WebMethod
-    List<FlightDTO> getFlightsFromCityToCityWithinDateRange(String fromCity, String toCity, String startDateRange, String endDateRange);
+//    @WebMethod
+//    List<FlightDTO> getFlightsByFromCity(String city);
+//
+//    @WebMethod
+//    List<FlightDTO> getFlightsByToCity(String city);
+//
+//    @WebMethod
+//    List<FlightDTO> getFlightsFromCityToCity(String fromCity, String toCity);
+//
+//    @WebMethod
+//    List<FlightDTO> getFlightsFromCityToCityWithinDateRange(String fromCity, String toCity, String startDateRange, String endDateRange);
 
     @WebMethod
     List<FlightDTO> getAllFlightsWithParameters(String fromCity, String toCity, String startDateRange, String endDateRange);
@@ -75,4 +75,7 @@ public interface AirportServer {
 
     @WebMethod
     List<FlightReservationDTO> getUserReservations(String username);
+
+    @WebMethod
+    Long getFlightAvailableSeats(Long flightId);
 }
