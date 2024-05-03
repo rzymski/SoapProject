@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import ttk
+import tkcalendar as tkc
 import tkinter.font as font
 from icecream import ic
 
@@ -9,6 +10,12 @@ from client import AirportClient
 
 class AirportInterface:
     def __init__(self, root, logicClass):
+        print(ttk.Style().theme_names())
+
+        self.style = ttk.Style()
+        self.style.theme_use('winnative')
+        self.style.configure("Treeview.Heading", font=(None, 24, "bold"))
+        self.style.configure("Treeview", font=("Courier New", 18, "bold"), rowheight=int(18 * 2))
         self.root = root
         self.logic = logicClass
         self.root.title("Airport interface")
@@ -47,20 +54,21 @@ class AirportInterface:
         self.toDropdown.config(width=12)  # Ustawienie stałej szerokości
         self.toDropdown['font'] = boldFont18
         self.toDropdown.grid(row=1, column=2)
+        # start date entry
+        self.startDateLabel = self.createLabel(self.findFlightLabel, "Od:", grid=[2, 1], labelFont=[18, "bold"])
+        self.startDateEntry = tkc.DateEntry(self.findFlightLabel)
+        self.startDateEntry['font'] = boldFont18
+        self.startDateEntry.grid(row=2, column=2)
         # show reservations
         self.checkReservationsButton = self.createButton(self.leftFrame, text="Sprawdź rezerwacje", command=self.checkReservationList, pad=[10, 10], grid=[2, 0], buttonFont=[28, "bold"])
         # reserve button
         self.reserveFlightButton = self.createButton(self.leftFrame, text="Zarezerwuj lot", command=self.reserveFlight, pad=[10, 10], grid=[3, 0], buttonFont=[28, "bold"])
         # cancel reservation
         self.cancelReservationButton = self.createButton(self.leftFrame, text="Anuluj rezerwacje", command=self.cancelReservation, pad=[10, 10], grid=[4, 0], buttonFont=[28, "bold"])
-
         # hide buttons which shouldn't be displayed to not logged user
         self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton])  # ukrycie przyciskow rezerwowania i usuwania rezerwacji
-        # self.showButtonsAndLabels([[self.reserveFlightButton, (2, 0, "WE")], [self.cancelReservationButton, (3, 0, "WE")]])  # wyswietlenie przyciskow rezerwowania i usuwania rezerwacji
-
         # flights list
         self.flightsLabel, self.flightList = [None] * 2
-
         # login panel variables
         self.loginWindow, self.loginPanel, self.usernameLabel, self.usernameEntry, self.passwordLabel, self.passwordEntry, self.loginConfirmButton, self.otherAuthenticationOptionLabel = [None] * 8
         # registration panel variables
@@ -173,14 +181,10 @@ class AirportInterface:
         loginPanel = AirportInterface.createLabel(window, "", grid=[1, 1])
         return window, loginPanel
 
-    @staticmethod
-    def createList(frame, headers, headerFont, bodyFont):
+
+    def createList(self, frame, headers):
         flightsLabel = AirportInterface.createLabel(frame, pack=[None, True, "both"], border=0)
         scrollbarFlights = Scrollbar(flightsLabel, orient=VERTICAL)
-        style = ttk.Style()
-        style.theme_use('clam')
-        style.configure("Treeview.Heading", font=headerFont)
-        style.configure("Treeview", font=bodyFont, rowheight=int(18 * 2))
         columns = [f"c{i}" for i in range(1, len(headers) + 1)]
         flightList = ttk.Treeview(flightsLabel, column=columns, show='headings', yscrollcommand=scrollbarFlights)
         for index, header in enumerate(headers, start=1):
@@ -235,24 +239,31 @@ class AirportInterface:
         for element in elements:
             element.grid_forget()
 
-    def checkFlightList(self):
-        ic("Check flight list")
+    def manageMainFieldSpace(self):
         if self.flightsLabel:
             self.flightsLabel.destroy()
         if self.flightList:
             self.flightList.destroy()
-        self.flightsLabel, self.flightList = self.createList(self.root, headers=["KOD LOTU", "LOTNISKO ODLOTU", "CZAS ODLOTU", "LOTNISKO DOCELOWE", "CZAS PRZYLOTU"], headerFont=(None, 24, "bold"), bodyFont=("Courier New", 18, "bold"))
-        # example insert data to list
+
+    def checkFlightList(self):
+        ic("Check flight list")
+        self.manageMainFieldSpace()
+        self.flightsLabel, self.flightList = self.createList(self.root, headers=["KOD LOTU", "LOTNISKO ODLOTU", "CZAS ODLOTU", "LOTNISKO DOCELOWE", "CZAS PRZYLOTU"])
         data = self.logic.getAllFlights()
         for flight in data:
             self.flightList.insert('', END, values=(flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
-        # for i in range(2000):
-        #     self.flightList.insert('', END, values=(f'KOD{i}', 'ODLOT Z', 'YYYY-MM-DD HH:mm:ss', 'PRZYLOT DO', 'YYYY-MM-DD HH:mm:ss'))
 
     def findFlight(self):
         departureAirport = self.fromAirportVar.get()
         destinationAirport = self.toAirportVar.get()
         ic("find flight", departureAirport, destinationAirport)
+        self.manageMainFieldSpace()
+        self.flightsLabel, self.flightList = self.createList(self.root, headers=["KOD LOTU", "LOTNISKO ODLOTU", "CZAS ODLOTU", "LOTNISKO DOCELOWE", "CZAS PRZYLOTU"])
+        data = self.logic.getFlightsWithParameters(departureAirport=departureAirport, destinationAirport=destinationAirport, departureTime=None, arrivalTime=None)
+        for flight in data:
+            self.flightList.insert('', END, values=(flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
+
+
 
     def checkReservationList(self):
         ic("Check reservation list")
