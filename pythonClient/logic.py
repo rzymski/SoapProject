@@ -10,6 +10,9 @@ class AirportLogic:
         self.client = client
         self.username, self.email, self.password = [None] * 3
 
+    def getAllAirports(self):
+        return [airport.title() for airport in self.client.service("findAvailableAirports")]
+
     def validateUser(self, username, password):
         ic("Logika walidacja: ", username, password)
         self.client.setUser(username, password)

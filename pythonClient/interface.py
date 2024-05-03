@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import ttk
 import tkcalendar as tkc
 import tkinter.font as font
+from datetime import datetime, timedelta
 from icecream import ic
 
 from logic import AirportLogic
@@ -36,29 +37,36 @@ class AirportInterface:
         # Left frame buttons checkFlights, findFlight, reserve flight, cancel reservation
         self.leftFrame = self.createLabelFrame(self.root, pad=[0, 0], side="left", fill="both")
         self.checkFlightsButton = self.createButton(self.leftFrame, text="Sprawdź listę lotów", command=self.checkFlightList, pad=[10, 10], grid=[0, 0], buttonFont=[28, "bold"])
-        self.findFlightLabel = self.createLabel(self.leftFrame, text='', grid=[1, 0], sticky="WE")
-        self.findFlightButton = self.createButton(self.findFlightLabel, text="Wyszukaj lot", command=self.findFlight, pad=[10, 10], grid=[0, 0], span=(2, 1), buttonFont=[28, "bold"])
+        self.findFlightLabel = self.createLabel(self.leftFrame, text='', grid=[1, 0])
+        self.findFlightLabel.grid_columnconfigure(0, weight=1)
+        self.findFlightButton = self.createButton(self.findFlightLabel, text="Wyszukaj lot", command=self.findFlight, grid=[0, 0], sticky="WE", span=(1, 2), pad=[10, 10], buttonFont=[28, "bold"])
         # dropdown departure city
-        self.fromLabel = self.createLabel(self.findFlightLabel, "Z:", grid=[0, 1], labelFont=[18, "bold"])
+        self.fromLabel = self.createLabel(self.findFlightLabel, "Lotnisko odlotu:", grid=[1, 0], labelFont=[16, "bold"])  # Lotnisko odlotu
         self.fromAirportVar = StringVar()
         # pozniej trzeba zrobic, zeby opcje pobieral z WSDL
-        self.options = [''] + ['Warsaw', 'Paris', 'Rome', 'Moscow', 'Berlin', 'London', 'Los Angeles', 'New York', 'Tokyo', 'Beijing', 'Kair', "Madrid", 'Brasilia', 'Seul']
+        self.options = [''] + self.logic.getAllAirports()  # ['Warsaw', 'Paris', 'Rome', 'Moscow', 'Berlin', 'London', 'Los Angeles', 'New York', 'Tokyo', 'Beijing', 'Kair', "Madrid", 'Brasilia', 'Seul']
         self.fromDropdown = OptionMenu(self.findFlightLabel, self.fromAirportVar, *self.options)
         self.fromDropdown.config(width=12)  # Ustawienie stałej szerokości
         self.fromDropdown['font'] = boldFont18
-        self.fromDropdown.grid(row=0, column=2)
+        self.fromDropdown.grid(row=1, column=1)
         # dropdown destination city
-        self.toLabel = self.createLabel(self.findFlightLabel, "Do:", grid=[1, 1], labelFont=[18, "bold"])
+        self.toLabel = self.createLabel(self.findFlightLabel, "Lotnisko przylotu:", grid=[2, 0], labelFont=[16, "bold"])
         self.toAirportVar = StringVar()
         self.toDropdown = OptionMenu(self.findFlightLabel, self.toAirportVar, *self.options)
         self.toDropdown.config(width=12)  # Ustawienie stałej szerokości
         self.toDropdown['font'] = boldFont18
-        self.toDropdown.grid(row=1, column=2)
+        self.toDropdown.grid(row=2, column=1)
         # start date entry
-        self.startDateLabel = self.createLabel(self.findFlightLabel, "Od:", grid=[2, 1], labelFont=[18, "bold"])
-        self.startDateEntry = tkc.DateEntry(self.findFlightLabel)
+        self.startDateLabel = self.createLabel(self.findFlightLabel, "Od daty:", grid=[3, 0], labelFont=[18, "bold"])
+        self.startDateEntry = tkc.DateEntry(self.findFlightLabel, date_pattern='d/m/yyyy')
         self.startDateEntry['font'] = boldFont18
-        self.startDateEntry.grid(row=2, column=2)
+        self.startDateEntry.grid(row=3, column=1)
+        # end date entry
+        self.endDateLabel = self.createLabel(self.findFlightLabel, "Do daty:", grid=[4, 0], labelFont=[18, "bold"])
+        defaultEndDate = datetime.today() + timedelta(days=7)
+        self.endDateEntry = tkc.DateEntry(self.findFlightLabel, date_pattern='d/m/yyyy', year=defaultEndDate.year, month=defaultEndDate.month, day=defaultEndDate.day)
+        self.endDateEntry['font'] = boldFont18
+        self.endDateEntry.grid(row=4, column=1)
         # show reservations
         self.checkReservationsButton = self.createButton(self.leftFrame, text="Sprawdź rezerwacje", command=self.checkReservationList, pad=[10, 10], grid=[2, 0], buttonFont=[28, "bold"])
         # reserve button
@@ -75,7 +83,6 @@ class AirportInterface:
         self.registerWindow, self.registerPanel, self.emailLabel, self.emailEntry, self.registerConfirmButton, self.loginOptionLabel = [None] * 6
         # errors in login or registration
         self.noUsernameError, self.emailError, self.noPasswordError, self.noAuthorizationError = [None] * 4
-
 
     def validateUserInterface(self):
         username = self.usernameEntry.get()
@@ -181,8 +188,8 @@ class AirportInterface:
         loginPanel = AirportInterface.createLabel(window, "", grid=[1, 1])
         return window, loginPanel
 
-
-    def createList(self, frame, headers):
+    @staticmethod
+    def createList(frame, headers):
         flightsLabel = AirportInterface.createLabel(frame, pack=[None, True, "both"], border=0)
         scrollbarFlights = Scrollbar(flightsLabel, orient=VERTICAL)
         columns = [f"c{i}" for i in range(1, len(headers) + 1)]
@@ -204,15 +211,15 @@ class AirportInterface:
 
 
     @staticmethod
-    def createLabelFrame(frame, pad, side=None, fill="both", expand=False, text="", labelFont=[18, "bold"]):
+    def createLabelFrame(frame, pad, side=None, fill="both", expand=False, text="", labelFont=(18, "bold")):
         labelFrame = LabelFrame(frame, padx=pad[0], pady=pad[1], text=text)
         labelFrame.pack(side=side, fill=fill, expand=expand)
         labelFrame['font'] = font.Font(size=labelFont[0], weight=labelFont[1])
         return labelFrame
 
     @staticmethod
-    def createLabel(frame, text='', grid=None, pack=None, sticky="WE", span=(1, 1), pad=[0, 0], labelFont=[18, "bold"], border=1, fg=None, cursor=None, bind=None):
-        label = Label(frame, text=text, padx=pad[0], pady=pad[1], bd=border, fg=fg, cursor=cursor)
+    def createLabel(frame, text='', grid=None, pack=None, sticky="WE", span=(1, 1), pad=(0, 0), labelFont=(18, "bold"), border=1, fg=None, bg=None, cursor=None, bind=None):
+        label = Label(frame, text=text, padx=pad[0], pady=pad[1], bd=border, fg=fg, bg=bg, cursor=cursor)
         if grid:
             label.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky)
         if pack:
@@ -223,7 +230,7 @@ class AirportInterface:
         return label
 
     @staticmethod
-    def createButton(frame, text, command, grid, sticky="WE", span=(1, 1), pad=[0, 0], margin=[0, 0], buttonFont=[18, "bold"]):
+    def createButton(frame, text, command, grid, sticky="WE", span=(1, 1), pad=(0, 0), margin=(0, 0), buttonFont=(18, "bold")):
         button = Button(frame, text=text, command=command, padx=pad[0], pady=pad[1])
         button.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky, padx=margin[0], pady=margin[1])
         button['font'] = font.Font(size=buttonFont[0], weight=buttonFont[1])
@@ -256,10 +263,12 @@ class AirportInterface:
     def findFlight(self):
         departureAirport = self.fromAirportVar.get()
         destinationAirport = self.toAirportVar.get()
-        ic("find flight", departureAirport, destinationAirport)
+        departureTime = self.startDateEntry.get_date().strftime(AirportLogic.javaDateFormat)
+        arrivalTime = self.endDateEntry.get_date().strftime(AirportLogic.javaDateFormat)
+        ic("find flight", departureAirport, destinationAirport, departureTime, arrivalTime)
         self.manageMainFieldSpace()
         self.flightsLabel, self.flightList = self.createList(self.root, headers=["KOD LOTU", "LOTNISKO ODLOTU", "CZAS ODLOTU", "LOTNISKO DOCELOWE", "CZAS PRZYLOTU"])
-        data = self.logic.getFlightsWithParameters(departureAirport=departureAirport, destinationAirport=destinationAirport, departureTime=None, arrivalTime=None)
+        data = self.logic.getFlightsWithParameters(departureAirport=departureAirport, destinationAirport=destinationAirport, departureTime=departureTime, arrivalTime=arrivalTime)
         for flight in data:
             self.flightList.insert('', END, values=(flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
 
