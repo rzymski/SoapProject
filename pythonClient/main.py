@@ -1,6 +1,10 @@
-from client import *
+from tkinter import Tk
+from interface import AirportInterface
+from logic import AirportLogic
+from client import AirportClient
 
 if __name__ == "__main__":
-    soapService = AirportClient(8080, [], "localhost", "SoapProject/AirportServerImplService")
-    soapService.generatePDF(653)
-
+    rootInterface = Tk()
+    # app = AirportInterface(rootInterface, AirportLogic(AirportClient(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService")))
+    app = AirportInterface(rootInterface, AirportLogic(AirportClient(8080, [], "localhost", "SoapProject/AirportServerImplService")))
+    rootInterface.mainloop()

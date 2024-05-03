@@ -11,8 +11,6 @@ from client import AirportClient
 
 class AirportInterface:
     def __init__(self, root, logicClass):
-        print(ttk.Style().theme_names())
-
         self.style = ttk.Style()
         self.style.theme_use('winnative')
         self.style.configure("Treeview.Heading", font=(None, 24, "bold"))
@@ -26,7 +24,7 @@ class AirportInterface:
         self.root.geometry(f"{self.screen_width}x{self.screen_height}+0+0")
         root.state("zoomed")
         # Top frame, its weights and buttons login, register, logout
-        self.topFrame = self.createLabelFrame(self.root, pad=[10, 10], side="top", fill="both")
+        self.topFrame = self.createLabelFrame(self.root, pad=[10, 10], pack=["top", False, "both"])
         self.topFrame.grid_columnconfigure(0, weight=1)  # Kolumna do rozciągania
         self.topFrame.grid_columnconfigure(1, weight=0)  # Kolumna dla przycisku login
         self.topFrame.grid_columnconfigure(2, weight=0)  # Kolumna dla przycisku register
@@ -35,9 +33,9 @@ class AirportInterface:
         self.registerButton = self.createButton(self.topFrame, text="Zarejestruj się", command=self.register, pad=[20, 20], grid=[0, 2], buttonFont=[24, "bold"])
         self.logoutButton = self.createButton(self.topFrame, text="Wyloguj się", command=self.logout, pad=[20, 20], grid=[0, 3], buttonFont=[24, "bold"])
         # Left frame buttons checkFlights, findFlight, reserve flight, cancel reservation
-        self.leftFrame = self.createLabelFrame(self.root, pad=[0, 0], side="left", fill="both")
+        self.leftFrame = self.createLabelFrame(self.root, pad=[0, 0], pack=["left", False, "both"])
         self.checkFlightsButton = self.createButton(self.leftFrame, text="Sprawdź listę lotów", command=self.checkFlightList, pad=[10, 10], grid=[0, 0], buttonFont=[28, "bold"])
-        self.findFlightLabel = self.createLabel(self.leftFrame, text='', grid=[1, 0])
+        self.findFlightLabel = self.createLabelFrame(self.leftFrame, text='', grid=[1, 0], border=10)
         self.findFlightLabel.grid_columnconfigure(0, weight=1)
         self.findFlightButton = self.createButton(self.findFlightLabel, text="Wyszukaj lot", command=self.findFlight, grid=[0, 0], sticky="WE", span=(1, 2), pad=[10, 10], buttonFont=[28, "bold"])
         # dropdown departure city
@@ -67,22 +65,26 @@ class AirportInterface:
         self.endDateEntry = tkc.DateEntry(self.findFlightLabel, date_pattern='d/m/yyyy', year=defaultEndDate.year, month=defaultEndDate.month, day=defaultEndDate.day)
         self.endDateEntry['font'] = boldFont18
         self.endDateEntry.grid(row=4, column=1)
-        # show reservations
-        self.checkReservationsButton = self.createButton(self.leftFrame, text="Sprawdź rezerwacje", command=self.checkReservationList, pad=[10, 10], grid=[2, 0], buttonFont=[28, "bold"])
         # reserve button
-        self.reserveFlightButton = self.createButton(self.leftFrame, text="Zarezerwuj lot", command=self.reserveFlight, pad=[10, 10], grid=[3, 0], buttonFont=[28, "bold"])
+        self.reserveFlightButton = self.createButton(self.leftFrame, text="Zarezerwuj lot", command=self.reserveFlight, pad=[10, 10], grid=[2, 0], buttonFont=[28, "bold"])
+        # show reservations
+        self.checkReservationsButton = self.createButton(self.leftFrame, text="Sprawdź rezerwacje", command=self.checkReservationList, pad=[10, 10], grid=[3, 0], buttonFont=[28, "bold"])
         # cancel reservation
         self.cancelReservationButton = self.createButton(self.leftFrame, text="Anuluj rezerwacje", command=self.cancelReservation, pad=[10, 10], grid=[4, 0], buttonFont=[28, "bold"])
         # hide buttons which shouldn't be displayed to not logged user
         self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton])  # ukrycie przyciskow rezerwowania i usuwania rezerwacji
         # flights list
-        self.flightsLabel, self.flightList = [None] * 2
+        self.mainLabel, self.mainList = [None] * 2
         # login panel variables
         self.loginWindow, self.loginPanel, self.usernameLabel, self.usernameEntry, self.passwordLabel, self.passwordEntry, self.loginConfirmButton, self.otherAuthenticationOptionLabel = [None] * 8
         # registration panel variables
         self.registerWindow, self.registerPanel, self.emailLabel, self.emailEntry, self.registerConfirmButton, self.loginOptionLabel = [None] * 6
         # errors in login or registration
         self.noUsernameError, self.emailError, self.noPasswordError, self.noAuthorizationError = [None] * 4
+
+        # automatyczne zalogowanie na czes testow
+        self.logic.validateUser("rzymski", "Szumek19")
+        self.userAuthorizedInterface("rzymski")
 
     def validateUserInterface(self):
         username = self.usernameEntry.get()
@@ -121,7 +123,7 @@ class AirportInterface:
         # change buttons when authorization completed
         self.hideButtonsAndLabels([self.loginButton, self.registerButton])
         self.loggedUserLabel['text'] = username
-        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.checkReservationsButton, (2, 0, "WE")], [self.reserveFlightButton, (3, 0, "WE")], [self.cancelReservationButton, (4, 0, "WE")]])
+        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.reserveFlightButton, (2, 0, "WE")], [self.checkReservationsButton, (3, 0, "WE")], [self.cancelReservationButton, (4, 0, "WE")]])
 
     def register(self, event=None):
         ic("Register")
@@ -189,18 +191,19 @@ class AirportInterface:
         return window, loginPanel
 
     @staticmethod
-    def createList(frame, headers):
-        flightsLabel = AirportInterface.createLabel(frame, pack=[None, True, "both"], border=0)
-        scrollbarFlights = Scrollbar(flightsLabel, orient=VERTICAL)
+    def createList(frame, headers, anchor=CENTER):
+        mainLabel = AirportInterface.createLabel(frame, pack=[None, True, "both"], border=0)
+        scrollbarFlights = Scrollbar(mainLabel, orient=VERTICAL)
         columns = [f"c{i}" for i in range(1, len(headers) + 1)]
-        flightList = ttk.Treeview(flightsLabel, column=columns, show='headings', yscrollcommand=scrollbarFlights)
+        mainList = ttk.Treeview(mainLabel, column=columns, show='headings', yscrollcommand=scrollbarFlights)
         for index, header in enumerate(headers, start=1):
-            flightList.column(f"#{index}", anchor=CENTER)
-            flightList.heading(f"#{index}", text=header)
-        scrollbarFlights.config(command=flightList.yview)
+            mainList.column(f"#{index}", anchor=anchor)
+            mainList.heading(f"#{index}", text=header, anchor=anchor)
+        mainList.column("c1", width=0, stretch=False)
+        scrollbarFlights.config(command=mainList.yview)
         scrollbarFlights.pack(side=RIGHT, fill=Y)
-        flightList.pack(fill="both", expand=True)
-        return flightsLabel, flightList
+        mainList.pack(fill="both", expand=True)
+        return mainLabel, mainList
 
     @staticmethod
     def createEntry(frame, textvariable=None, validationcommand=None, width=20, grid=(0, 0), span=(1, 1), pad=(0, 0), sticky="WE", justify=CENTER, entryFont=(18, "bold"), show=None):
@@ -211,9 +214,12 @@ class AirportInterface:
 
 
     @staticmethod
-    def createLabelFrame(frame, pad, side=None, fill="both", expand=False, text="", labelFont=(18, "bold")):
-        labelFrame = LabelFrame(frame, padx=pad[0], pady=pad[1], text=text)
-        labelFrame.pack(side=side, fill=fill, expand=expand)
+    def createLabelFrame(frame, text='', grid=None, pack=None, sticky="WE", span=(1, 1), pad=(0, 0), border=1, labelFont=(18, "bold")):
+        labelFrame = LabelFrame(frame, padx=pad[0], pady=pad[1], text=text, bd=border)
+        if grid:
+            labelFrame.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky)
+        if pack:
+            labelFrame.pack(side=pack[0], expand=pack[1], fill=pack[2])
         labelFrame['font'] = font.Font(size=labelFont[0], weight=labelFont[1])
         return labelFrame
 
@@ -247,18 +253,18 @@ class AirportInterface:
             element.grid_forget()
 
     def manageMainFieldSpace(self):
-        if self.flightsLabel:
-            self.flightsLabel.destroy()
-        if self.flightList:
-            self.flightList.destroy()
+        if self.mainLabel:
+            self.mainLabel.destroy()
+        if self.mainList:
+            self.mainList.destroy()
 
     def checkFlightList(self):
         ic("Check flight list")
         self.manageMainFieldSpace()
-        self.flightsLabel, self.flightList = self.createList(self.root, headers=["KOD LOTU", "LOTNISKO ODLOTU", "CZAS ODLOTU", "LOTNISKO DOCELOWE", "CZAS PRZYLOTU"])
+        self.mainLabel, self.mainList = self.createList(self.root, headers=["ID", "KOD LOTU", "ODLOT Z", "CZAS ODLOTU", "PRZYLOT DO", "CZAS PRZYLOTU"])
         data = self.logic.getAllFlights()
         for flight in data:
-            self.flightList.insert('', END, values=(flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
+            self.mainList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
 
     def findFlight(self):
         departureAirport = self.fromAirportVar.get()
@@ -267,28 +273,37 @@ class AirportInterface:
         arrivalTime = self.endDateEntry.get_date().strftime(AirportLogic.javaDateFormat)
         ic("find flight", departureAirport, destinationAirport, departureTime, arrivalTime)
         self.manageMainFieldSpace()
-        self.flightsLabel, self.flightList = self.createList(self.root, headers=["KOD LOTU", "LOTNISKO ODLOTU", "CZAS ODLOTU", "LOTNISKO DOCELOWE", "CZAS PRZYLOTU"])
-        data = self.logic.getFlightsWithParameters(departureAirport=departureAirport, destinationAirport=destinationAirport, departureTime=departureTime, arrivalTime=arrivalTime)
-        for flight in data:
-            self.flightList.insert('', END, values=(flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
-
-
-
-    def checkReservationList(self):
-        ic("Check reservation list")
+        self.mainLabel, self.mainList = self.createList(self.root, headers=["ID", "KOD LOTU", "ODLOT Z", "CZAS ODLOTU", "PRZYLOT DO", "CZAS PRZYLOTU"])
+        flights = self.logic.getFlightsWithParameters(departureAirport=departureAirport, destinationAirport=destinationAirport, departureTime=departureTime, arrivalTime=arrivalTime)
+        for flight in flights:
+            self.mainList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
 
     def reserveFlight(self):
         ic("reserve flight")
+        selectedFlight = self.mainList.selection()
+        if selectedFlight:
+            ic("JEST")
+            item = self.mainList.item(selectedFlight[0])
+            values = item['values']
+            ic(values)
+        else:
+            ic("NIE MA")
+
+    def checkReservationList(self):
+        ic("Check reservation list")
+        self.manageMainFieldSpace()
+        self.mainLabel, self.mainList = self.createList(self.root, headers=["ID", "ID REZERWACJI", "KOD", "KIERUNEK", "ODLOT", "MIEJSCA"], anchor="w")
+        reservations = self.logic.getFlightReservations()
+        for reservation in reservations:
+            self.mainList.insert('', END, values=(reservation["id"], reservation['reservationId'], reservation['flightCode'], reservation['airports'], reservation['dates'], reservation['seats']))
 
     def cancelReservation(self):
         ic("Anuluj rezerwacje")
 
 
-
-
 if __name__ == "__main__":
     rootInterface = Tk()
-    app = AirportInterface(rootInterface, AirportLogic(AirportClient(8080, [8085], "localhost", "SoapProject/AirportServerImplService")))
+    app = AirportInterface(rootInterface, AirportLogic(AirportClient(8080, [], "localhost", "SoapProject/AirportServerImplService")))
     rootInterface.mainloop()
 
 

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.logging.Logger;
 
 @NamedQuery(name="User.findByLogin",query = "select u from User u where u.login=:login")
-@NamedQuery(name = "User.findFlightReservation", query = "select fr from FlightReservation fr where fr.user=?1 and fr.flight=?2")
 @Entity
 public class User extends AbstractModel {
     @Column(unique = true)

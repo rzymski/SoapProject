@@ -133,3 +133,4 @@ if __name__ == "__main__":
     # soapService.printService("cancelFlightReservation", 1099)
     # soapService.printService("createUser", "pythonClient", "xd", "python@gmail.com")
     # soapService.generatePDF(653)
+    soapService.printService("getUserReservations")

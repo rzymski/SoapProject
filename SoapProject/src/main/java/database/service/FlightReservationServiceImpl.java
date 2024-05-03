@@ -35,7 +35,7 @@ public class FlightReservationServiceImpl implements FlightReservationService {
 
     @Override
     public FlightReservation findFlightReservation(User user, Flight flight) {
-        return flightReservationDao.findFlightReservation(user, flight);
+        return flightReservationDao.getFlightReservation(user, flight);
     }
 
     @Inject
@@ -45,11 +45,11 @@ public class FlightReservationServiceImpl implements FlightReservationService {
     public boolean addEditFlightReservation(User user, Flight flight, Long numberOfReservedSeats) {
         logger.severe("Wywolal sie serwis addEditFlightReservation");
         logger.severe("User = " + user + " Flight = " + flight);
-        FlightReservation fr = flightReservationDao.findFlightReservation(user, flight);
+        FlightReservation fr = flightReservationDao.getFlightReservation(user, flight);
 
         Long actuallyReservedSeats = 0L;
         if(fr != null){
-            FlightReservation flightReservation = flightReservationDao.findFlightReservation(user, flight);
+            FlightReservation flightReservation = flightReservationDao.getFlightReservation(user, flight);
             actuallyReservedSeats = flightReservation.getNumberOfReservedSeats();
         }
 
@@ -89,5 +89,10 @@ public class FlightReservationServiceImpl implements FlightReservationService {
     public void clearUserFlightReservations(User user) {
         user.clearUserFlightReservations();
         userService.save(user);
+    }
+
+    @Override
+    public List<FlightReservation> findUserReservations(User user) {
+        return flightReservationDao.getUserReservations(user);
     }
 }

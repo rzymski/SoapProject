@@ -13,12 +13,21 @@ import java.util.logging.Logger;
 public class FlightReservationDaoImpl extends AbstractDaoJpaImpl<FlightReservation> implements FlightReservationDao{
     private static Logger logger = Logger.getLogger(FlightReservationDaoImpl.class.getName());
     @Override
-    public FlightReservation findFlightReservation(User user, Flight flight) {
+    public FlightReservation getFlightReservation(User user, Flight flight) {
         logger.severe("findFlightReservation wywolal sie: user= " + user + " lot = " + flight);
-        TypedQuery<FlightReservation> query = em.createNamedQuery( "User.findFlightReservation", FlightReservation.class);
+        TypedQuery<FlightReservation> query = em.createNamedQuery( "FlightReservation.findFlightReservation", FlightReservation.class);
         query.setParameter(1, user);
         query.setParameter(2, flight);
         List<FlightReservation> result = query.getResultList();
         return result.isEmpty() ? null : result.get(0);
+    }
+
+    @Override
+    public List<FlightReservation> getUserReservations(User user) {
+        logger.severe("findFlightReservation wywolal sie: user= " + user);
+        TypedQuery<FlightReservation> query = em.createNamedQuery( "FlightReservation.findUserReservations", FlightReservation.class);
+        query.setParameter(1, user);
+        List<FlightReservation> result = query.getResultList();
+        return result;
     }
 }

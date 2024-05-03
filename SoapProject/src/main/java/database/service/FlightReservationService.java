@@ -18,4 +18,6 @@ public interface FlightReservationService {
     void deleteFlightReservation(User user, Flight flight);
     void deleteFlightReservation(FlightReservation flightReservation);
     void clearUserFlightReservations(User user);
+
+    List<FlightReservation> findUserReservations(User user);
 }

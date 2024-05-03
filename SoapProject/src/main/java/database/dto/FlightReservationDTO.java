@@ -6,6 +6,8 @@ import database.model.FlightReservation;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class FlightReservationDTO extends FlightDTO {
     private Long reservationId;
@@ -93,5 +95,13 @@ public class FlightReservationDTO extends FlightDTO {
                 .append(UserData)
                 .append("reservationId = " + reservationId + "}");
         return sb.toString();
+    }
+
+    public static List<FlightReservationDTO> createFromFlightReservationsFlightReservationDTOs(List<FlightReservation> flightReservations) {
+        List<FlightReservationDTO> flightReservationDTOS = new ArrayList<>();
+        for (FlightReservation flightReservation : flightReservations) {
+            flightReservationDTOS.add(new FlightReservationDTO(flightReservation));
+        }
+        return flightReservationDTOS;
     }
 }

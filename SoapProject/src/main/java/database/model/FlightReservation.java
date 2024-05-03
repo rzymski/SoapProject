@@ -5,6 +5,8 @@ import javax.validation.constraints.Min;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+@NamedQuery(name="FlightReservation.findUserReservations",query = "select fr from FlightReservation fr where fr.user=?1")
+@NamedQuery(name = "FlightReservation.findFlightReservation", query = "select fr from FlightReservation fr where fr.user=?1 and fr.flight=?2")
 @Entity
 public class FlightReservation extends AbstractModel {
 

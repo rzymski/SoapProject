@@ -38,23 +38,20 @@ class AirportLogic:
         self.client.setUser(None, None)
 
     @staticmethod
-    def refactorFlightDataTimeFormat(flightData):
+    def refactorFlight(flightData):
         departureTime = datetime.strptime(flightData['departureTime'], AirportLogic.javaDateFormat).strftime("%H:%M %d/%m/%Y")
         arrivalTime = datetime.strptime(flightData['arrivalTime'], AirportLogic.javaDateFormat).strftime("%H:%M %d/%m/%Y")
         departureTime = departureTime if departureTime[0] != "0" else departureTime[1:]
         arrivalTime = arrivalTime if arrivalTime[0] != "0" else arrivalTime[1:]
-        return {"flightCode": flightData['flightCode'], "departureAirport": flightData['departureAirport'], "departureTime": departureTime, "destinationAirport": flightData['destinationAirport'], "arrivalTime": arrivalTime}
+        return {"id": flightData['id'], "flightCode": flightData['flightCode'], "departureAirport": flightData['departureAirport'], "departureTime": departureTime, "destinationAirport": flightData['destinationAirport'], "arrivalTime": arrivalTime}
 
     @staticmethod
-    def refactorFlightsDataTimeFormat(flightsData):
-        if not flightsData:
-            return None
-        else:
-            flights = []
-            for flightData in flightsData:
-                flight = AirportLogic.refactorFlightDataTimeFormat(flightData)
-                flights.append(flight)
-            return flights
+    def refactorFlightList(flightsData):
+        flights = []
+        for flightData in flightsData:
+            flight = AirportLogic.refactorFlight(flightData)
+            flights.append(flight)
+        return flights
 
     @staticmethod
     def convertEmptyToNoneDecorator(func):
@@ -70,10 +67,31 @@ class AirportLogic:
 
     def getAllFlights(self):
         flightsData = self.client.service("getFlightsData")
-        return AirportLogic.refactorFlightsDataTimeFormat(flightsData)
+        return AirportLogic.refactorFlightList(flightsData)
 
     @convertEmptyToNoneDecorator
     def getFlightsWithParameters(self, departureAirport, destinationAirport, departureTime, arrivalTime):
         flightsData = self.client.service("getAllFlightsWithParameters", departureAirport, destinationAirport, departureTime, arrivalTime)
-        return AirportLogic.refactorFlightsDataTimeFormat(flightsData)
+        ic(flightsData)
+        return AirportLogic.refactorFlightList(flightsData)
+
+    @staticmethod
+    def refactorReservation(reservationData):
+        departureTime = datetime.strptime(reservationData['departureTime'], AirportLogic.javaDateFormat).strftime("%H:%M %d/%m/%Y")
+        arrivalTime = datetime.strptime(reservationData['arrivalTime'], AirportLogic.javaDateFormat).strftime("%H:%M %d/%m/%Y")
+        departureTime = departureTime if departureTime[0] != "0" else departureTime[1:]
+        arrivalTime = arrivalTime if arrivalTime[0] != "0" else arrivalTime[1:]
+        return {"id": reservationData['id'], "reservationId": reservationData['reservationId'], "flightCode": reservationData['flightCode'], "airports": f"{reservationData['departureAirport']} ---> {reservationData['destinationAirport']}", "dates": f"{arrivalTime}", "seats": f"{reservationData['numberOfReservedSeats']}/{reservationData['capacity']}"}
+
+    @staticmethod
+    def refactorReservationList(reservationsData):
+        reservations = []
+        for reservationData in reservationsData:
+            reservation = AirportLogic.refactorReservation(reservationData)
+            reservations.append(reservation)
+        return reservations
+
+    def getFlightReservations(self):
+        reservationsData = self.client.service("getUserReservations")
+        return AirportLogic.refactorReservationList(reservationsData)
 

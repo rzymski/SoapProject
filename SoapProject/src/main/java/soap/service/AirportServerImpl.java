@@ -221,4 +221,14 @@ public class AirportServerImpl implements AirportServer, Serializable {
         pdfGenerator.generate();
         return byteArrayOutputStream.toByteArray();
     }
+
+    @Override
+    public List<FlightReservationDTO> getUserReservations(String username) {
+        logger.warning("Metoda getUserReservations została wywołana");
+        User user = getAuthenticatedUser();
+        if (user == null) throw new UserNotFoundException("Nie ma użytkownika o takich danych logowania");
+        List<FlightReservation> flightReservations = flightReservationService.findUserReservations(user);
+        List<FlightReservationDTO> flightReservationDTOS = FlightReservationDTO.createFromFlightReservationsFlightReservationDTOs(flightReservations);
+        return flightReservationDTOS;
+    }
 }

@@ -72,4 +72,7 @@ public interface AirportServer {
 
     @WebMethod
     byte[] generatePdf(Long reservationId) throws IOException;
+
+    @WebMethod
+    List<FlightReservationDTO> getUserReservations(String username);
 }
