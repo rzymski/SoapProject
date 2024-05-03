@@ -71,10 +71,12 @@ class AirportInterface:
         self.checkReservationsButton = self.createButton(self.leftFrame, text="Sprawdź rezerwacje", command=self.checkReservationList, pad=[10, 10], grid=[3, 0], buttonFont=[28, "bold"])
         # cancel reservation
         self.cancelReservationButton = self.createButton(self.leftFrame, text="Anuluj rezerwacje", command=self.cancelReservation, pad=[10, 10], grid=[4, 0], buttonFont=[28, "bold"])
+        # generate pdf
+        self.generatePDFButton = self.createButton(self.leftFrame, text="Odbierz potwierdzenie", command=self.generatePDF, pad=[5, 15], grid=[5, 0], buttonFont=[25, "bold"])
         # hide buttons which shouldn't be displayed to not logged user
-        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton])  # ukrycie przyciskow rezerwowania i usuwania rezerwacji
+        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton, self.generatePDFButton])  # ukrycie przyciskow rezerwowania i usuwania rezerwacji
         # flights list
-        self.mainLabel, self.mainList = [None] * 2
+        self.mainFlightLabel, self.mainFlightList, self.mainReservationLabel, self.mainReservationList = [None] * 4
         # login panel variables
         self.loginWindow, self.loginPanel, self.usernameLabel, self.usernameEntry, self.passwordLabel, self.passwordEntry, self.loginConfirmButton, self.otherAuthenticationOptionLabel = [None] * 8
         # registration panel variables
@@ -123,7 +125,7 @@ class AirportInterface:
         # change buttons when authorization completed
         self.hideButtonsAndLabels([self.loginButton, self.registerButton])
         self.loggedUserLabel['text'] = username
-        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.reserveFlightButton, (2, 0, "WE")], [self.checkReservationsButton, (3, 0, "WE")], [self.cancelReservationButton, (4, 0, "WE")]])
+        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.reserveFlightButton, (2, 0, "WE")], [self.checkReservationsButton, (3, 0, "WE")]])
 
     def register(self, event=None):
         ic("Register")
@@ -253,19 +255,29 @@ class AirportInterface:
             element.grid_forget()
 
     def manageMainFieldSpace(self):
-        if self.mainLabel:
-            self.mainLabel.destroy()
-        if self.mainList:
-            self.mainList.destroy()
+        if self.mainFlightLabel:
+            self.mainFlightLabel.destroy()
+            self.mainFlightLabel = None
+        if self.mainFlightList:
+            self.mainFlightList.destroy()
+            self.mainFlightList = None
+        if self.mainReservationLabel:
+            self.mainReservationLabel.destroy()
+            self.mainReservationLabel = None
+        if self.mainReservationList:
+            self.mainReservationList.destroy()
+            self.mainReservationList = None
 
     def checkFlightList(self):
         ic("Check flight list")
         self.manageMainFieldSpace()
-        self.mainLabel, self.mainList = self.createList(self.root, headers=["ID", "KOD LOTU", "ODLOT Z", "CZAS ODLOTU", "PRZYLOT DO", "CZAS PRZYLOTU"])
-        self.mainList.bind("<Double-1>", self.reserveFlight)
+        self.hideButtonsAndLabels([self.cancelReservationButton, self.generatePDFButton])
+        self.reserveFlightButton['text'] = "Zarezerwuj lot"
+        self.mainFlightLabel, self.mainFlightList = self.createList(self.root, headers=["ID", "KOD LOTU", "ODLOT Z", "CZAS ODLOTU", "PRZYLOT DO", "CZAS PRZYLOTU"])
+        self.mainFlightList.bind("<Double-1>", self.reserveFlight)
         data = self.logic.getAllFlights()
         for flight in data:
-            self.mainList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
+            self.mainFlightList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
 
     def findFlight(self):
         departureAirport = self.fromAirportVar.get()
@@ -274,52 +286,82 @@ class AirportInterface:
         arrivalTime = self.endDateEntry.get_date().strftime(AirportLogic.javaDateFormat)
         ic("find flight", departureAirport, destinationAirport, departureTime, arrivalTime)
         self.manageMainFieldSpace()
-        self.mainLabel, self.mainList = self.createList(self.root, headers=["ID", "KOD LOTU", "ODLOT Z", "CZAS ODLOTU", "PRZYLOT DO", "CZAS PRZYLOTU"])
-        self.mainList.bind("<Double-1>", self.reserveFlight)
+        self.hideButtonsAndLabels([self.cancelReservationButton, self.generatePDFButton])
+        self.reserveFlightButton['text'] = "Zarezerwuj lot"
+        self.mainFlightLabel, self.mainFlightList = self.createList(self.root, headers=["ID", "KOD LOTU", "ODLOT Z", "CZAS ODLOTU", "PRZYLOT DO", "CZAS PRZYLOTU"])
+        self.mainFlightList.bind("<Double-1>", self.reserveFlight)
         flights = self.logic.getFlightsWithParameters(departureAirport=departureAirport, destinationAirport=destinationAirport, departureTime=departureTime, arrivalTime=arrivalTime)
         for flight in flights:
-            self.mainList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
+            self.mainFlightList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
 
     def reserveFlight(self, event=None):
         ic("reserve flight")
-        selectedFlight = self.mainList.selection()
-        if selectedFlight:
-            item = self.mainList.item(selectedFlight[0])
-            values = item['values']
-            flightId = values[0]
-            numberOfAvailableSeats = self.logic.numberOfAvailableSeatsInFlight(flightId)
-            reserveFlightWindow, reserveFlightPanel = self.initNewWindow(self.root, [500, 250], "Dodaj rezerwacje")
-            numberOfSeatsLabel = self.createLabel(reserveFlightPanel, "Ile chcesz zarezerwować miejsc?", grid=[0, 0], sticky="W", pad=[0, 0], span=(1, 2), labelFont=[18, "bold"])
-            numberOfSeatsEntry = self.createEntry(reserveFlightPanel, width=3, grid=[1, 0], entryFont=[32, "bold"], sticky="E")
-            availableSeats = self.createLabel(reserveFlightPanel, f"/ {numberOfAvailableSeats}", grid=[1, 1], sticky="W", pad=[0, 0], labelFont=[32, "bold"])
-            loginConfirmButton = self.createButton(reserveFlightPanel, text="Zarezerwuj miejsca", command=lambda: self.reserveFlightProcessing(flightId, numberOfSeatsEntry.get(), reserveFlightWindow), grid=[2, 0], span=(1, 2), margin=[0, 10], buttonFont=[32, 'bold'])
+        if self.mainFlightList:
+            ic("Wybierz z listy lotow")
+            selectedFlight = self.mainFlightList.selection()
+            if selectedFlight:
+                item = self.mainFlightList.item(selectedFlight[0])
+                self.editReservation(item)
+        elif self.mainReservationList:
+            ic("Wybierz z listy rezerwacji")
+            selectedReservation = self.mainReservationList.selection()
+            if selectedReservation:
+                item = self.mainReservationList.item(selectedReservation[0])
+                self.editReservation(item, True)
+        else:
+            return None
+
+    def editReservation(self, item, reservationExist=False):
+        flightId = item['values'][0]
+        # alreadyReservedSeats = item['values'][5].split('/')[0] if reservationExist else ""
+        alreadyReservedSeats = item['values'][5] if reservationExist else ""
+        ic(alreadyReservedSeats)
+        numberOfAvailableSeats = self.logic.numberOfAvailableSeatsInFlight(flightId)
+        reserveFlightWindow, reserveFlightPanel = self.initNewWindow(self.root, [500, 250], "Dodaj rezerwacje")
+        numberOfSeatsLabel = self.createLabel(reserveFlightPanel, "Ile chcesz zarezerwować miejsc?", grid=[0, 0], sticky="W", pad=[0, 0], span=(1, 2), labelFont=[18, "bold"])
+        numberOfSeatsEntry = self.createEntry(reserveFlightPanel, width=3, grid=[1, 0], entryFont=[32, "bold"], sticky="E")
+        numberOfSeatsEntry.insert(0, alreadyReservedSeats)
+        availableSeats = self.createLabel(reserveFlightPanel, f"/ {numberOfAvailableSeats}", grid=[1, 1], sticky="W", pad=[0, 0], labelFont=[32, "bold"])
+        loginConfirmButton = self.createButton(reserveFlightPanel, text="Zarezerwuj miejsca", command=lambda: self.reserveFlightProcessing(flightId, numberOfSeatsEntry.get(), reserveFlightWindow), grid=[2, 0], span=(1, 2), margin=[0, 10], buttonFont=[32, 'bold'])
 
     def reserveFlightProcessing(self, flightId, numberOfReservedSeats, window):
         ic("reserve flight processing")
         if self.logic.reserveFlight(flightId, int(numberOfReservedSeats)):
-            ic("UDALO SIE")
             window.destroy()
-
+            self.checkReservationList()
 
     def checkReservationList(self):
         ic("Check reservation list")
         self.manageMainFieldSpace()
-        self.mainLabel, self.mainList = self.createList(self.root, headers=["ID", "ID REZERWACJI", "KOD", "KIERUNEK", "ODLOT", "MIEJSCA"], anchor="w")
-        self.mainList.bind("<Double-1>", self.editReservation)
+        self.showButtonsAndLabels([[self.cancelReservationButton, (4, 0, "WE")], [self.generatePDFButton, (5, 0, "WE")]])
+        self.reserveFlightButton['text'] = "Zmien rezerwacje"
+        self.mainReservationLabel, self.mainReservationList = self.createList(self.root, headers=["ID", "ID REZERWACJI", "KOD", "KIERUNEK", "ODLOT", "MIEJSCA"], anchor="w")
+        self.mainReservationList.bind("<Double-1>", self.reserveFlight)
         reservations = self.logic.getFlightReservations()
         for reservation in reservations:
-            self.mainList.insert('', END, values=(reservation["id"], reservation['reservationId'], reservation['flightCode'], reservation['airports'], reservation['dates'], reservation['seats']))
-
-    def editReservation(self, event=None):
-        ic("Edytuj rezerwacje")
-        selectedReservation = self.mainList.selection()
-        if selectedReservation:
-            item = self.mainList.item(selectedReservation[0])
-            values = item['values']
-
+            self.mainReservationList.insert('', END, values=(reservation["id"], reservation['reservationId'], reservation['flightCode'], reservation['airports'], reservation['dates'], reservation['seats']))
 
     def cancelReservation(self):
         ic("Anuluj rezerwacje")
+        if self.mainReservationList:
+            selectedReservation = self.mainReservationList.selection()
+            if selectedReservation:
+                item = self.mainReservationList.item(selectedReservation[0])
+                values = item['values']
+                flightId = values[0]
+                self.logic.cancelReservation(flightId)
+                self.checkReservationList()
+
+    def generatePDF(self):
+        ic("Generuj pdf-a")
+        if not self.mainReservationList:
+            return None
+        selectedReservation = self.mainReservationList.selection()
+        if selectedReservation:
+            item = self.mainReservationList.item(selectedReservation[0])
+            values = item['values']
+            reservationId = values[1]
+            self.logic.generatePDF(reservationId)
 
 
 if __name__ == "__main__":

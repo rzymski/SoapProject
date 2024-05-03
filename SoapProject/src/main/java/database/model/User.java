@@ -97,13 +97,13 @@ public class User extends AbstractModel {
                 ", userGroup='" + userGroup.getName() + '\'' +
                 '}';
         StringBuilder sb = new StringBuilder();
-        sb.append(basicData)
-                .append(" lista rezerwacji: ");
-
-        for (FlightReservation flightReservation : flightReservations) {
-            sb.append(flightReservation.getFlight())
-                    .append(", ");
-        }
+        sb.append(basicData);
+//                .append(" lista rezerwacji: ");
+//
+//        for (FlightReservation flightReservation : flightReservations) {
+//            sb.append(flightReservation.getFlight())
+//                    .append(", ");
+//        }
         return sb.toString();
     }
 

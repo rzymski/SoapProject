@@ -14,6 +14,7 @@ import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.element.Image;
 import com.itextpdf.layout.properties.TextAlignment;
 import com.itextpdf.layout.properties.VerticalAlignment;
+import database.dto.FlightDTO;
 import database.dto.FlightReservationDTO;
 import com.itextpdf.layout.Canvas;
 
@@ -105,8 +106,8 @@ public class PdfGenerator {
 
         Text text2 = new Text("Flight " + _reservation.getFlightCode()).setFontSize(17).setBold();
         Paragraph flightDataHeader = new Paragraph(text2);
-        Paragraph flightData = new Paragraph("Departure: " + _reservation.getDepartureAirport() + " at " + _reservation.getDepartureTime() + "  ----->  "
-                                                + "Destination: " + _reservation.getDestinationAirport() + " at " + _reservation.getArrivalTime());
+        Paragraph flightData = new Paragraph("Departure: " + _reservation.getDepartureAirport() + " at " + FlightDTO.getStringFromDate(_reservation.getDepartureTime()) + "  ----->  "
+                                                + "Destination: " + _reservation.getDestinationAirport() + " at " + FlightDTO.getStringFromDate(_reservation.getArrivalTime()));
 
         //watermark
 

@@ -80,7 +80,11 @@ class AirportLogic:
         arrivalTime = datetime.strptime(reservationData['arrivalTime'], AirportLogic.javaDateFormat).strftime("%H:%M %d/%m/%Y")
         departureTime = departureTime if departureTime[0] != "0" else departureTime[1:]
         arrivalTime = arrivalTime if arrivalTime[0] != "0" else arrivalTime[1:]
-        return {"id": reservationData['id'], "reservationId": reservationData['reservationId'], "flightCode": reservationData['flightCode'], "airports": f"{reservationData['departureAirport']} ---> {reservationData['destinationAirport']}", "dates": f"{arrivalTime}", "seats": f"{reservationData['numberOfReservedSeats']}/{reservationData['capacity']}"}
+        return {"id": reservationData['id'],
+                "reservationId": reservationData['reservationId'],
+                "flightCode": reservationData['flightCode'],
+                "airports": f"{reservationData['departureAirport']} ==> {reservationData['destinationAirport']}",
+                "dates": f"{arrivalTime}", "seats": f"{reservationData['numberOfReservedSeats']}"}  # "dates": f"{arrivalTime}", "seats": f"{reservationData['numberOfReservedSeats']}/{reservationData['capacity']}"}
 
     @staticmethod
     def refactorReservationList(reservationsData):
@@ -99,4 +103,10 @@ class AirportLogic:
 
     def reserveFlight(self, flightId, numberOfReservedSeats):
         return self.client.service("reserveFlight", flightId, numberOfReservedSeats)
+
+    def generatePDF(self, reservationId):
+        self.client.generatePDF(reservationId)
+
+    def cancelReservation(self, flightId):
+        self.client.service("cancelFlightReservation", flightId)
 

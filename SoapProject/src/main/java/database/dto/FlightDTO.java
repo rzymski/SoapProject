@@ -2,10 +2,14 @@ package database.dto;
 
 import database.adapter.LocalDateTimeAdapter;
 import database.model.Flight;
+import database.service.UserServiceImpl;
+import org.eclipse.persistence.jpa.jpql.parser.DateTime;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -13,7 +17,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "FlightDTO")
 public class FlightDTO {
-
     protected Long id;
     protected String flightCode;
     protected String departureAirport;
@@ -115,5 +118,11 @@ public class FlightDTO {
             flightDTOs.add(new FlightDTO(flight));
         }
         return flightDTOs;
+    }
+
+    private static Logger logger = Logger.getLogger(FlightDTO.class.getName());
+    public static String getStringFromDate(LocalDateTime dateTime){
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm d/M/yyyy");
+        return dateTime.format(formatter);
     }
 }
