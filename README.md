@@ -272,7 +272,7 @@ SoapProject
 ```mermaid
 graph TD;
    A[SoapProject]-->B[src];
-   A[SoapProject]-->|baza danych| C[airport.mv.db];
+   A[SoapProject]-->C[(airport.mv.db)];
    B-->M[main];
    M-->J[java];
    M-->R[resources];
@@ -290,6 +290,23 @@ graph TD;
    S-->SS[service];
    R-->META-INF;
    W-->WEB-INF;
+```
+
+### Struktura klienta pythona w **`pythonCLient`**
+```
+pythonCLient
+    client.py
+    interface.py
+    logic.py
+    main.py
+```
+
+```mermaid
+graph TD;
+    A[pythonClient]-->M[main.py];
+    A-->I[interface.py];
+    A-->L[logic.py];
+    A-->C[client.py];
 ```
 
 # Wskazówki użycia
