@@ -58,14 +58,13 @@ public class FlightDaoImpl extends AbstractDaoJpaImpl<Flight> implements FlightD
     }
 
     @Override
-    public Long getFlightTotalNumberOfOccupiedSeats(Flight flight, Long additionalNumberOfOccupiedSeats) {
-        logger.severe("findFlightTotalNumberOfOccupiedSeats wywolal sie z liczba dodatkowych miejsc = " + additionalNumberOfOccupiedSeats);
+    public Long getFlightTotalNumberOfOccupiedSeats(Flight flight) {
+        logger.severe("findFlightTotalNumberOfOccupiedSeats wywolal sie");
         TypedQuery<Long> query = em.createNamedQuery("Flight.getFlightTotalNumberOfOccupiedSeats", Long.class);
         query.setParameter(1, flight);
         List<Long> result = query.getResultList();
         Long resultValue = result.get(0) == null ? 0L : result.get(0);
-        logger.severe("findFlightTotalNumberOfOccupiedSeats " + (resultValue + additionalNumberOfOccupiedSeats));
-        return resultValue + additionalNumberOfOccupiedSeats;
+        return resultValue;
     }
 
     @Override

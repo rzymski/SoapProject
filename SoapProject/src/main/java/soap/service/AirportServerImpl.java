@@ -234,7 +234,8 @@ public class AirportServerImpl implements AirportServer, Serializable {
 
     @Override
     public Long getFlightAvailableSeats(Long flightId) {
+        User user = getAuthenticatedUser();
         Flight flight = flightService.findById(flightId);
-        return flightReservationService.getFlightAvailableSeats(flight);
+        return flightReservationService.getFlightAvailableSeats(flight, user);
     }
 }
