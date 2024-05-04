@@ -1,15 +1,10 @@
 package database.service;
 
-import database.dao.FlightDao;
-import database.dao.FlightReservationDao;
 import database.dao.UserDao;
-import database.model.Flight;
-import database.model.FlightReservation;
 import database.model.User;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.logging.Logger;
 

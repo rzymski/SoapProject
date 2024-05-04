@@ -34,15 +34,14 @@ class AirportInterface:
         self.logoutButton = self.createButton(self.topFrame, text="Wyloguj się", command=self.logout, pad=[20, 20], grid=[0, 3], buttonFont=[24, "bold"])
         # Left frame buttons checkFlights, findFlight, reserve flight, cancel reservation
         self.leftFrame = self.createLabelFrame(self.root, pad=[0, 0], pack=["left", False, "both"])
-        self.checkFlightsButton = self.createButton(self.leftFrame, text="Sprawdź listę lotów", command=self.checkFlightList, pad=[10, 10], grid=[0, 0], buttonFont=[28, "bold"])
+        self.checkFlightsButton = self.createButton(self.leftFrame, text="Wszystkie loty", command=self.checkFlightList, pad=[10, 10], grid=[0, 0], buttonFont=[28, "bold"])
         self.findFlightLabel = self.createLabelFrame(self.leftFrame, text='', grid=[1, 0], border=10)
         self.findFlightLabel.grid_columnconfigure(0, weight=1)
         self.findFlightButton = self.createButton(self.findFlightLabel, text="Wyszukaj lot", command=self.findFlight, grid=[0, 0], sticky="WE", span=(1, 2), pad=[10, 10], buttonFont=[28, "bold"])
         # dropdown departure city
         self.fromLabel = self.createLabel(self.findFlightLabel, "Lotnisko odlotu:", grid=[1, 0], labelFont=[16, "bold"])  # Lotnisko odlotu
         self.fromAirportVar = StringVar()
-        # pozniej trzeba zrobic, zeby opcje pobieral z WSDL
-        self.options = [''] + self.logic.getAllAirports()  # ['Warsaw', 'Paris', 'Rome', 'Moscow', 'Berlin', 'London', 'Los Angeles', 'New York', 'Tokyo', 'Beijing', 'Kair', "Madrid", 'Brasilia', 'Seul']
+        self.options = [''] + self.logic.getAllAirports()
         self.fromDropdown = OptionMenu(self.findFlightLabel, self.fromAirportVar, *self.options)
         self.fromDropdown.config(width=12)  # Ustawienie stałej szerokości
         self.fromDropdown['font'] = boldFont18
@@ -65,10 +64,10 @@ class AirportInterface:
         self.endDateEntry = tkc.DateEntry(self.findFlightLabel, date_pattern='d/m/yyyy', year=defaultEndDate.year, month=defaultEndDate.month, day=defaultEndDate.day)
         self.endDateEntry['font'] = boldFont18
         self.endDateEntry.grid(row=4, column=1)
-        # reserve button
-        self.reserveFlightButton = self.createButton(self.leftFrame, text="Zarezerwuj lot", command=self.reserveFlight, pad=[10, 10], grid=[2, 0], buttonFont=[28, "bold"])
         # show reservations
-        self.checkReservationsButton = self.createButton(self.leftFrame, text="Sprawdź rezerwacje", command=self.checkReservationList, pad=[10, 10], grid=[3, 0], buttonFont=[28, "bold"])
+        self.checkReservationsButton = self.createButton(self.leftFrame, text="Moje rezerwacje", command=self.checkReservationList, pad=[10, 10], grid=[2, 0], buttonFont=[28, "bold"])
+        # reserve button
+        self.reserveFlightButton = self.createButton(self.leftFrame, text="Zarezerwuj lot", command=self.reserveFlight, pad=[10, 10], grid=[3, 0], buttonFont=[28, "bold"])
         # cancel reservation
         self.cancelReservationButton = self.createButton(self.leftFrame, text="Anuluj rezerwacje", command=self.cancelReservation, pad=[10, 10], grid=[4, 0], buttonFont=[28, "bold"])
         # generate pdf
@@ -85,8 +84,8 @@ class AirportInterface:
         self.noUsernameError, self.emailError, self.noPasswordError, self.noAuthorizationError = [None] * 4
 
         # automatyczne zalogowanie na czes testow
-        self.logic.validateUser("rzymski", "Szumek19")
-        self.userAuthorizedInterface("rzymski")
+        # self.logic.validateUser("rzymski", "Szumek19")
+        # self.userAuthorizedInterface("rzymski")
 
     def validateUserProcessing(self):
         username = self.usernameEntry.get()
@@ -94,7 +93,6 @@ class AirportInterface:
         ic("Validate user", username, password)
         self.noUsernameError['text'] = "Pole 'nazwa użytkownika' jest wymagane." if not username else ""
         self.noPasswordError['text'] = "Pole 'hasło' jest wymagane." if not password else ""
-        # przykładowe sprawdzenie poprawnosci
         if self.logic.validateUser(username, password):
             self.userAuthorizedInterface(username)
         elif username and password:
@@ -125,7 +123,7 @@ class AirportInterface:
         # change buttons when authorization completed
         self.hideButtonsAndLabels([self.loginButton, self.registerButton])
         self.loggedUserLabel['text'] = username
-        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.reserveFlightButton, (2, 0, "WE")], [self.checkReservationsButton, (3, 0, "WE")]])
+        self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.checkReservationsButton, (2, 0, "WE")], [self.reserveFlightButton, (3, 0, "WE")]])
 
     def register(self, event=None):
         ic("Register")

@@ -90,16 +90,15 @@ public class User extends AbstractModel {
 
     @Override
     public String toString() {
-        String basicData = "User{" +
-                "id=" + getId() +
-                ", login='" + login + '\'' +
-                ", email='" + email + '\'' +
-                ", userGroup='" + userGroup.getName() + '\'' +
-                '}';
         StringBuilder sb = new StringBuilder();
-        sb.append(basicData);
-//                .append(" lista rezerwacji: ");
-//
+        sb.append("User{id=" + getId()).append(", login='" + login + '\'').append(", email='" + email + '\'');
+        if (userGroup != null && userGroup.getName() != null) {
+            sb.append(", userGroup='" + userGroup.getName() + '\'');
+        } else {
+            sb.append(", userGroup='none'");
+        }
+
+//        sb.append(" lista rezerwacji: ");
 //        for (FlightReservation flightReservation : flightReservations) {
 //            sb.append(flightReservation.getFlight())
 //                    .append(", ");

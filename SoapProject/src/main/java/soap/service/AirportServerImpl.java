@@ -228,8 +228,7 @@ public class AirportServerImpl implements AirportServer, Serializable {
         User user = getAuthenticatedUser();
         if (user == null) throw new UserNotFoundException("Nie ma użytkownika o takich danych logowania");
         List<FlightReservation> flightReservations = flightReservationService.findUserReservations(user);
-        List<FlightReservationDTO> flightReservationDTOS = FlightReservationDTO.createFromFlightReservationsFlightReservationDTOs(flightReservations);
-        return flightReservationDTOS;
+        return FlightReservationDTO.createFromFlightReservationsFlightReservationDTOs(flightReservations);
     }
 
     @Override

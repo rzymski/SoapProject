@@ -88,6 +88,7 @@ class AirportLogic:
 
     @staticmethod
     def refactorReservationList(reservationsData):
+        reservationsData = reservationsData if reservationsData else []
         reservations = []
         for reservationData in reservationsData:
             reservation = AirportLogic.refactorReservation(reservationData)

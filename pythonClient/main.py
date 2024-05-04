@@ -5,6 +5,6 @@ from client import AirportClient
 
 if __name__ == "__main__":
     rootInterface = Tk()
-    # app = AirportInterface(rootInterface, AirportLogic(AirportClient(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService")))
-    app = AirportInterface(rootInterface, AirportLogic(AirportClient(8080, [], "localhost", "SoapProject/AirportServerImplService")))
+    app = AirportInterface(rootInterface, AirportLogic(AirportClient(8080, [8085, 8084], "localhost", "SoapProject/AirportServerImplService")))
+    # app = AirportInterface(rootInterface, AirportLogic(AirportClient(8080, [], "localhost", "SoapProject/AirportServerImplService")))
     rootInterface.mainloop()
