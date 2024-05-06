@@ -83,6 +83,8 @@ class AirportInterface:
         self.registerWindow, self.registerPanel, self.emailLabel, self.emailEntry, self.registerConfirmButton, self.loginOptionLabel = [None] * 6
         # errors in login or registration
         self.noUsernameError, self.emailError, self.noPasswordError, self.noAuthorizationError = [None] * 4
+        # variable to store if user is logged in
+        self.loggedIn = False
 
         # automatyczne zalogowanie na czes testow
         # self.logic.validateUser("rzymski", "Szumek19")
@@ -127,6 +129,7 @@ class AirportInterface:
         self.hideButtonsAndLabels([self.loginButton, self.registerButton])
         self.loggedUserLabel['text'] = username
         self.showButtonsAndLabels([[self.loggedUserLabel, (0, 0, "WE")], [self.logoutButton, (0, 3, "E")], [self.checkReservationsButton, (2, 0, "WE")], [self.reserveFlightButton, (3, 0, "WE")]])
+        self.loggedIn = True
 
     def register(self, event=None):
         ic("Register")
@@ -171,6 +174,7 @@ class AirportInterface:
         self.showButtonsAndLabels([[self.loginButton, (0, 1, "E")], [self.registerButton, (0, 2, "E")]])
         self.logic.logoutUser()
         self.manageMainFieldSpace()
+        self.loggedIn = True
 
     @staticmethod
     def initNewWindow(frame, size, title):
@@ -297,6 +301,8 @@ class AirportInterface:
 
     def reserveFlight(self, event=None):
         ic("reserve flight")
+        if not self.loggedIn:
+            return None
         if self.mainFlightList:
             ic("Wybierz z listy lotow")
             selectedFlight = self.mainFlightList.selection()
