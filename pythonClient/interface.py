@@ -4,6 +4,7 @@ import tkcalendar as tkc
 import tkinter.font as font
 from datetime import datetime, timedelta
 from icecream import ic
+import re
 
 from logic import AirportLogic
 from client import AirportClient
@@ -107,7 +108,9 @@ class AirportInterface:
         ic("Create user", username, password, email)
         self.noUsernameError['text'] = "Pole 'nazwa użytkownika' jest wymagane." if not username else ""
         self.noPasswordError['text'] = "Pole 'hasło' jest wymagane." if not password else ""
-        if username and password:
+        correctEmail = True if re.match(r'^[a-zA-Z0-9]+([._+-][a-zA-Z0-9]+)*@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$', email) or not email else False
+        self.emailError['text'] = "Niepoprawny format mail-a" if not correctEmail else ""
+        if username and password and correctEmail:
             if self.logic.createUser(username, password, email):
                 self.userAuthorizedInterface(username)
             else:
@@ -299,25 +302,33 @@ class AirportInterface:
             selectedFlight = self.mainFlightList.selection()
             if selectedFlight:
                 item = self.mainFlightList.item(selectedFlight[0])
-                self.editReservation(item)
+                self.addEditReservation(item)
         elif self.mainReservationList:
             ic("Wybierz z listy rezerwacji")
             selectedReservation = self.mainReservationList.selection()
             if selectedReservation:
                 item = self.mainReservationList.item(selectedReservation[0])
-                self.editReservation(item, True)
+                self.addEditReservation(item, True)
         else:
             return None
 
-    def editReservation(self, item, reservationExist=False):
+    @staticmethod
+    def validateEntryNumberRange(P, numberRange=[]):
+        if P == "" or (str.isdigit(P) and (not numberRange or numberRange[0] <= int(P) <= numberRange[1])):
+            return True
+        else:
+            return False
+
+    def addEditReservation(self, item, reservationExist=False):
         flightId = item['values'][0]
         # alreadyReservedSeats = item['values'][5].split('/')[0] if reservationExist else ""
         alreadyReservedSeats = item['values'][5] if reservationExist else ""
         ic(alreadyReservedSeats)
         numberOfAvailableSeats = self.logic.numberOfAvailableSeatsInFlight(flightId)
         reserveFlightWindow, reserveFlightPanel = self.initNewWindow(self.root, [500, 250], "Dodaj rezerwacje")
+        validateCommand = (reserveFlightPanel.register(lambda P: self.validateEntryNumberRange(P, [1, int(numberOfAvailableSeats)])), '%P')
         numberOfSeatsLabel = self.createLabel(reserveFlightPanel, "Ile chcesz zarezerwować miejsc?", grid=[0, 0], sticky="W", pad=[0, 0], span=(1, 2), labelFont=[18, "bold"])
-        numberOfSeatsEntry = self.createEntry(reserveFlightPanel, width=3, grid=[1, 0], entryFont=[32, "bold"], sticky="E")
+        numberOfSeatsEntry = self.createEntry(reserveFlightPanel, width=3, grid=[1, 0], entryFont=[32, "bold"], sticky="E", validationCommand=validateCommand)
         numberOfSeatsEntry.insert(0, alreadyReservedSeats)
         availableSeats = self.createLabel(reserveFlightPanel, f"/ {numberOfAvailableSeats}", grid=[1, 1], sticky="W", pad=[0, 0], labelFont=[32, "bold"])
         loginConfirmButton = self.createButton(reserveFlightPanel, text="Zarezerwuj miejsca", command=lambda: self.reserveFlightProcessing(flightId, numberOfSeatsEntry.get(), reserveFlightWindow), grid=[2, 0], span=(1, 2), margin=[0, 10], buttonFont=[32, 'bold'])

@@ -39,7 +39,10 @@ class AirportClient:
                 self.client = Client(wsdl=wsdlUrl, transport=transport, plugins=[self.plugin])
                 break
             except (ProxyError, ConnectionError, Timeout) as e:
-                print(f"Nie udało się połączyć z proxy na porcie {proxyPort if proxyPort is not None else serverPort}.")
+                if proxyPort:
+                    print(f"Nie udało się połączyć z proxy na porcie {proxyPort}.")
+                else:
+                    raise ValueError(f"Nie udało się połączyć z serwerem na porcie {serverPort}")
 
     def setUser(self, username, password):
         if self.client:
