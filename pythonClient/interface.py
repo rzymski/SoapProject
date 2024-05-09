@@ -14,8 +14,8 @@ class AirportInterface:
     def __init__(self, root, logicClass):
         self.style = ttk.Style()
         self.style.theme_use('winnative')
-        self.style.configure("Treeview.Heading", font=(None, 24, "bold"))
-        self.style.configure("Treeview", font=("Courier New", 18, "bold"), rowheight=int(18 * 2))
+        self.style.configure("Treeview.Heading", font=(None, 18, "bold"))
+        self.style.configure("Treeview", font=("Courier New", 16, "bold"), rowheight=int(16 * 2))
         self.root = root
         self.logic = logicClass
         self.root.title("Airport interface")
@@ -201,11 +201,16 @@ class AirportInterface:
     @staticmethod
     def createList(frame, headers, anchor=CENTER):
         mainLabel = AirportInterface.createLabel(frame, pack=[None, True, "both"], border=0)
+        mainLabel.update()
+        totalWidth = mainLabel.winfo_width()
+        headerLengths = [len(header) for header in headers]
+        totalHeaderLength = sum(headerLengths)
         scrollbarFlights = Scrollbar(mainLabel, orient=VERTICAL)
         columns = [f"c{i}" for i in range(1, len(headers) + 1)]
         mainList = ttk.Treeview(mainLabel, column=columns, show='headings', yscrollcommand=scrollbarFlights)
         for index, header in enumerate(headers, start=1):
-            mainList.column(f"#{index}", anchor=anchor)
+            percentageOfWidth = headerLengths[index - 1] / totalHeaderLength
+            mainList.column(f"#{index}", anchor=anchor, width=int(totalWidth * percentageOfWidth))
             mainList.heading(f"#{index}", text=header, anchor=anchor)
         mainList.column("c1", width=0, stretch=False)
         scrollbarFlights.config(command=mainList.yview)
@@ -273,16 +278,28 @@ class AirportInterface:
             self.mainReservationList.destroy()
             self.mainReservationList = None
 
+    def manageMainList(self, flightsData=None, reservationsData=None):
+        self.manageMainFieldSpace()
+        if flightsData:
+            self.hideButtonsAndLabels([self.cancelReservationButton, self.generatePDFButton])
+            self.reserveFlightButton['text'] = "Zarezerwuj lot"
+            # self.mainFlightLabel, self.mainFlightList = self.createList(self.root, headers=["ID", "KOD", "Z", "ODLOT O", "DO", "PRZYLOT O"])
+            self.mainFlightLabel, self.mainFlightList = self.createList(self.root, headers=["ID", "KOD LOTU", "ODLOT Z", "CZAS ODLOTU", "PRZYLOT DO", "CZAS PRZYLOTU"])
+            self.mainFlightList.bind("<Double-1>", self.reserveFlight)
+            for flight in flightsData:
+                self.mainFlightList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
+        if reservationsData:
+            self.showButtonsAndLabels([[self.cancelReservationButton, (4, 0, "WE")], [self.generatePDFButton, (5, 0, "WE")]])
+            self.reserveFlightButton['text'] = "Zmien rezerwacje"
+            self.mainReservationLabel, self.mainReservationList = self.createList(self.root, headers=["ID", "ID ", "KOD LOTU", "KIERUNEK LOTU", "CZAS ODLOTU", "MIEJSCA"], anchor="w")
+            self.mainReservationList.bind("<Double-1>", self.reserveFlight)
+            for reservation in reservationsData:
+                self.mainReservationList.insert('', END, values=(reservation["id"], reservation['reservationId'], reservation['flightCode'], reservation['airports'], reservation['dates'], reservation['seats']))
+
     def checkFlightList(self):
         ic("Check flight list")
-        self.manageMainFieldSpace()
-        self.hideButtonsAndLabels([self.cancelReservationButton, self.generatePDFButton])
-        self.reserveFlightButton['text'] = "Zarezerwuj lot"
-        self.mainFlightLabel, self.mainFlightList = self.createList(self.root, headers=["ID", "KOD LOTU", "ODLOT Z", "CZAS ODLOTU", "PRZYLOT DO", "CZAS PRZYLOTU"])
-        self.mainFlightList.bind("<Double-1>", self.reserveFlight)
-        data = self.logic.getAllFlights()
-        for flight in data:
-            self.mainFlightList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
+        flights = self.logic.getAllFlights()
+        self.manageMainList(flightsData=flights)
 
     def findFlight(self):
         departureAirport = self.fromAirportVar.get()
@@ -290,14 +307,8 @@ class AirportInterface:
         departureTime = self.startDateEntry.get_date().strftime(AirportLogic.javaDateFormat)
         arrivalTime = self.endDateEntry.get_date().strftime(AirportLogic.javaDateFormat)
         ic("find flight", departureAirport, destinationAirport, departureTime, arrivalTime)
-        self.manageMainFieldSpace()
-        self.hideButtonsAndLabels([self.cancelReservationButton, self.generatePDFButton])
-        self.reserveFlightButton['text'] = "Zarezerwuj lot"
-        self.mainFlightLabel, self.mainFlightList = self.createList(self.root, headers=["ID", "KOD LOTU", "ODLOT Z", "CZAS ODLOTU", "PRZYLOT DO", "CZAS PRZYLOTU"])
-        self.mainFlightList.bind("<Double-1>", self.reserveFlight)
         flights = self.logic.getFlightsWithParameters(departureAirport=departureAirport, destinationAirport=destinationAirport, departureTime=departureTime, arrivalTime=arrivalTime)
-        for flight in flights:
-            self.mainFlightList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
+        self.manageMainList(flightsData=flights)
 
     def reserveFlight(self, event=None):
         ic("reserve flight")
@@ -347,14 +358,8 @@ class AirportInterface:
 
     def checkReservationList(self):
         ic("Check reservation list")
-        self.manageMainFieldSpace()
-        self.showButtonsAndLabels([[self.cancelReservationButton, (4, 0, "WE")], [self.generatePDFButton, (5, 0, "WE")]])
-        self.reserveFlightButton['text'] = "Zmien rezerwacje"
-        self.mainReservationLabel, self.mainReservationList = self.createList(self.root, headers=["ID", "ID REZERWACJI", "KOD", "KIERUNEK", "ODLOT", "MIEJSCA"], anchor="w")
-        self.mainReservationList.bind("<Double-1>", self.reserveFlight)
         reservations = self.logic.getFlightReservations()
-        for reservation in reservations:
-            self.mainReservationList.insert('', END, values=(reservation["id"], reservation['reservationId'], reservation['flightCode'], reservation['airports'], reservation['dates'], reservation['seats']))
+        self.manageMainList(reservationsData=reservations)
 
     def cancelReservation(self):
         ic("Anuluj rezerwacje")
