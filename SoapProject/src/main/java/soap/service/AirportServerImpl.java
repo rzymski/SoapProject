@@ -216,7 +216,7 @@ public class AirportServerImpl implements AirportServer, Serializable {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         PdfGenerator pdfGenerator = new PdfGenerator(byteArrayOutputStream, res);
         pdfGenerator.setHeaderFooter("Potwierdzenie rezerwacji biletu", "Super linie lotnicze sp. z o.o.");
-        String imagePath = "D:\\programowanie\\java\\rsi\\SoapProject\\screens\\plane.png";
+        String imagePath = "D:\\programowanie\\java\\rsi\\soap\\SoapProject\\screens\\plane.png";
         pdfGenerator.setImage(imagePath);
         pdfGenerator.generate();
         return byteArrayOutputStream.toByteArray();

@@ -18,7 +18,7 @@ import java.util.logging.Logger;
         name = "java:global/SoapProjectDataSource",
         className = "org.h2.jdbcx.JdbcDataSource",
         //url = "jdbc:h2:file:C:/Users/ukasz/Desktop/SoapProject/javaSoapProject/airport",
-        url = "jdbc:h2:file:D:/programowanie/java/rsi/SoapProject/SoapProject/airport",
+        url = "jdbc:h2:file:D:/programowanie/java/rsi/soap/SoapProject/SoapProject/airport",
 //        url = "jdbc:h2:file:./SoapProject/airport", // wskazuje na miejsce zainstalowania Payary np. D:\programowanie\java\oprogramowanie\payara\payara-5.2022.5\payara5\glassfish\domains\domain1\config
 //        url = "jdbc:h2:file:${user.dir}/SoapProject/SoapProject/airport", // wskazuje na miejsce zainstalowania Payary
 

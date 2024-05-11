@@ -170,8 +170,8 @@ class AirportInterface:
 
     def logout(self):
         ic("Logout")
-        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton])
-        self.showButtonsAndLabels([[self.loginButton, (0, 1, "E")], [self.registerButton, (0, 2, "E")]])
+        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton, self.generatePDFButton])
+        self.showButtonsAndLabels([[self.loginButton, (0, 1, "E")], [self.registerButton, (0, 2, "E")], [self.findFlightLabel, (1, 0, "WE")]])
         self.logic.logoutUser()
         self.manageMainFieldSpace()
         self.loggedIn = True
@@ -282,6 +282,7 @@ class AirportInterface:
         self.manageMainFieldSpace()
         if flightsData:
             self.hideButtonsAndLabels([self.cancelReservationButton, self.generatePDFButton])
+            self.showButtonsAndLabels([[self.findFlightLabel, (1, 0, "WE")]])
             self.reserveFlightButton['text'] = "Zarezerwuj lot"
             # self.mainFlightLabel, self.mainFlightList = self.createList(self.root, headers=["ID", "KOD", "Z", "ODLOT O", "DO", "PRZYLOT O"])
             self.mainFlightLabel, self.mainFlightList = self.createList(self.root, headers=["ID", "KOD LOTU", "ODLOT Z", "CZAS ODLOTU", "PRZYLOT DO", "CZAS PRZYLOTU"])
@@ -289,6 +290,7 @@ class AirportInterface:
             for flight in flightsData:
                 self.mainFlightList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
         if reservationsData:
+            self.hideButtonsAndLabels([self.findFlightLabel])
             self.showButtonsAndLabels([[self.cancelReservationButton, (4, 0, "WE")], [self.generatePDFButton, (5, 0, "WE")]])
             self.reserveFlightButton['text'] = "Zmien rezerwacje"
             self.mainReservationLabel, self.mainReservationList = self.createList(self.root, headers=["ID", "ID ", "KOD LOTU", "KIERUNEK LOTU", "CZAS ODLOTU", "MIEJSCA"], anchor="w")
