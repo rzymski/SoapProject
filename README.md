@@ -12,6 +12,7 @@ ___
 7. :dragon: [Konfiguracja klienta w pythonie](#instrukcja-konfiguracji-klienta)
 8. :file_folder: [Struktura projektu](#struktura-projektu)
 9. :white_check_mark: [Wskazówki](#wskazówki-użycia)
+10. :godmode: [WSDL](#wsdl)
 
 # Funkcjonalność
 **System rezerwacji biletów lotniczych**
@@ -316,3 +317,281 @@ graph TD;
 >
 >  ###
 >  01. :white_check_mark: &nbsp; Baza danych nie może być otwarta w tym samym momencie przez aplikacje i konsole Inteliji 
+
+# WSDL
+```xml
+<definitions targetNamespace="http://service.soap/" name="AirportServerImplService">
+	<wsp:Policy wsu:Id="AirportServerImplPortBinding_MTOM_Policy-AirportServerImplPortBinding_MTOM_Policy">
+		<ns1:OptimizedMimeSerialization wsp:Optional="true"/>
+	</wsp:Policy>
+	<types>
+		<xsd:schema>
+			<xsd:import namespace="http://service.soap/" schemaLocation="http://localhost:8080/SoapProject/AirportServerImplService?xsd=1"/>
+		</xsd:schema>
+	</types>
+	<message name="echo">
+		<part name="parameters" element="tns:echo"/>
+	</message>
+	<message name="echoResponse">
+		<part name="parameters" element="tns:echoResponse"/>
+	</message>
+	<message name="getFlightsData">
+		<part name="parameters" element="tns:getFlightsData"/>
+	</message>
+	<message name="getFlightsDataResponse">
+		<part name="parameters" element="tns:getFlightsDataResponse"/>
+	</message>
+	<message name="getFlightById">
+		<part name="parameters" element="tns:getFlightById"/>
+	</message>
+	<message name="getFlightByIdResponse">
+		<part name="parameters" element="tns:getFlightByIdResponse"/>
+	</message>
+	<message name="generatePdf">
+		<part name="parameters" element="tns:generatePdf"/>
+	</message>
+	<message name="generatePdfResponse">
+		<part name="parameters" element="tns:generatePdfResponse"/>
+	</message>
+	<message name="IOException">
+		<part name="fault" element="tns:IOException"/>
+	</message>
+	<message name="reserveFlight">
+		<part name="parameters" element="tns:reserveFlight"/>
+	</message>
+	<message name="reserveFlightResponse">
+		<part name="parameters" element="tns:reserveFlightResponse"/>
+	</message>
+	<message name="createUser">
+		<part name="parameters" element="tns:createUser"/>
+	</message>
+	<message name="createUserResponse">
+		<part name="parameters" element="tns:createUserResponse"/>
+	</message>
+	<message name="getFlightAvailableSeats">
+		<part name="parameters" element="tns:getFlightAvailableSeats"/>
+	</message>
+	<message name="getFlightAvailableSeatsResponse">
+		<part name="parameters" element="tns:getFlightAvailableSeatsResponse"/>
+	</message>
+	<message name="findAvailableAirports">
+		<part name="parameters" element="tns:findAvailableAirports"/>
+	</message>
+	<message name="findAvailableAirportsResponse">
+		<part name="parameters" element="tns:findAvailableAirportsResponse"/>
+	</message>
+	<message name="checkFlightReservation">
+		<part name="parameters" element="tns:checkFlightReservation"/>
+	</message>
+	<message name="checkFlightReservationResponse">
+		<part name="parameters" element="tns:checkFlightReservationResponse"/>
+	</message>
+	<message name="cancelFlightReservation">
+		<part name="parameters" element="tns:cancelFlightReservation"/>
+	</message>
+	<message name="cancelFlightReservationResponse">
+		<part name="parameters" element="tns:cancelFlightReservationResponse"/>
+	</message>
+	<message name="getUserReservations">
+		<part name="parameters" element="tns:getUserReservations"/>
+	</message>
+	<message name="getUserReservationsResponse">
+		<part name="parameters" element="tns:getUserReservationsResponse"/>
+	</message>
+	<message name="getAllFlightsWithParameters">
+		<part name="parameters" element="tns:getAllFlightsWithParameters"/>
+	</message>
+	<message name="getAllFlightsWithParametersResponse">
+		<part name="parameters" element="tns:getAllFlightsWithParametersResponse"/>
+	</message>
+	<message name="cancelUserReservationInConcreteFlight">
+		<part name="parameters" element="tns:cancelUserReservationInConcreteFlight"/>
+	</message>
+	<message name="cancelUserReservationInConcreteFlightResponse">
+		<part name="parameters" element="tns:cancelUserReservationInConcreteFlightResponse"/>
+	</message>
+	<portType name="AirportServer">
+		<operation name="echo">
+			<input wsam:Action="http://service.soap/AirportServer/echoRequest" message="tns:echo"/>
+			<output wsam:Action="http://service.soap/AirportServer/echoResponse" message="tns:echoResponse"/>
+		</operation>
+		<operation name="getFlightsData">
+			<input wsam:Action="http://service.soap/AirportServer/getFlightsDataRequest" message="tns:getFlightsData"/>
+			<output wsam:Action="http://service.soap/AirportServer/getFlightsDataResponse" message="tns:getFlightsDataResponse"/>
+		</operation>
+		<operation name="getFlightById">
+			<input wsam:Action="http://service.soap/AirportServer/getFlightByIdRequest" message="tns:getFlightById"/>
+			<output wsam:Action="http://service.soap/AirportServer/getFlightByIdResponse" message="tns:getFlightByIdResponse"/>
+		</operation>
+		<operation name="generatePdf">
+			<input wsam:Action="http://service.soap/AirportServer/generatePdfRequest" message="tns:generatePdf"/>
+			<output wsam:Action="http://service.soap/AirportServer/generatePdfResponse" message="tns:generatePdfResponse"/>
+			<fault message="tns:IOException" name="IOException" wsam:Action="http://service.soap/AirportServer/generatePdf/Fault/IOException"/>
+		</operation>
+		<operation name="reserveFlight">
+			<input wsam:Action="http://service.soap/AirportServer/reserveFlightRequest" message="tns:reserveFlight"/>
+			<output wsam:Action="http://service.soap/AirportServer/reserveFlightResponse" message="tns:reserveFlightResponse"/>
+		</operation>
+		<operation name="createUser">
+			<input wsam:Action="http://service.soap/AirportServer/createUserRequest" message="tns:createUser"/>
+			<output wsam:Action="http://service.soap/AirportServer/createUserResponse" message="tns:createUserResponse"/>
+		</operation>
+		<operation name="getFlightAvailableSeats">
+			<input wsam:Action="http://service.soap/AirportServer/getFlightAvailableSeatsRequest" message="tns:getFlightAvailableSeats"/>
+			<output wsam:Action="http://service.soap/AirportServer/getFlightAvailableSeatsResponse" message="tns:getFlightAvailableSeatsResponse"/>
+		</operation>
+		<operation name="findAvailableAirports">
+			<input wsam:Action="http://service.soap/AirportServer/findAvailableAirportsRequest" message="tns:findAvailableAirports"/>
+			<output wsam:Action="http://service.soap/AirportServer/findAvailableAirportsResponse" message="tns:findAvailableAirportsResponse"/>
+		</operation>
+		<operation name="checkFlightReservation">
+			<input wsam:Action="http://service.soap/AirportServer/checkFlightReservationRequest" message="tns:checkFlightReservation"/>
+			<output wsam:Action="http://service.soap/AirportServer/checkFlightReservationResponse" message="tns:checkFlightReservationResponse"/>
+		</operation>
+		<operation name="cancelFlightReservation">
+			<input wsam:Action="http://service.soap/AirportServer/cancelFlightReservationRequest" message="tns:cancelFlightReservation"/>
+			<output wsam:Action="http://service.soap/AirportServer/cancelFlightReservationResponse" message="tns:cancelFlightReservationResponse"/>
+		</operation>
+		<operation name="getUserReservations">
+			<input wsam:Action="http://service.soap/AirportServer/getUserReservationsRequest" message="tns:getUserReservations"/>
+			<output wsam:Action="http://service.soap/AirportServer/getUserReservationsResponse" message="tns:getUserReservationsResponse"/>
+		</operation>
+		<operation name="getAllFlightsWithParameters">
+			<input wsam:Action="http://service.soap/AirportServer/getAllFlightsWithParametersRequest" message="tns:getAllFlightsWithParameters"/>
+			<output wsam:Action="http://service.soap/AirportServer/getAllFlightsWithParametersResponse" message="tns:getAllFlightsWithParametersResponse"/>
+		</operation>
+		<operation name="cancelUserReservationInConcreteFlight">
+			<input wsam:Action="http://service.soap/AirportServer/cancelUserReservationInConcreteFlightRequest" message="tns:cancelUserReservationInConcreteFlight"/>
+			<output wsam:Action="http://service.soap/AirportServer/cancelUserReservationInConcreteFlightResponse" message="tns:cancelUserReservationInConcreteFlightResponse"/>
+		</operation>
+	</portType>
+	<binding name="AirportServerImplPortBinding" type="tns:AirportServer">
+		<wsp:PolicyReference URI="#AirportServerImplPortBinding_MTOM_Policy-AirportServerImplPortBinding_MTOM_Policy"/>
+		<soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+		<operation name="echo">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="getFlightsData">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="getFlightById">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="generatePdf">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+			<fault name="IOException">
+				<soap:fault name="IOException" use="literal"/>
+			</fault>
+		</operation>
+		<operation name="reserveFlight">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="createUser">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="getFlightAvailableSeats">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="findAvailableAirports">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="checkFlightReservation">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="cancelFlightReservation">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="getUserReservations">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="getAllFlightsWithParameters">
+			<soap:operation soapAction=""/>
+			<input>
+				<soap:body use="literal"/>
+			</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="cancelUserReservationInConcreteFlight">
+			<soap:operation soapAction=""/>
+			<input>
+</input>
+			<output>
+				<soap:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="AirportServerImplService">
+		<port name="AirportServerImplPort" binding="tns:AirportServerImplPortBinding">
+			<soap:address location="http://localhost:8080/SoapProject/AirportServerImplService"/>
+		</port>
+	</service>
+</definitions>
+```
