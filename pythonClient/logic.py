@@ -117,6 +117,6 @@ class AirportLogic:
         reservation['departureTime'] = AirportLogic.refactorDate(reservation['departureTime'])
         return reservation
 
-    def cancelReservation(self, flightId):
-        self.client.service("cancelFlightReservation", flightId)
+    def cancelReservation(self, flightReservationId):
+        self.client.service("cancelFlightReservation", flightReservationId)
 

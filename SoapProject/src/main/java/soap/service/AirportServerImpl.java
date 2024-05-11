@@ -168,7 +168,15 @@ public class AirportServerImpl implements AirportServer, Serializable {
     }
 
     @Override
-    public boolean cancelFlightReservation(Long flightId) {
+    public boolean cancelFlightReservation(Long flightReservationId) {
+        FlightReservation flightReservation =  flightReservationService.findById(flightReservationId);
+        if(flightReservation == null) throw new RecordNotFoundException("Nie ma rezerwacji lotu o ID: " + flightReservationId);
+        flightReservationService.deleteFlightReservation(flightReservation);
+        return true;
+    }
+
+    @Override
+    public boolean cancelUserReservationInConcreteFlight(Long flightId) {
         User user = getAuthenticatedUser();
         if (user == null) throw new UserNotFoundException("Nie ma użytkownika o takich danych logowania");
         Flight flight = flightService.findById(flightId);

@@ -1,7 +1,11 @@
 from tkinter import *
 from tkinter import ttk
+
+import customtkinter
 import tkcalendar as tkc
 import tkinter.font as font
+import customtkinter as ctk
+from PIL import Image, ImageTk
 from datetime import datetime, timedelta
 from icecream import ic
 import re
@@ -86,12 +90,14 @@ class AirportInterface:
         self.registerWindow, self.registerPanel, self.emailLabel, self.emailEntry, self.registerConfirmButton, self.loginOptionLabel = [None] * 6
         # errors in login or registration
         self.noUsernameError, self.emailError, self.noPasswordError, self.noAuthorizationError = [None] * 4
+        # reservation operations window
+        self.operationWindow = None
         # variable to store if user is logged in
         self.loggedIn = False
 
         # automatyczne zalogowanie na czes testow
-        self.logic.validateUser("rzymski", "Szumek19")
-        self.userAuthorizedInterface("rzymski")
+        # self.logic.validateUser("rzymski", "Szumek19")
+        # self.userAuthorizedInterface("rzymski")
 
     def validateUserProcessing(self):
         username = self.usernameEntry.get()
@@ -297,7 +303,7 @@ class AirportInterface:
             self.showButtonsAndLabels([[self.cancelReservationButton, (4, 0, "WE")], [self.generatePDFButton, (5, 0, "WE")], [self.checkReservationButton, (6, 0, "WE")]])
             self.reserveFlightButton['text'] = "Zmien rezerwacje"
             self.mainReservationLabel, self.mainReservationList = self.createList(self.root, headers=["ID", "ID ", "KOD LOTU", "KIERUNEK LOTU", "CZAS ODLOTU", "MIEJSCA"], anchor="w")
-            self.mainReservationList.bind("<Double-1>", self.reserveFlight)
+            self.mainReservationList.bind("<Double-1>", self.reservationOperations)
             for reservation in reservationsData:
                 self.mainReservationList.insert('', END, values=(reservation["id"], reservation['reservationId'], reservation['flightCode'], reservation['airports'], reservation['dates'], reservation['seats']))
 
@@ -366,41 +372,56 @@ class AirportInterface:
         reservations = self.logic.getFlightReservations()
         self.manageMainList(reservationsData=reservations)
 
-    def cancelReservation(self):
-        ic("Anuluj rezerwacje")
-        if self.mainReservationList:
-            selectedReservation = self.mainReservationList.selection()
-            if selectedReservation:
-                item = self.mainReservationList.item(selectedReservation[0])
-                values = item['values']
-                flightId = values[0]
-                self.logic.cancelReservation(flightId)
-                self.checkReservationList()
-
-    def generatePDF(self):
-        ic("Generate pdf")
+    def getSelectedReservation(self):
         if not self.mainReservationList:
             return None
         selectedReservation = self.mainReservationList.selection()
         if selectedReservation:
-            item = self.mainReservationList.item(selectedReservation[0])
-            values = item['values']
-            reservationId = values[1]
+            return self.mainReservationList.item(selectedReservation[0])['values'][1]
+        return 0
+
+    def cancelReservation(self, event=None):
+        ic("Anuluj rezerwacje")
+        reservationId = self.getSelectedReservation()
+        if reservationId:
+            self.logic.cancelReservation(reservationId)
+            self.checkReservationList()
+
+    def generatePDF(self, event=None):
+        ic("Generate pdf")
+        reservationId = self.getSelectedReservation()
+        if reservationId:
             self.logic.generatePDF(reservationId)
 
-    def checkReservation(self):
+    def checkReservation(self, event=None):
         ic("Check reservation")
-        if not self.mainReservationList:
-            return None
-        selectedReservation = self.mainReservationList.selection()
-        if selectedReservation:
-            item = self.mainReservationList.item(selectedReservation[0])
-            values = item['values']
-            reservationId = values[1]
+        reservationId = self.getSelectedReservation()
+        if reservationId:
             reservationData = self.logic.checkReservation(reservationId)
-            reservationWindow, reservationMainLabel = self.initNewWindow(self.root, [500, 500], f"Wszystkie dane rezerwacji o id {reservationId}")
+            reservationWindow, reservationMainLabel = self.initNewWindow(self.root, [500, 500], f"Wszystkie dane rezerwacji {reservationId}")
             for i, (key, value) in enumerate(reservationData.items()):
                 self.createLabel(reservationMainLabel, text=f"{key}: {value}", grid=[i, 0], sticky="W")
+
+    @staticmethod
+    def createCtkButton(frame, text, command, grid, sticky="WE", span=(1, 1), margin=(0, 0), imagePath=None, imageSize=(100, 100), imageSide="top", buttonSize=(150, 150), textColor="white", fg="red", hg=None):
+        image = customtkinter.CTkImage(light_image=Image.open(imagePath), size=imageSize) if imagePath else None
+        button = customtkinter.CTkButton(master=frame, text=text, command=command, image=image, compound=imageSide, width=buttonSize[0], height=buttonSize[1], text_color=textColor, fg_color=fg, hover_color=hg)
+        button.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky, padx=margin[0], pady=margin[1])
+        return button
+
+    def reservationOperations(self, event=None):
+        ic("Reservation operations")
+        reservationId = self.getSelectedReservation()
+        if reservationId:
+            self.operationWindow, operationMainLabel = self.initNewWindow(self.root, [450, 450], f"Dostepne operacje na rezerwacji {reservationId}")
+            infoButton = self.createCtkButton(operationMainLabel, "Szczegółowe dane", lambda func=self.checkReservation: self.doReservationOperation(func), grid=(0, 0), imagePath="..\\images\\info.png", margin=(25, 25), fg="#0000FF", hg="#0000A0")
+            pdfButton = self.createCtkButton(operationMainLabel, "Generuj pdfa", lambda func=self.generatePDF: self.doReservationOperation(func), grid=(0, 1), imagePath="..\\images\\pdf.png", margin=(25, 25), fg="#FF0000", hg="#A00000")
+            editButton = self.createCtkButton(operationMainLabel, "Edytuj rezerwacje", lambda func=self.reserveFlight: self.doReservationOperation(func), grid=(1, 0), imagePath="..\\images\\edit.png", margin=(25, 25), fg="#FFAC1C", hg="#E3963E")
+            cancelButton = self.createCtkButton(operationMainLabel, "Usuń rezerwacje", lambda func=self.cancelReservation: self.doReservationOperation(func), grid=(1, 1), imagePath="..\\images\\trash.png", margin=(25, 25), fg="#000000", hg="#202020")
+
+    def doReservationOperation(self, operationFunction, event=None):
+        self.operationWindow.destroy()
+        operationFunction()
 
 
 if __name__ == "__main__":

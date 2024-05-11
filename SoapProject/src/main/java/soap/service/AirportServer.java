@@ -1,21 +1,14 @@
 package soap.service;
 
-import database.adapter.LocalDateTimeAdapter;
 import database.dto.FlightDTO;
 import database.dto.FlightReservationDTO;
-import database.model.Flight;
-import database.model.FlightReservation;
 
 import javax.jws.WebMethod;
 import javax.jws.WebService;
 
 //import javax.xml.ws.BindingType;
 //import javax.xml.ws.soap.MTOM;
-import java.awt.*;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import javax.jws.soap.SOAPBinding;
@@ -65,7 +58,10 @@ public interface AirportServer {
     boolean reserveFlight(Long flightId, Long numberOfReservedSeats);
 
     @WebMethod
-    boolean cancelFlightReservation(Long flightId);
+    boolean cancelFlightReservation(Long flightReservationId);
+
+    @WebMethod
+    boolean cancelUserReservationInConcreteFlight(Long flightId);
 
     @WebMethod
     boolean createUser(String username, String password,String email);
