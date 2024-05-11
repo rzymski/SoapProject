@@ -11,4 +11,3 @@ if __name__ == "__main__":
         rootInterface.mainloop()
     except ValueError as e:
         print(e)
-

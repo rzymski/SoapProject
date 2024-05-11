@@ -19,6 +19,7 @@ class AirportInterface:
         self.root = root
         self.logic = logicClass
         self.root.title("Airport interface")
+        self.root.iconbitmap('..\\images\\icons\\planeWorld.ico')
         boldFont18 = font.Font(size=18, weight="bold")
         self.screen_width = root.winfo_screenwidth()
         self.screen_height = root.winfo_screenheight()
@@ -73,8 +74,10 @@ class AirportInterface:
         self.cancelReservationButton = self.createButton(self.leftFrame, text="Anuluj rezerwacje", command=self.cancelReservation, pad=[10, 10], grid=[4, 0], buttonFont=[28, "bold"])
         # generate pdf
         self.generatePDFButton = self.createButton(self.leftFrame, text="Odbierz potwierdzenie", command=self.generatePDF, pad=[5, 15], grid=[5, 0], buttonFont=[25, "bold"])
+        # check reservation
+        self.checkReservationButton = self.createButton(self.leftFrame, text="Sprawdź rezerwacje", command=self.checkReservation, pad=[10, 10], grid=[6, 0], buttonFont=[28, "bold"])
         # hide buttons which shouldn't be displayed to not logged user
-        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton, self.generatePDFButton])  # ukrycie przyciskow rezerwowania i usuwania rezerwacji
+        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton, self.generatePDFButton, self.checkReservationButton])  # ukrycie przyciskow rezerwowania i usuwania rezerwacji
         # flights list
         self.mainFlightLabel, self.mainFlightList, self.mainReservationLabel, self.mainReservationList = [None] * 4
         # login panel variables
@@ -87,8 +90,8 @@ class AirportInterface:
         self.loggedIn = False
 
         # automatyczne zalogowanie na czes testow
-        # self.logic.validateUser("rzymski", "Szumek19")
-        # self.userAuthorizedInterface("rzymski")
+        self.logic.validateUser("rzymski", "Szumek19")
+        self.userAuthorizedInterface("rzymski")
 
     def validateUserProcessing(self):
         username = self.usernameEntry.get()
@@ -170,7 +173,7 @@ class AirportInterface:
 
     def logout(self):
         ic("Logout")
-        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton, self.generatePDFButton])
+        self.hideButtonsAndLabels([self.loggedUserLabel, self.logoutButton, self.checkReservationsButton, self.reserveFlightButton, self.cancelReservationButton, self.generatePDFButton, self.checkReservationButton])
         self.showButtonsAndLabels([[self.loginButton, (0, 1, "E")], [self.registerButton, (0, 2, "E")], [self.findFlightLabel, (1, 0, "WE")]])
         self.logic.logoutUser()
         self.manageMainFieldSpace()
@@ -195,8 +198,8 @@ class AirportInterface:
         window.grid_columnconfigure(1, weight=0)  # Miejsce na elementy
         window.grid_columnconfigure(2, weight=1)  # Przestrzeń po
         # elements space in window
-        loginPanel = AirportInterface.createLabel(window, "", grid=[1, 1])
-        return window, loginPanel
+        windowMainLabel = AirportInterface.createLabel(window, "", grid=[1, 1])
+        return window, windowMainLabel
 
     @staticmethod
     def createList(frame, headers, anchor=CENTER):
@@ -281,7 +284,7 @@ class AirportInterface:
     def manageMainList(self, flightsData=None, reservationsData=None):
         self.manageMainFieldSpace()
         if flightsData:
-            self.hideButtonsAndLabels([self.cancelReservationButton, self.generatePDFButton])
+            self.hideButtonsAndLabels([self.cancelReservationButton, self.generatePDFButton, self.checkReservationButton])
             self.showButtonsAndLabels([[self.findFlightLabel, (1, 0, "WE")]])
             self.reserveFlightButton['text'] = "Zarezerwuj lot"
             # self.mainFlightLabel, self.mainFlightList = self.createList(self.root, headers=["ID", "KOD", "Z", "ODLOT O", "DO", "PRZYLOT O"])
@@ -291,7 +294,7 @@ class AirportInterface:
                 self.mainFlightList.insert('', END, values=(flight["id"], flight['flightCode'], flight['departureAirport'], flight['departureTime'], flight['destinationAirport'], flight['arrivalTime']))
         if reservationsData:
             self.hideButtonsAndLabels([self.findFlightLabel])
-            self.showButtonsAndLabels([[self.cancelReservationButton, (4, 0, "WE")], [self.generatePDFButton, (5, 0, "WE")]])
+            self.showButtonsAndLabels([[self.cancelReservationButton, (4, 0, "WE")], [self.generatePDFButton, (5, 0, "WE")], [self.checkReservationButton, (6, 0, "WE")]])
             self.reserveFlightButton['text'] = "Zmien rezerwacje"
             self.mainReservationLabel, self.mainReservationList = self.createList(self.root, headers=["ID", "ID ", "KOD LOTU", "KIERUNEK LOTU", "CZAS ODLOTU", "MIEJSCA"], anchor="w")
             self.mainReservationList.bind("<Double-1>", self.reserveFlight)
@@ -375,7 +378,7 @@ class AirportInterface:
                 self.checkReservationList()
 
     def generatePDF(self):
-        ic("Generuj pdf-a")
+        ic("Generate pdf")
         if not self.mainReservationList:
             return None
         selectedReservation = self.mainReservationList.selection()
@@ -384,6 +387,20 @@ class AirportInterface:
             values = item['values']
             reservationId = values[1]
             self.logic.generatePDF(reservationId)
+
+    def checkReservation(self):
+        ic("Check reservation")
+        if not self.mainReservationList:
+            return None
+        selectedReservation = self.mainReservationList.selection()
+        if selectedReservation:
+            item = self.mainReservationList.item(selectedReservation[0])
+            values = item['values']
+            reservationId = values[1]
+            reservationData = self.logic.checkReservation(reservationId)
+            reservationWindow, reservationMainLabel = self.initNewWindow(self.root, [500, 500], f"Wszystkie dane rezerwacji o id {reservationId}")
+            for i, (key, value) in enumerate(reservationData.items()):
+                self.createLabel(reservationMainLabel, text=f"{key}: {value}", grid=[i, 0], sticky="W")
 
 
 if __name__ == "__main__":

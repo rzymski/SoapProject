@@ -1,5 +1,6 @@
 from datetime import datetime
 from functools import wraps
+from zeep.helpers import serialize_object as serialize
 from icecream import ic
 
 
@@ -38,11 +39,15 @@ class AirportLogic:
         self.client.setUser(None, None)
 
     @staticmethod
+    def refactorDate(date):
+        dateStr = datetime.strptime(date, AirportLogic.javaDateFormat).strftime("%H:%M %d/%m/%Y")
+        refactoredDateStr = dateStr if dateStr[0] != "0" else dateStr[1:]
+        return refactoredDateStr
+
+    @staticmethod
     def refactorFlight(flightData):
-        departureTime = datetime.strptime(flightData['departureTime'], AirportLogic.javaDateFormat).strftime("%H:%M %d/%m/%Y")
-        arrivalTime = datetime.strptime(flightData['arrivalTime'], AirportLogic.javaDateFormat).strftime("%H:%M %d/%m/%Y")
-        departureTime = departureTime if departureTime[0] != "0" else departureTime[1:]
-        arrivalTime = arrivalTime if arrivalTime[0] != "0" else arrivalTime[1:]
+        departureTime = AirportLogic.refactorDate(flightData['departureTime'])
+        arrivalTime = AirportLogic.refactorDate(flightData['arrivalTime'])
         return {"id": flightData['id'], "flightCode": flightData['flightCode'], "departureAirport": flightData['departureAirport'], "departureTime": departureTime, "destinationAirport": flightData['destinationAirport'], "arrivalTime": arrivalTime}
 
     @staticmethod
@@ -76,10 +81,7 @@ class AirportLogic:
 
     @staticmethod
     def refactorReservation(reservationData):
-        departureTime = datetime.strptime(reservationData['departureTime'], AirportLogic.javaDateFormat).strftime("%H:%M %d/%m/%Y")
-        arrivalTime = datetime.strptime(reservationData['arrivalTime'], AirportLogic.javaDateFormat).strftime("%H:%M %d/%m/%Y")
-        departureTime = departureTime if departureTime[0] != "0" else departureTime[1:]
-        arrivalTime = arrivalTime if arrivalTime[0] != "0" else arrivalTime[1:]
+        arrivalTime = AirportLogic.refactorDate(reservationData['arrivalTime'])
         return {"id": reservationData['id'],
                 "reservationId": reservationData['reservationId'],
                 "flightCode": reservationData['flightCode'],
@@ -107,6 +109,13 @@ class AirportLogic:
 
     def generatePDF(self, reservationId):
         self.client.generatePDF(reservationId)
+
+    def checkReservation(self, reservationId):
+        reservation = self.client.service("checkFlightReservation", reservationId)
+        reservation = serialize(reservation)
+        reservation['arrivalTime'] = AirportLogic.refactorDate(reservation['arrivalTime'])
+        reservation['departureTime'] = AirportLogic.refactorDate(reservation['departureTime'])
+        return reservation
 
     def cancelReservation(self, flightId):
         self.client.service("cancelFlightReservation", flightId)

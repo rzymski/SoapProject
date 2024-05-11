@@ -98,6 +98,7 @@ class AirportClient:
                     print("Błąd podczas zapisywania pliku:", e)
             else:
                 print("Zapis pliku został anulowany.")
+        root.destroy()
 
     def getHeaderValue(self, serviceName, *args):
         result = self.service(serviceName, *args)
