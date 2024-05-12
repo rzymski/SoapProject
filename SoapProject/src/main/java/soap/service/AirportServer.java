@@ -23,24 +23,8 @@ public interface AirportServer {
     @WebMethod
     String echo(String text);
 
-//    @WebMethod
-//    byte[] downloadImage();
-
-
     @WebMethod
     List<FlightDTO> getFlightsData();
-
-//    @WebMethod
-//    List<FlightDTO> getFlightsByFromCity(String city);
-//
-//    @WebMethod
-//    List<FlightDTO> getFlightsByToCity(String city);
-//
-//    @WebMethod
-//    List<FlightDTO> getFlightsFromCityToCity(String fromCity, String toCity);
-//
-//    @WebMethod
-//    List<FlightDTO> getFlightsFromCityToCityWithinDateRange(String fromCity, String toCity, String startDateRange, String endDateRange);
 
     @WebMethod
     List<FlightDTO> getAllFlightsWithParameters(String fromCity, String toCity, String startDateRange, String endDateRange);

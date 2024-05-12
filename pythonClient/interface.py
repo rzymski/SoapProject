@@ -415,7 +415,7 @@ class AirportInterface:
         if reservationId:
             self.operationWindow, operationMainLabel = self.initNewWindow(self.root, [450, 450], f"Dostepne operacje na rezerwacji {reservationId}")
             infoButton = self.createCtkButton(operationMainLabel, "Szczegółowe dane", lambda func=self.checkReservation: self.doReservationOperation(func), grid=(0, 0), imagePath="..\\images\\info.png", margin=(25, 25), fg="#0000FF", hg="#0000A0")
-            pdfButton = self.createCtkButton(operationMainLabel, "Generuj pdfa", lambda func=self.generatePDF: self.doReservationOperation(func), grid=(0, 1), imagePath="..\\images\\pdf.png", margin=(25, 25), fg="#FF0000", hg="#A00000")
+            pdfButton = self.createCtkButton(operationMainLabel, "Generuj pdfa", lambda func=self.generatePDF: self.doReservationOperation(func), grid=(0, 1), imagePath="..\\images\\pdf.png", margin=(25, 25), fg="#FF0000", hg="#C00000")
             editButton = self.createCtkButton(operationMainLabel, "Edytuj rezerwacje", lambda func=self.reserveFlight: self.doReservationOperation(func), grid=(1, 0), imagePath="..\\images\\edit.png", margin=(25, 25), fg="#FFAC1C", hg="#E3963E")
             cancelButton = self.createCtkButton(operationMainLabel, "Usuń rezerwacje", lambda func=self.cancelReservation: self.doReservationOperation(func), grid=(1, 1), imagePath="..\\images\\trash.png", margin=(25, 25), fg="#000000", hg="#202020")
 

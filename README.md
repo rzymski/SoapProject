@@ -582,7 +582,8 @@ graph TD;
 		<operation name="cancelUserReservationInConcreteFlight">
 			<soap:operation soapAction=""/>
 			<input>
-</input>
+				<soap:body use="literal"/>
+			</input>
 			<output>
 				<soap:body use="literal"/>
 			</output>
@@ -595,3 +596,60 @@ graph TD;
 	</service>
 </definitions>
 ```
+
+1. Opis Web serwisu <b><code>echo</code></b>
+   - Operacja przyjmuje stringa i zwraca komunikat z serwera  wraz z tym samym stringiem. <b>echo</b> można również wykorzystać do sprawdzenia poprawności logowania, jeśli umieści się w nagłówku wartości do "username" i "password", echo zwraca w Soap nagłówku usernameValidation wartość bool.
+2. Opisz szczegółowy
+    - Dane wejściowe
+      - text - dowolny string 
+      - oprcjonalny nagłówek "username" i "password"
+    - Dane wyjściowe
+      - text - wiadomość z serwera "Serwer zwraca otrzymany text: " + text z parametru
+      - soap nagłówek "usernameValidation" z wartością bool
+3. Przykładowy komunikat wysłany do usługi:
+    ```xml
+    POST http://localhost:8080/SoapProject/AirportServerImplService HTTP/1.1
+            Host: localhost:8080
+            User-Agent: Zeep/4.2.1 (www.python-zeep.org)
+            Accept-Encoding: gzip, deflate
+            Accept: */*
+            Connection: keep-alive
+            SOAPAction: ""
+            Content-Type: text/xml; charset=utf-8
+            Content-Length: 564
+            username: user
+            password: admin
+    
+    <soap-env:Envelope xmlns:soap-env="http://schemas.xmlsoap.org/soap/envelope/">
+       <soap-env:Header xmlns:wsa="http://www.w3.org/2005/08/addressing">
+          <wsa:Action>http://service.soap/AirportServer/echoRequest</wsa:Action>
+          <wsa:MessageID>urn:uuid:9f36bcac-4fc3-461a-a62c-af66bee2918e</wsa:MessageID>
+          <wsa:To>http://localhost:8080/SoapProject/AirportServerImplService</wsa:To>
+       </soap-env:Header>
+       <soap-env:Body>
+          <ns0:echo xmlns:ns0="http://service.soap/">
+             <arg0>Check if user is correct</arg0>
+          </ns0:echo>
+       </soap-env:Body>
+    </soap-env:Envelope>
+    ```
+4. Przykładowy komunikat zwrócony z usługi:
+    ```xml
+    HTTP/1.1 200 OK
+            Server: Payara Server  5.2022.5 #badassfish
+            X-Powered-By: Servlet/4.0 JSP/2.3 (Payara Server  5.2022.5 #badassfish Java/Oracle Corporation/1.8)
+            Content-Type: text/xml; charset=utf-8
+            Transfer-Encoding: chunked
+            X-Frame-Options: SAMEORIGIN
+    
+    <S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/" xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+       <SOAP-ENV:Header>
+          <usernameValidation SOAP-ENV:actor="http://schemas.xmlsoap.org/soap/actor/next" xmlns="http://localhost:8080/SoapProject/AirportServerImplService">true</usernameValidation>
+       </SOAP-ENV:Header>
+       <S:Body xmlns:ns2="http://service.soap/">
+          <ns2:echoResponse>
+             <return>Serwer zwraca otrzymany text: Check if user is correct</return>
+          </ns2:echoResponse>
+       </S:Body>
+    </S:Envelope>
+    ```
