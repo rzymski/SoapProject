@@ -37,14 +37,17 @@ class AirportClient:
                     self.session.proxies = {'http': f'http://localhost:{proxyPort}/{serviceUrl}?WSDL'}
                 elif proxyPort:
                     self.session.proxies = {'http': f'http://{ipAddress}:{proxyPort}/{serviceUrl}?WSDL'}
+                else:
+                    self.session.proxies = {}
                 transport = Transport(session=self.session, timeout=1)
                 wsdlUrl = f'http://{ipAddress}:{serverPort}/{serviceUrl}?WSDL'
                 self.client = Client(wsdl=wsdlUrl, transport=transport, plugins=[self.plugin])
                 break
             except (ProxyError, ConnectionError, Timeout) as e:
-                if proxyPort and proxyPort[0]:
+                print(proxyPort)
+                if proxyPort:
                     proxySide = "klient" if proxyInClientSide else "serwer"
-                    print(f"Nie udało się połączyć z proxyPort na porcie {proxyPort[1]} po stronie {proxySide}a")
+                    print(f"Nie udało się połączyć z proxyPort na porcie {proxyPort} po stronie {proxySide}a")
                 else:
                     raise ValueError(f"Nie udało się połączyć z serwerem na porcie {serverPort}")
 
