@@ -18,7 +18,7 @@ from lxml import etree
 
 
 class AirportClient:
-    def __init__(self, serverPort, proxyPorts, ipAddress, serviceUrl, username=None, password=None):
+    def __init__(self, serverPort, proxyPorts, ipAddress, serviceUrl, username=None, password=None, proxyInClientSide=True):
         self.serverPort = serverPort
         self.proxyPorts = proxyPorts
         self.ipAddress = ipAddress
@@ -33,14 +33,18 @@ class AirportClient:
                     'username': username,
                     'password': password,
                 })
-                self.session.proxies = {'http': f'http://{ipAddress}:{proxyPort}/{serviceUrl}?WSDL'} if proxyPort else None
+                if proxyPort and proxyInClientSide:
+                    self.session.proxies = {'http': f'http://localhost:{proxyPort}/{serviceUrl}?WSDL'}
+                elif proxyPort:
+                    self.session.proxies = {'http': f'http://{ipAddress}:{proxyPort}/{serviceUrl}?WSDL'}
                 transport = Transport(session=self.session, timeout=1)
                 wsdlUrl = f'http://{ipAddress}:{serverPort}/{serviceUrl}?WSDL'
                 self.client = Client(wsdl=wsdlUrl, transport=transport, plugins=[self.plugin])
                 break
             except (ProxyError, ConnectionError, Timeout) as e:
-                if proxyPort:
-                    print(f"Nie udało się połączyć z proxy na porcie {proxyPort}.")
+                if proxyPort and proxyPort[0]:
+                    proxySide = "klient" if proxyInClientSide else "serwer"
+                    print(f"Nie udało się połączyć z proxyPort na porcie {proxyPort[1]} po stronie {proxySide}a")
                 else:
                     raise ValueError(f"Nie udało się połączyć z serwerem na porcie {serverPort}")
 
@@ -111,7 +115,7 @@ class AirportClient:
         root = ET.fromstring(responseXML)
         namespace = {'SOAP-ENV': 'http://schemas.xmlsoap.org/soap/envelope/'}
         header = root.find('.//SOAP-ENV:Header', namespaces=namespace)
-        usernameValidation = header.find(".//{http://" + str(self.ipAddress) + ":" + str(self.serverPort) + "/" + self.serviceUrl + "}usernameValidation").text
+        usernameValidation = header.find(".//{http://" + "localhost" + ":" + str(self.serverPort) + "/" + self.serviceUrl + "}usernameValidation").text
         print("Wartość usernameValidation:", usernameValidation)
         return usernameValidation == "true"
 

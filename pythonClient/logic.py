@@ -119,4 +119,3 @@ class AirportLogic:
 
     def cancelReservation(self, flightReservationId):
         self.client.service("cancelFlightReservation", flightReservationId)
-

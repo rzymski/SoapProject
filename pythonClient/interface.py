@@ -1,11 +1,9 @@
 from tkinter import *
 from tkinter import ttk
-
-import customtkinter
 import tkcalendar as tkc
 import tkinter.font as font
 import customtkinter as ctk
-from PIL import Image, ImageTk
+from PIL import Image
 from datetime import datetime, timedelta
 from icecream import ic
 import re
@@ -404,8 +402,8 @@ class AirportInterface:
 
     @staticmethod
     def createCtkButton(frame, text, command, grid, sticky="WE", span=(1, 1), margin=(0, 0), imagePath=None, imageSize=(100, 100), imageSide="top", buttonSize=(150, 150), textColor="white", fg="red", hg=None):
-        image = customtkinter.CTkImage(light_image=Image.open(imagePath), size=imageSize) if imagePath else None
-        button = customtkinter.CTkButton(master=frame, text=text, command=command, image=image, compound=imageSide, width=buttonSize[0], height=buttonSize[1], text_color=textColor, fg_color=fg, hover_color=hg)
+        image = ctk.CTkImage(light_image=Image.open(imagePath), size=imageSize) if imagePath else None
+        button = ctk.CTkButton(master=frame, text=text, command=command, image=image, compound=imageSide, width=buttonSize[0], height=buttonSize[1], text_color=textColor, fg_color=fg, hover_color=hg)
         button.grid(row=grid[0], column=grid[1], rowspan=span[0], columnspan=span[1], sticky=sticky, padx=margin[0], pady=margin[1])
         return button
 
@@ -428,5 +426,3 @@ if __name__ == "__main__":
     rootInterface = Tk()
     app = AirportInterface(rootInterface, AirportLogic(AirportClient(8080, [], "localhost", "SoapProject/AirportServerImplService")))
     rootInterface.mainloop()
-
-
