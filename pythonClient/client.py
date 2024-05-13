@@ -39,7 +39,7 @@ class AirportClient:
                     self.session.proxies = {'http': f'http://{ipAddress}:{proxyPort}/{serviceUrl}?WSDL'}
                 else:
                     self.session.proxies = {}
-                transport = Transport(session=self.session, timeout=1)
+                transport = Transport(session=self.session, timeout=10)
                 wsdlUrl = f'http://{ipAddress}:{serverPort}/{serviceUrl}?WSDL'
                 self.client = Client(wsdl=wsdlUrl, transport=transport, plugins=[self.plugin])
                 break
