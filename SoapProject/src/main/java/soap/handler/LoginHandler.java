@@ -86,7 +86,8 @@ public class LoginHandler implements SOAPHandler<SOAPMessageContext>{
                 boolean usernameValidation = userValidationConfirmed;
                 // logger.warning("Sprawdzenie zmiennych na wyjsciu: " + String.valueOf(usernameValidation) + " " + String.valueOf(userValidationConfirmed));
                 userValidationConfirmed = false;
-                QName qname = new QName("http://localhost:8080/SoapProject/AirportServerImplService", "usernameValidation");
+                // QName qname = new QName("http://localhost:8080/SoapProject/AirportServerImplService", "usernameValidation");
+                QName qname = new QName("validationHeader", "usernameValidation");
                 SOAPHeaderElement soapHeaderElement = soapHeader.addHeaderElement(qname);
                 soapHeaderElement.setActor(SOAPConstants.URI_SOAP_ACTOR_NEXT);
                 soapHeaderElement.addTextNode(String.valueOf(usernameValidation));

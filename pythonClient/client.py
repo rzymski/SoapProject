@@ -118,7 +118,7 @@ class AirportClient:
         root = ET.fromstring(responseXML)
         namespace = {'SOAP-ENV': 'http://schemas.xmlsoap.org/soap/envelope/'}
         header = root.find('.//SOAP-ENV:Header', namespaces=namespace)
-        usernameValidation = header.find(".//{http://" + "localhost" + ":" + str(self.serverPort) + "/" + self.serviceUrl + "}usernameValidation").text
+        usernameValidation = header.find("{validationHeader}usernameValidation").text
         print("Wartość usernameValidation:", usernameValidation)
         return usernameValidation == "true"
 
