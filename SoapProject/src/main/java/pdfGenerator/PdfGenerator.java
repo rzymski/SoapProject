@@ -131,37 +131,6 @@ public class PdfGenerator {
 
         document.close();
 
-        /*
-        pdfDocument.addNewPage();
-
-        Document document = new Document(pdfDocument);
-
-        if(isHeaderFooter) {
-            pdfDocument.addEventHandler(PdfDocumentEvent.END_PAGE, new HeaderFooterEventHandler(headerText, footerText));
-            System.out.println("[PdfGenerator] Add header and footer event handler");
-        }
-
-        Paragraph paragraph = new Paragraph("Pdf Generator");
-        document.add(paragraph);
-        System.out.println("[PdfGenerator] Add paragraph");
-
-        Paragraph paragraph1 = new Paragraph(_reservation.getLogin() + " " + _reservation.getEmail() + "\n" +
-                                                _reservation.getFlightCode() + " " + _reservation.getNumberOfReservedSeats());
-        document.add(paragraph1);
-
-        if(isImage) {
-            ImageData id = ImageDataFactory.create(imagePath);
-            Image img = new Image(id);
-
-            img.scaleAbsolute(100, 100);
-
-            document.add(img);
-            System.out.println("[PdfGenerator] Add image");
-        }
-
-
-*/
-
         System.out.println("[PdfGenerator] Document closed");
     }
 }
